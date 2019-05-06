@@ -1,12 +1,13 @@
 package com.example.pigeon.FirebaseManagers.Messaging;
 
-public class MessagingInstance {
+public abstract class MessagingInstance {
 
-    private String path;
+    protected String dbPath;
+    protected String userID;
+    protected long sentTimestamp;
 
-    public MessagingInstance(String path) {
-        this.path = path;
-    }
-
+    public abstract String getDBPath();
+    public abstract String getUserID();
+    public abstract long getSentTimestamp();
 
 }

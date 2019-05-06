@@ -10,8 +10,10 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.ValueEventListener;
 
 import static android.content.ContentValues.TAG;
 
@@ -49,7 +51,7 @@ public class LoggingInHelper {
                             // Sign in success, update UI with the signed-in user's information
                             Log.d(TAG, "signInWithEmail:success");
                             FirebaseUser user = FirebaseHelper.mainAuth.getCurrentUser();
-
+                            createExistingUser(user.getUid());
                         } else {
                             // If sign in fails, display a message to the user.
                             Log.w(TAG, "signInWithEmail:success", task.getException());
@@ -66,13 +68,38 @@ public class LoggingInHelper {
         FirebaseHelper.mainDB.getReference().child(uID).setValue(MainActivity.user, new OnUserComplete());
     }
 
+    public void createExistingUser(String uID){
+
+        //Creates a new listener
+        ValueEventListener listener = new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                User user = dataSnapshot.getValue(User.class);
+                MainActivity.user = user;
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+                Log.d(TAG , "errorAccessingUser") ;
+            }
+        };
+        FirebaseHelper.mainDB.getReference().child(uID).addListenerForSingleValueEvent(listener);
+    }
+
+
     class OnUserComplete implements DatabaseReference.CompletionListener {
         @Override
         public void onComplete(DatabaseError error, DatabaseReference ref) {
             if(error.getCode() == 0){
                 Log.w(TAG, "userInDatabase:success");
+                //Update UI here
             }
         }
     }
+
+
+
+
+
 
 }

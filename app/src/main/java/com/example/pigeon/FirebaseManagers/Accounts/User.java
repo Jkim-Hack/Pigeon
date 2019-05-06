@@ -23,4 +23,15 @@ public class User {
         this.uID = uID;
     }
 
+    public String getEmail() {
+        return email;
+    }
+
+    public String getuID() {
+        return uID;
+    }
+
+    public String getName() {
+        return name;
+    }
 }
