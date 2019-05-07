@@ -21,7 +21,7 @@ public class LoggingInHelper {
 
 
 
-    public void signUpUser(final String email, final String password, final String name, final long phoneNumber){
+    public static void signUpUser(final String email, final String password, final String name, final long phoneNumber){
         FirebaseHelper.mainAuth.createUserWithEmailAndPassword(email, password)
                 .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
                     @Override
@@ -30,7 +30,7 @@ public class LoggingInHelper {
                             // Sign in success, update UI with the signed-in user's information
                             Log.d(TAG, "createUserWithEmail:success");
                             FirebaseUser firebaseUser = FirebaseHelper.mainAuth.getCurrentUser();
-                            createNewUser(email, name, firebaseUser.getUid());
+                            createNewUser(email, name, firebaseUser.getUid(), phoneNumber);
                         } else {
                             // If sign in fails, display a message to the user.
                             Log.w(TAG, "createUserWithEmail:failure", task.getException());
@@ -42,7 +42,7 @@ public class LoggingInHelper {
                 });
     }
 
-    public void signInUser(String email, String password){
+    public static void signInUser(String email, String password){
         FirebaseHelper.mainAuth.signInWithEmailAndPassword(email, password)
                 .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
                     @Override
@@ -63,19 +63,19 @@ public class LoggingInHelper {
                 });
     }
 
-    public void createNewUser(String email, String name, String uID) {
-        MainActivity.user = new User(email,name, uID);
+    private static void createNewUser(String email, String name, String uID, long phonenumber) {
+        MainActivity.user = new User(email,name, uID, phonenumber);
         FirebaseHelper.mainDB.getReference().child(uID).setValue(MainActivity.user, new OnUserComplete());
     }
 
-    public void createExistingUser(String uID){
+    private static void createExistingUser(String uID){
 
         //Creates a new listener
         ValueEventListener listener = new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 User user = dataSnapshot.getValue(User.class);
-                MainActivity.user = user;
+                MainActivity.user = new User(user);
             }
 
             @Override
@@ -87,13 +87,18 @@ public class LoggingInHelper {
     }
 
 
-    class OnUserComplete implements DatabaseReference.CompletionListener {
+
+   static class OnUserComplete implements DatabaseReference.CompletionListener {
         @Override
         public void onComplete(DatabaseError error, DatabaseReference ref) {
-            if(error.getCode() == 0){
+            if(error == null){
                 Log.w(TAG, "userInDatabase:success");
                 //Update UI here
+            } else {
+                Log.w(TAG, "userInDatabase:FAILED");
+                //Update UI here
             }
+
         }
     }
 

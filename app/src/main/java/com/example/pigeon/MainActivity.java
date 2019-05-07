@@ -3,8 +3,11 @@ package com.example.pigeon;
 import android.content.Context;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 
+import com.example.pigeon.FirebaseManagers.Accounts.LoggingInHelper;
 import com.example.pigeon.FirebaseManagers.Accounts.User;
+import com.example.pigeon.FirebaseManagers.FirebaseHelper;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
@@ -15,9 +18,9 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        FirebaseDatabase database = FirebaseDatabase.getInstance();
-        DatabaseReference myRef = database.getReference("message");
+        FirebaseHelper.build();
 
-        myRef.setValue("Android Developers Rise Up");
+        LoggingInHelper.signInUser("jkim@gmail.com", "password");
+
     }
 }

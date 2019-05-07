@@ -11,9 +11,7 @@ public class TextMessage extends MessagingInstance{
     }
 
     @Override
-    public String getDBPath() {
-        return dbPath;
-    }
+    public String getDBPath() { return dbPath; }
     @Override
     public String getUserID() {
         return userID;

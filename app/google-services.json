@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "994422171305",
+    "firebase_url": "https://pigeon-engine.firebaseio.com",
+    "project_id": "pigeon-engine",
+    "storage_bucket": "pigeon-engine.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:994422171305:android:624af8a6a59af6fc",
+        "android_client_info": {
+          "package_name": "com.example.pigeon"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "994422171305-8bvemvqt9p5t8o2uk758fuotokcrcd38.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCx-UgFYKnLSl5lY_MqTc90FQ4mVusfH8U"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "994422171305-8bvemvqt9p5t8o2uk758fuotokcrcd38.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "994422171305-ncudru5v5rksj3vengtnbp2tesi8s372.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "playground.Pigeon"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
