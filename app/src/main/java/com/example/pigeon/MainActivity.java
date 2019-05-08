@@ -22,5 +22,6 @@ public class MainActivity extends AppCompatActivity {
 
         LoggingInHelper.signInUser("jkim@gmail.com", "password");
 
+
     }
 }

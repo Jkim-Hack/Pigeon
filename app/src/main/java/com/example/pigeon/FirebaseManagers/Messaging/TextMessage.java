@@ -4,9 +4,9 @@ public class TextMessage extends MessagingInstance{
     private String message;
 
     public TextMessage(){}
-    public TextMessage(String message, long timestamp, String userkey){
+    public TextMessage(String message, String userkey){
         this.message = message;
-        this.sentTimestamp = timestamp;
+        this.sentTimestamp = System.currentTimeMillis();
         this.userID = userkey;
     }
 

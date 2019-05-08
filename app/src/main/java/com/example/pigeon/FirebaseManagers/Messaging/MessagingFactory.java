@@ -11,9 +11,8 @@ public class MessagingFactory {
 
     //channelPath = the path in the database where we want to open a channel
     public static MessagingInstance initializeTextMessagingInstance(String message){
-        long currentTime = System.currentTimeMillis();
         String userID = MainActivity.user.getuID();
-        return new TextMessage(message, currentTime, userID);
+        return new TextMessage(message, userID);
     }
 
     //More will be added:
