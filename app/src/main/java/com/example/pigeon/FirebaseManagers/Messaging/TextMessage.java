@@ -21,4 +21,14 @@ public class TextMessage extends MessagingInstance{
         return sentTimestamp;
     }
 
+    @Override
+    public String setDBPath() { return dbPath; }
+    @Override
+    public String setUserID() {
+        return userID;
+    }
+    @Override
+    public long setSentTimestamp() {
+        return sentTimestamp;
+    }
 }
