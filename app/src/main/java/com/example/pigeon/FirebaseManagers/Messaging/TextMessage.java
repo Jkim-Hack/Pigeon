@@ -8,6 +8,7 @@ public class TextMessage extends MessagingInstance{
         this.message = message;
         this.sentTimestamp = System.currentTimeMillis();
         this.userID = userkey;
+        this.type = "TEXT";
     }
 
     @Override
@@ -20,15 +21,15 @@ public class TextMessage extends MessagingInstance{
     public long getSentTimestamp() {
         return sentTimestamp;
     }
+    @Override
+    public String getType() {return type;}
 
     @Override
-    public String setDBPath() { return dbPath; }
-    @Override
-    public String setUserID() {
-        return userID;
+    public void setDBPath(String path) {
+        this.dbPath = path;
     }
     @Override
-    public long setSentTimestamp() {
-        return sentTimestamp;
+    public void setUserID(String userID) {
+        this.userID = userID;
     }
 }

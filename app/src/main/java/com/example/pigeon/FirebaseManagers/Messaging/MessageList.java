@@ -2,20 +2,12 @@ package com.example.pigeon.FirebaseManagers.Messaging;
 
 
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.LinkedList;
 
 
 public class MessageList<E> extends LinkedList<E> {
 
     private ArrayList<MessageListListener> listeners = new ArrayList<>();
-
-    @Override
-    public boolean add(E e){
-        boolean res = super.add(e);
-        notifyAllListeners();
-        return res;
-    }
 
     @Override
     public boolean offer(E e){
@@ -30,7 +22,7 @@ public class MessageList<E> extends LinkedList<E> {
 
     private void notifyAllListeners() {
         for (MessageListListener listener: listeners) {
-            listener.OnMessageAdd();
+            listener.OnMessageOffer();
         }
     }
 
