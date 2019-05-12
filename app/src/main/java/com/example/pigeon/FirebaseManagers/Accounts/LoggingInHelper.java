@@ -54,7 +54,7 @@ public class LoggingInHelper {
                             createExistingUser(user.getUid());
                         } else {
                             // If sign in fails, display a message to the user.
-                            Log.w(TAG, "signInWithEmail:success", task.getException());
+                            Log.w(TAG, "signInWithEmail:failed", task.getException());
                           //  Toast.makeText(EmailPasswordActivity.this, "Authentication failed.",
                             //      Toast.LENGTH_SHORT).show();
 
@@ -76,6 +76,7 @@ public class LoggingInHelper {
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 User user = dataSnapshot.getValue(User.class);
                 MainActivity.user = new User(user);
+                MainActivity.send();
             }
 
             @Override

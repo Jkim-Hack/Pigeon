@@ -1,11 +1,17 @@
 package com.example.pigeon.FirebaseManagers.Accounts;
 
+import com.example.pigeon.FirebaseManagers.FirebaseHelper;
+
+import java.util.ArrayList;
+import java.util.List;
+
 public class User implements Cloneable{
 
     private String email;
     private String name;
     private String uID;
     private long phonenumber;
+    private ArrayList<String> chatList;
 
     public User() {
         this.email = "user@gmail.com";
@@ -17,6 +23,7 @@ public class User implements Cloneable{
         this.name = name;
         this.uID = uID;
         this.phonenumber = phonenumber;
+        this.chatList = new ArrayList<>();
     }
 
     public User(User otherUser){
@@ -24,6 +31,7 @@ public class User implements Cloneable{
         this.name = otherUser.getName();
         this.uID = otherUser.getuID();
         this.phonenumber = otherUser.getPhonenumber();
+        this.chatList = otherUser.getChatList();
     }
 
     public void updateUser(String email, String name, String uID, long phonenumber) {
@@ -51,8 +59,21 @@ public class User implements Cloneable{
         return phonenumber;
     }
 
+    public ArrayList<String> getChatList() {
+        return chatList;
+    }
+
+    //WORK IN PROGRESS
+    public void addChat(String chatID) {
+        if(chatList == null){
+            chatList = new ArrayList<>();
+        }
+        chatList.add(chatID);
+        //FirebaseHelper.mainDB.getReference().child(this.uID).child("chatList").setValue(chatList);
+    }
+
     @Override
     public String toString() {
-        return "Email:" + email + " Name:" + name + " uID:" + uID + " Phone Number:" + phonenumber;
+        return "Email:" + email + " Name:" + name + " uID:" + uID + " Phone Number:" + phonenumber + "Chars: " + chatList;
     }
 }

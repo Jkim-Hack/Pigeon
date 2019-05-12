@@ -11,8 +11,8 @@ public class TextMessage extends MessagingInstance{
         this.type = "TEXT";
     }
 
-    @Override
-    public String getDBPath() { return dbPath; }
+
+    public String getMessage(){return message;}
     @Override
     public String getUserID() {
         return userID;
@@ -23,11 +23,6 @@ public class TextMessage extends MessagingInstance{
     }
     @Override
     public String getType() {return type;}
-
-    @Override
-    public void setDBPath(String path) {
-        this.dbPath = path;
-    }
     @Override
     public void setUserID(String userID) {
         this.userID = userID;
