@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".FirebaseManagers.Accounts.SignInActivity">
+
+    <android.support.constraint.ConstraintLayout
+        android:id="@+id/constraintLayout2"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:context=".SignInScreen">
+
+        <TextView
+            android:id="@+id/signInGreet"
+            android:layout_width="wrap_content"
+            android:layout_height="0dp"
+            android:layout_marginTop="74dp"
+            android:layout_marginBottom="78dp"
+            android:text="@string/welcome_sign_in_below"
+            android:textSize="25sp"
+            app:layout_constraintBottom_toTopOf="@+id/emailEnter"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <EditText
+            android:id="@+id/emailEnter"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="37dp"
+            android:autofillHints=""
+            android:ems="10"
+            android:hint="@string/email"
+            android:inputType="textEmailAddress"
+            app:layout_constraintBottom_toTopOf="@+id/passwordEnter"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/signInGreet" />
+
+        <EditText
+            android:id="@+id/passwordEnter"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="75dp"
+            android:autofillHints=""
+            android:ems="10"
+            android:hint="@string/password"
+            android:inputType="textPassword"
+            app:layout_constraintBottom_toTopOf="@+id/signInConfirm"
+            app:layout_constraintStart_toStartOf="@+id/emailEnter"
+            app:layout_constraintTop_toBottomOf="@+id/emailEnter" />
+
+        <Button
+            android:id="@+id/signInConfirm"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="92dp"
+            android:ellipsize="none"
+            android:fadingEdge="none"
+            android:text="@string/sign_in"
+            app:layout_constraintBottom_toTopOf="@+id/button2"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/passwordEnter" />
+
+        <Button
+            android:id="@+id/button2"
+            android:layout_width="256dp"
+            android:layout_height="0dp"
+            android:layout_marginBottom="176dp"
+            android:background="@android:color/transparent"
+            android:text="@string/don_t_have_an_account_sign_up"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/signInConfirm" />
+    </android.support.constraint.ConstraintLayout>
+</android.support.constraint.ConstraintLayout>
