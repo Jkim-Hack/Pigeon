@@ -26,6 +26,14 @@ public class User implements Cloneable{
         this.chatList = new ArrayList<>();
     }
 
+    public User(String email, String name, String uID){
+        this.email = email;
+        this.name = name;
+        this.uID = uID;
+        this.phonenumber = 0;
+        this.chatList = new ArrayList<>();
+    }
+
     public User(User otherUser){
         this.email = otherUser.getEmail();
         this.name = otherUser.getName();

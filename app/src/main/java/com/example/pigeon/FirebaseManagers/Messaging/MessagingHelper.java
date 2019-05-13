@@ -3,9 +3,8 @@ package com.example.pigeon.FirebaseManagers.Messaging;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
-import com.example.pigeon.FirebaseManagers.Accounts.LoggingInHelper;
 import com.example.pigeon.FirebaseManagers.FirebaseHelper;
-import com.example.pigeon.MainActivity;
+import com.example.pigeon.Activities.MainActivity;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.database.ChildEventListener;
@@ -62,6 +61,7 @@ public class MessagingHelper {
                         TextMessage message = (TextMessage)receivedMessage;
                         currentChatRoom.add(message);
                         //update UI received here
+                        //Notification here
                     }
                 }
             }

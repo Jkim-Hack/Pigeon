@@ -1,11 +1,6 @@
 package com.example.pigeon.FirebaseManagers.Messaging;
 
-import com.example.pigeon.FirebaseManagers.Messaging.MessagingInstance;
-import com.example.pigeon.MainActivity;
-
-import java.security.KeyPairGenerator;
-import java.security.NoSuchAlgorithmException;
-import java.security.NoSuchProviderException;
+import com.example.pigeon.Activities.MainActivity;
 
 public class MessagingFactory {
 

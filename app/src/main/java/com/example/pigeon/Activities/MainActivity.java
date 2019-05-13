@@ -1,4 +1,4 @@
-package com.example.pigeon;
+package com.example.pigeon.Activities;
 
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
@@ -9,6 +9,7 @@ import com.example.pigeon.FirebaseManagers.Accounts.LoggingInHelper;
 import com.example.pigeon.FirebaseManagers.Accounts.User;
 import com.example.pigeon.FirebaseManagers.FirebaseHelper;
 import com.example.pigeon.FirebaseManagers.Messaging.MessagingHelper;
+import com.example.pigeon.R;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
@@ -28,7 +29,7 @@ public class MainActivity extends AppCompatActivity {
 
         FirebaseHelper.build();
 
-        LoggingInHelper.signInUser("jkim@gmail.com", "password");
+       // LoggingInHelper.signInUser("jkim@gmail.com", "password");
 
 
     }
