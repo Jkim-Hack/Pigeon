@@ -8,10 +8,11 @@ public class TextMessage extends MessagingInstance{
         this.message = message;
         this.sentTimestamp = System.currentTimeMillis();
         this.userID = userkey;
+        this.type = "TEXT";
     }
 
-    @Override
-    public String getDBPath() { return dbPath; }
+
+    public String getMessage(){return message;}
     @Override
     public String getUserID() {
         return userID;
@@ -20,15 +21,10 @@ public class TextMessage extends MessagingInstance{
     public long getSentTimestamp() {
         return sentTimestamp;
     }
-
     @Override
-    public String setDBPath() { return dbPath; }
+    public String getType() {return type;}
     @Override
-    public String setUserID() {
-        return userID;
-    }
-    @Override
-    public long setSentTimestamp() {
-        return sentTimestamp;
+    public void setUserID(String userID) {
+        this.userID = userID;
     }
 }
