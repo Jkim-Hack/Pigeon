@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".Activities.MainMenu">
+
+    <TextView
+        android:id="@+id/chatsTextView"
+        android:layout_width="75dp"
+        android:layout_height="0dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginBottom="449dp"
+        android:fontFamily="sans-serif-medium"
+        android:text="Chats"
+        android:textSize="25dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/TextView" />
+
+    <TextView
+        android:id="@+id/TextView"
+        android:layout_width="112dp"
+        android:layout_height="0dp"
+        android:layout_marginStart="20dp"
+        android:layout_marginTop="115dp"
+        android:layout_marginBottom="81dp"
+        android:fontFamily="sans-serif-medium"
+        android:text="Frequent"
+        android:textSize="25dp"
+        app:layout_constraintBottom_toTopOf="@+id/chatsTextView"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <FrameLayout
+        android:id="@+id/frameLayout"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.0">
+
+        <LinearLayout
+            android:layout_width="350dp"
+            android:layout_height="64dp"
+            android:layout_marginLeft="20dp">
+
+            <ImageView
+                android:id="@+id/backgroundtopbar"
+                android:layout_width="300dp"
+                android:layout_height="70dp"
+                android:src="@mipmap/Group276" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/linearLayout"
+            android:layout_width="match_parent"
+            android:layout_height="64dp">
+
+            <ImageView
+                android:id="@+id/whitetopbar"
+                android:layout_width="290dp"
+                android:layout_height="70dp"
+                android:layout_marginLeft="25dp"
+                android:src="@mipmap/Group279" />
+
+
+            <ImageView
+                android:id="@+id/profile"
+                android:layout_width="50dp"
+                android:layout_height="match_parent"
+                android:layout_marginLeft="25dp"
+                android:src="@mipmap/defaultprofile" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="71dp"
+            android:layout_height="52dp"
+            android:layout_marginLeft="25dp"
+            android:layout_marginTop="10dp"
+            android:orientation="vertical">
+
+            //TODO: add sandwich icon here
+            <ImageView
+                android:id="@+id/expanded_menu"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/frequentList"
+            android:layout_width="match_parent"
+            android:layout_height="70dp"
+            android:layout_marginTop="170dp"
+            android:layout_marginLeft="21dp"
+            android:layout_marginRight="21dp"
+            android:orientation="horizontal"></LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/chatsList"
+            android:layout_width="match_parent"
+            android:layout_height="400dp"
+            android:layout_marginTop="300dp"
+            android:layout_marginLeft="21dp"
+            android:layout_marginRight="21dp"
+            android:orientation="vertical"></LinearLayout>
+
+    </FrameLayout>
+
+
+</android.support.constraint.ConstraintLayout>
