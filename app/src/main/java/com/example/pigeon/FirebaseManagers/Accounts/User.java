@@ -1,6 +1,10 @@
 package com.example.pigeon.FirebaseManagers.Accounts;
 
+import android.support.annotation.NonNull;
+
 import com.example.pigeon.FirebaseManagers.FirebaseHelper;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -72,12 +76,20 @@ public class User implements Cloneable{
     }
 
     //WORK IN PROGRESS
-    public void addChat(String chatID) {
+    public void addChat(final String chatID) {
         if(chatList == null){
             chatList = new ArrayList<>();
         }
-        chatList.add(chatID);
-        //FirebaseHelper.mainDB.getReference().child(this.uID).child("chatList").setValue(chatList);
+        //ChatList add should be done after the user has been updated
+        Task<Void> addChat = FirebaseHelper.mainDB.getReference().child(this.uID).child("chatList").setValue(chatList);
+        addChat.addOnCompleteListener(new OnCompleteListener<Void>() {
+            @Override
+            public void onComplete(@NonNull Task<Void> task) {
+                chatList.add(chatID);
+            }
+        });
+
+
     }
 
     @Override
