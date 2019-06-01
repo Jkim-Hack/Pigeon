@@ -3,6 +3,7 @@ package com.example.pigeon.FirebaseManagers.Accounts;
 import android.support.annotation.NonNull;
 
 import com.example.pigeon.FirebaseManagers.FirebaseHelper;
+import com.example.pigeon.FirebaseManagers.Messaging.MessagingHelper;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 
@@ -86,6 +87,7 @@ public class User implements Cloneable{
             @Override
             public void onComplete(@NonNull Task<Void> task) {
                 chatList.add(chatID);
+                MessagingHelper.LoadAllChatRooms();
             }
         });
 
