@@ -2,6 +2,7 @@ package com.example.pigeon.FirebaseManagers.Messaging;
 
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.util.Log;
 
 import com.example.pigeon.FirebaseManagers.FirebaseHelper;
 import com.example.pigeon.Activities.MainActivity;
@@ -36,6 +37,8 @@ public class MessagingHelper {
      *
      *
      * */
+
+    //TODO: NEEDS TESTING
     public static List<Task<Void>> createChat(String otherUID) {
         currentChatRoom = new MessageList();
 
@@ -109,6 +112,8 @@ public class MessagingHelper {
     /*
      * Loads all of the chat rooms and any new chats are added to the variable "chatList"
      */
+    //TODO: NEEDS TESTING
+
     public static void LoadAllChatRooms() {
        final ArrayList<String> chatIDLists = MainActivity.user.getChatList();
         for (final String chatID : chatIDLists) {
@@ -146,6 +151,7 @@ public class MessagingHelper {
         chatList.add(map);
     }
 
+    //TODO: NEEDS TESTING
     public static void LoadChatRoom(String chatID) {
         currentChatRoom = new MessageList<>();
         currentChatID = chatID;
@@ -154,35 +160,37 @@ public class MessagingHelper {
             @Override
             public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
                 if(dataSnapshot.exists()){
+
+                    //Creates a new MessageList and copies all the messages received into the new list. This is inefficient but it should work.
+                    currentChatRoom = new MessageList<>();
                     List<MessagingInstance> messagingInstanceList = (List<MessagingInstance>) dataSnapshot.getValue();
-                    //TODO: ADD currentChatRoom TO MESSAGING INSTANCE LIST
+                    for (MessagingInstance message: messagingInstanceList) {
+                        currentChatRoom.add(message);
+                    }
                 }
             }
 
             @Override
             public void onChildChanged(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
-
+                Log.d("TAG", "Changed");
             }
-
             @Override
             public void onChildRemoved(@NonNull DataSnapshot dataSnapshot) {
-
+                //TODO: Add remove handler
             }
-
             @Override
             public void onChildMoved(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
-
+                //TODO: Add moved handler
             }
-
             @Override
             public void onCancelled(@NonNull DatabaseError databaseError) {
-
+                //TODO: Add Toast on cancelled event
             }
         });
 
     }
 
-
+    //TODO: NEEDS TESTING
     //Sends a basic text message
     public static void sendTextMessage(String textmessage) {
         MessagingInstance message = MessagingFactory.initializeTextMessagingInstance(textmessage);
@@ -192,6 +200,7 @@ public class MessagingHelper {
         }
 
     }
+
 
     //Updates "previous message" in the database
     private static void updatePreviousMessage(String message) {
