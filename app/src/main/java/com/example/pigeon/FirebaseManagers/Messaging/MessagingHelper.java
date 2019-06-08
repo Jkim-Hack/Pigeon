@@ -3,14 +3,19 @@ package com.example.pigeon.FirebaseManagers.Messaging;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.util.Log;
+import android.widget.ImageView;
 
 import com.example.pigeon.FirebaseManagers.FirebaseHelper;
 import com.example.pigeon.Activities.MainActivity;
+import com.example.pigeon.FirebaseManagers.ImageHandler;
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
+import com.google.firebase.storage.UploadTask;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -201,6 +206,32 @@ public class MessagingHelper {
 
     }
 
+    public static void sendImageMessage(String src){
+        final MessagingInstance message = MessagingFactory.initializeImageMessagingInstance(src);
+        ImageMessage imageMessage = (ImageMessage)message;
+        String storagePath = ""; //TODO: Figure out storage path when sending a message.
+        UploadTask uploadTask = ImageHandler.uploadImagePath(src, storagePath);
+        uploadTask.addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception exception) {
+                // Handle unsuccessful uploads
+            }
+        }).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+            @Override
+            public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                // taskSnapshot.getMetadata() contains file metadata such as size, content-type, etc.
+                if(currentChatRoom != null){
+                    currentChatRoom.offer(message);
+                    updatePreviousMessage(FirebaseHelper.mainStorage.getReference().getDownloadUrl().toString());
+                }
+
+            }
+        });
+    }
+
+
+    public static void sendImageMessage(ImageView image){}
+
 
     //Updates "previous message" in the database
     private static void updatePreviousMessage(String message) {
@@ -237,9 +268,12 @@ public class MessagingHelper {
         @Override
         public void OnMessageOffer() {
             //peek just looks at the top object and doesn't remove anything
+            if(currentChatRoom.peek().getType().equals("IMAGE")){
+                ImageMessage message = (ImageMessage)(currentChatRoom.peek());
+                if(message)
+            }
             Task<Void> task = FirebaseHelper.messagingDB.getReference().child("Messages").child(currentChatID)
                     .push().setValue(currentChatRoom.peek());
-
             //Update UI Sending
 
             ExecutorService es = Executors.newSingleThreadExecutor();

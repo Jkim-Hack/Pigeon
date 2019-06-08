@@ -1,30 +1,35 @@
 package com.example.pigeon.FirebaseManagers.Messaging;
 
-public class TextMessage extends MessagingInstance{
-    private String message;
+public class ImageMessage extends MessagingInstance {
 
-    public TextMessage(){
+    private String downloadLink;
+
+    public ImageMessage(){
         //TODO: ADD DEFAULT MESSAGE
     }
-    public TextMessage(String message, String userID){
-        this.message = message;
+
+    public ImageMessage(String downloadLink, String userID){
+        this.downloadLink = downloadLink;
         this.sentTimestamp = System.currentTimeMillis();
         this.userID = userID;
-        this.type = "TEXT";
+        this.type = "IMAGE";
     }
 
-
-    public String getMessage(){return message;}
     @Override
     public String getUserID() {
-        return userID;
+        return this.userID;
     }
+
     @Override
     public long getSentTimestamp() {
-        return sentTimestamp;
+        return this.sentTimestamp;
     }
+
     @Override
-    public String getType() {return type;}
+    public String getType() {
+        return this.type;
+    }
+
     @Override
     public void setUserID(String userID) {
         this.userID = userID;
