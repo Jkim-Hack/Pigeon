@@ -17,11 +17,13 @@ public class MessagingFactory {
         return new ImageMessage(path, userID);
     }
 
+    //TODO: Make a image messaging instance using an ImageView object
+    /*
     public static MessagingInstance initializeImageMessagingInstance(ImageView image){
         String userID = MainActivity.user.getuID();
         return new ImageMessage(image, userID);
     }
-
+    */
     //More will be added:
         //Images, Links, Videos, etc.
 

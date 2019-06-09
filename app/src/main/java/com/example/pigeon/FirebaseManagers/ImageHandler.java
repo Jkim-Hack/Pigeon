@@ -8,6 +8,7 @@ import android.widget.ImageView;
 
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.storage.StorageMetadata;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 
@@ -24,6 +25,16 @@ public class ImageHandler {
         // Register observers to listen for when the download is done or if it fails
         return uploadTask;
     }
+
+    public static UploadTask uploadImagePath(String src, String storagePath, StorageMetadata metadata) {
+        Uri file = Uri.fromFile(new File(src));
+        StorageReference storageRef = FirebaseHelper.mainStorage.getReference().child(storagePath);
+
+        UploadTask uploadTask = storageRef.putFile(file, metadata);
+        // Register observers to listen for when the download is done or if it fails
+        return uploadTask;
+    }
+
 
     public static UploadTask uploadImageBytes(ImageView image, String storagePath){
         Bitmap bitmap = ((BitmapDrawable) image.getDrawable()).getBitmap();

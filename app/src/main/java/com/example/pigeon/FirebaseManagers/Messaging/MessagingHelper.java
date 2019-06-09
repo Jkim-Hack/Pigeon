@@ -15,6 +15,10 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
+import com.google.firebase.storage.OnPausedListener;
+import com.google.firebase.storage.OnProgressListener;
+import com.google.firebase.storage.StorageMetadata;
+import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 
 import java.util.ArrayList;
@@ -29,13 +33,14 @@ public class MessagingHelper {
     //TODO: ENABLE OFFLINE CAPABILITIES https://firebase.google.com/docs/database/android/offline-capabilities
 
     //MESSAGES CAP = 30;
-    public static ArrayList<HashMap<String, ChatInfo>> chatList = new ArrayList<>();
-    public static MessageList<MessagingInstance> currentChatRoom;
-    public static String currentChatID;
+    public static ArrayList<HashMap<String, ChatInfo>> chatList = new ArrayList<>(); //List of chat rooms displayed in the main menu
+    public static List<UploadTask> uploadTasks; //upload tasks for the current viewed chat room
+    public static MessageList<MessagingInstance> currentChatRoom; //Current chat room's message list
+    public static String currentChatID; //Current chat room's ID
 
     /*
      *
-     * This creates a new chat and updates firebase
+     * This creates a new chat and updates Firebase
      *
      * An executorService is the executor service that executes all tasks here.
      * This requires an executor service attached to all the tasks in the returned list
@@ -115,7 +120,8 @@ public class MessagingHelper {
 
 
     /*
-     * Loads all of the chat rooms and any new chats are added to the variable "chatList"
+     * Loads all of the chat rooms and any new chats are added to the variable "chatList".
+     * This should NOT be used to enter a chat room.
      */
     //TODO: NEEDS TESTING
 
@@ -157,16 +163,18 @@ public class MessagingHelper {
     }
 
     //TODO: NEEDS TESTING
+    //Loads a single chat room. This should be used only for entering a chat room within the app.
     public static void LoadChatRoom(String chatID) {
-        currentChatRoom = new MessageList<>();
         currentChatID = chatID;
-
+        String storagePath = "Messaging Rooms/" + currentChatID + "images/messages/";
+        StorageReference reference = FirebaseHelper.mainStorage.getReference().child(storagePath);
+        uploadTasks = reference.getActiveUploadTasks();
         FirebaseHelper.messagingDB.getReference("Messages").child(currentChatID).orderByKey().addChildEventListener(new ChildEventListener() {
             @Override
             public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
                 if(dataSnapshot.exists()){
-
                     //Creates a new MessageList and copies all the messages received into the new list. This is inefficient but it should work.
+                    //TODO: Create a new efficient method of getting a list of messages from Firebase. Try queries
                     currentChatRoom = new MessageList<>();
                     List<MessagingInstance> messagingInstanceList = (List<MessagingInstance>) dataSnapshot.getValue();
                     for (MessagingInstance message: messagingInstanceList) {
@@ -198,25 +206,50 @@ public class MessagingHelper {
     //TODO: NEEDS TESTING
     //Sends a basic text message
     public static void sendTextMessage(String textmessage) {
-        MessagingInstance message = MessagingFactory.initializeTextMessagingInstance(textmessage);
+        MessagingInstance message = MessagingFactory.initializeTextMessagingInstance(textmessage); //Creates a new text message object
         if (currentChatRoom != null) {
-            currentChatRoom.offer(message);
-            updatePreviousMessage(textmessage);
+            currentChatRoom.offer(message); //Sends message into the messageList
+            updatePreviousMessage(textmessage); //Updates the message data into Firebase
         }
 
     }
 
+    //TODO: NEEDS TESTING
+    //Sends an image message from the device's existing images.
     public static void sendImageMessage(String src){
-        final MessagingInstance message = MessagingFactory.initializeImageMessagingInstance(src);
+        final MessagingInstance message = MessagingFactory.initializeImageMessagingInstance(src); //Create a new message
         ImageMessage imageMessage = (ImageMessage)message;
-        String storagePath = ""; //TODO: Figure out storage path when sending a message.
-        UploadTask uploadTask = ImageHandler.uploadImagePath(src, storagePath);
+
+        //The storage path and file name will be based on the timestamp sent.
+        String storagePath = "Messaging Rooms/" + currentChatID + "images/messages/" + imageMessage.getSentTimestamp() + ".jpg";
+
+        //Create meta data for the image
+        StorageMetadata imageMetaData = new StorageMetadata.Builder()
+                .setContentType("images/jpg") //sets the type of file being sent
+                .build();
+
+        //Creates a new upload task created by the ImageHandler
+        UploadTask uploadTask = ImageHandler.uploadImagePath(src, storagePath, imageMetaData);
+
         uploadTask.addOnFailureListener(new OnFailureListener() {
             @Override
-            public void onFailure(@NonNull Exception exception) {
-                // Handle unsuccessful uploads
+            public void onFailure(@NonNull Exception exception) { //Handles failed upload
+                //TODO: Handle unsuccessful uploads
             }
-        }).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+        }).addOnPausedListener(new OnPausedListener<UploadTask.TaskSnapshot>() { //Handles paused upload
+            @Override
+            public void onPaused(UploadTask.TaskSnapshot taskSnapshot) {
+                System.out.println("Upload is paused");
+                //TODO: FRONTEND update pause event
+            }
+        }).addOnProgressListener(new OnProgressListener<UploadTask.TaskSnapshot>() { //Handles in progress upload
+            @Override
+            public void onProgress(UploadTask.TaskSnapshot taskSnapshot) {
+                double progress = (100*taskSnapshot.getBytesTransferred())/taskSnapshot.getTotalByteCount();
+                System.out.println("Upload is" + progress + "% done");
+                //TODO: FRONTEND display the progress here
+            }
+        }).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() { //Handles successful upload
             @Override
             public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
                 // taskSnapshot.getMetadata() contains file metadata such as size, content-type, etc.
@@ -229,7 +262,9 @@ public class MessagingHelper {
         });
     }
 
-
+    //TODO: FINISH METHOD
+    //Sends an image message based on Android's ImageView. This should be used to take pictures directly from the app.
+    //SHOULD NOT BE USED FOR EXISTING IMAGES.
     public static void sendImageMessage(ImageView image){}
 
 
@@ -256,22 +291,12 @@ public class MessagingHelper {
     }
 
     /*
-     *
-     * Turns out this will give an exception,
-     * FIX: Try add new methods in the MessageList so that the client can use each method
-     * based on whether or not the user is receiving messages Or sending them
-     *
-     * FIX: Switched the add method to not notify listeners
-     *
+     * The listener for adding a new message into the current chat message list
      */
     static class ListListener implements MessageListListener {
         @Override
         public void OnMessageOffer() {
             //peek just looks at the top object and doesn't remove anything
-            if(currentChatRoom.peek().getType().equals("IMAGE")){
-                ImageMessage message = (ImageMessage)(currentChatRoom.peek());
-                if(message)
-            }
             Task<Void> task = FirebaseHelper.messagingDB.getReference().child("Messages").child(currentChatID)
                     .push().setValue(currentChatRoom.peek());
             //Update UI Sending
