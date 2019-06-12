@@ -1,11 +1,37 @@
 <resources>
 
     <!-- Base application theme. -->
-    <style name="AppTheme" parent="Theme.AppCompat.Light.DarkActionBar">
+    <style name="AppTheme" parent="Theme.AppCompat.Light.NoActionBar">
         <!-- Customize your theme here. -->
+        <item name="android:windowDrawsSystemBarBackgrounds">true</item>
+        <item name="android:statusBarColor">@android:color/transparent</item>
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorAccent</item>
+    </style>
+
+    <style name="signInUpSelected" parent="TextAppearance.AppCompat.Button">
+        <item name="android:textColor">#2B4DF4</item>
+        <item name="android:shadowColor">#2B4DF4</item>
+        <item name="android:shadowDx">0.0</item>
+        <item name="android:shadowDy">0.0</item>
+        <item name="android:shadowRadius">2.0</item>
+    </style>
+
+    <style name="SigninupTabLayout" parent="Widget.Design.TabLayout">
+        <item name="tabIndicatorColor">#2B40F4</item>
+        <item name="tabIndicatorHeight">4dp</item>
+        <item name="tabPaddingStart">12dp</item>
+        <item name="tabPaddingEnd">12dp</item>
+        <item name="tabBackground">@android:color/transparent</item>
+        <item name="tabTextAppearance">@style/SigninupTabTextAppearance</item>
+        <item name="tabSelectedTextColor">#2B40F4</item>
+    </style>
+    <style name="SigninupTabTextAppearance" parent="TextAppearance.Design.Tab">
+        <item name="android:textSize">14sp</item>
+        <item name="android:textColor">#9EB9E2</item>
+        <item name="textAllCaps">true</item>
+        <item name="android:textAppearance">@style/signInUpSelected</item>
     </style>
 
 </resources>

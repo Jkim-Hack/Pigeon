@@ -49,6 +49,7 @@ public class MessagingHelper {
      * */
 
     //TODO: NEEDS TESTING
+    //Creates a new chat
     public static List<Task<Void>> createChat(String otherUID) {
         currentChatRoom = new MessageList();
 
@@ -90,6 +91,7 @@ public class MessagingHelper {
                         if (!MainActivity.user.getuID().equalsIgnoreCase(receivedMessage.getUserID())) {
                             TextMessage message = (TextMessage) receivedMessage;
                             currentChatRoom.add(message);
+                            //TODO: FRONT END HERE
                             //update UI received here
                             //Notification here
                         }
@@ -217,11 +219,15 @@ public class MessagingHelper {
     //TODO: NEEDS TESTING
     //Sends an image message from the device's existing images.
     public static void sendImageMessage(String src){
-        final MessagingInstance message = MessagingFactory.initializeImageMessagingInstance(src); //Create a new message
-        ImageMessage imageMessage = (ImageMessage)message;
 
         //The storage path and file name will be based on the timestamp sent.
-        String storagePath = "Messaging Rooms/" + currentChatID + "images/messages/" + imageMessage.getSentTimestamp() + ".jpg";
+        long timestamp = System.currentTimeMillis();
+        String storagePath = "Messaging Rooms/" + currentChatID + "images/messages/" + timestamp + ".jpg";
+
+        //Initialize a new message with the image reference download url as the text
+        StorageReference imageRef = FirebaseHelper.mainStorage.getReference().child(storagePath); //Image reference
+        final String downloadURL = imageRef.getDownloadUrl().toString(); //Get the reference downloadURL
+        final MessagingInstance message = MessagingFactory.initializeImageMessagingInstance(downloadURL); //Create a new message
 
         //Create meta data for the image
         StorageMetadata imageMetaData = new StorageMetadata.Builder()
@@ -255,7 +261,7 @@ public class MessagingHelper {
                 // taskSnapshot.getMetadata() contains file metadata such as size, content-type, etc.
                 if(currentChatRoom != null){
                     currentChatRoom.offer(message);
-                    updatePreviousMessage(FirebaseHelper.mainStorage.getReference().getDownloadUrl().toString());
+                    updatePreviousMessage(downloadURL);
                 }
 
             }

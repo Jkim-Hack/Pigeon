@@ -4,82 +4,78 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="#E2ECFE"
+    android:fitsSystemWindows="true"
     tools:context=".Activities.SignInActivity">
 
-    <android.support.constraint.ConstraintLayout
-        android:id="@+id/constraintLayout2"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        tools:context=".SignInScreen">
-
+      <!--  <TextView
+            android:id="@+id/signintext"
+            style="@style/signInUpSelected"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Sign In"
+            tools:layout_editor_absoluteX="101dp"
+            tools:layout_editor_absoluteY="355dp" />
 
         <TextView
-            android:id="@+id/signInGreet"
-            android:layout_width="wrap_content"
-            android:layout_height="0dp"
-            android:layout_marginTop="74dp"
-            android:layout_marginBottom="78dp"
-            android:text="@string/app_name"
-            android:textSize="25sp"
-            app:layout_constraintBottom_toTopOf="@+id/emailEnter"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
-
-        <EditText
-            android:id="@+id/emailEnter"
+            android:id="@+id/signuptext"
+            style="@style/signInUpSelected"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="37dp"
-            android:autofillHints=""
-            android:ems="10"
-            android:hint="email"
-            android:inputType="textEmailAddress"
-            app:layout_constraintBottom_toTopOf="@+id/passwordEnter"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/signInGreet" />
-
-        <EditText
-            android:id="@+id/passwordEnter"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="75dp"
-            android:autofillHints=""
-            android:ems="10"
-            android:hint="password"
-            android:inputType="textPassword"
-            app:layout_constraintBottom_toTopOf="@+id/signInConfirm"
-            app:layout_constraintStart_toStartOf="@+id/emailEnter"
-            app:layout_constraintTop_toBottomOf="@+id/emailEnter" />
+            android:text="Sign Up"
+            tools:layout_editor_absoluteX="244dp"
+            tools:layout_editor_absoluteY="355dp" />
 
         <Button
-            android:id="@+id/signInConfirm"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="92dp"
-            android:ellipsize="none"
-            android:fadingEdge="none"
-            android:text="sign_in"
-            app:layout_constraintBottom_toTopOf="@+id/signUpNow"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/passwordEnter" />
+            android:id="@+id/signinchange"
+            style="?android:attr/borderlessButtonStyle"
+            android:layout_width="140dp"
+            android:layout_height="55dp"
+            android:drawableBottom="@drawable/signinup_button_underline_selected"
+            tools:layout_editor_absoluteX="60dp"
+            tools:layout_editor_absoluteY="338dp" />
 
         <Button
-            android:id="@+id/signUpNow"
-            android:layout_width="256dp"
-            android:layout_height="0dp"
-            android:layout_marginBottom="176dp"
-            android:background="@android:color/transparent"
-            android:text="don't have an account \nsign_up"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/signInConfirm" />
-    </android.support.constraint.ConstraintLayout>
+            android:id="@+id/signupchange"
+            style="?android:attr/borderlessButtonStyle"
+            android:layout_width="140dp"
+            android:layout_height="55dp"
+            android:drawableBottom="@drawable/signinup_button_underline_selected"
+            tools:layout_editor_absoluteX="200dp"
+            tools:layout_editor_absoluteY="338dp" />
+-->
+
+    <ImageView
+        android:layout_width="match_parent"
+        android:layout_height="144dp"
+        android:layout_marginTop="8dp"
+        android:src="@drawable/gradient_signinup_bottom"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/view_pager"
+        app:layout_constraintVertical_bias="1.0" />
+
+    <android.support.v4.view.ViewPager
+        android:id="@+id/view_pager"
+        android:layout_width="330dp"
+        android:layout_height="280dp"
+        android:layout_margin="20dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginBottom="8dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.492"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.687">
+
+        <android.support.design.widget.TabLayout
+            android:id="@+id/tab_layout"
+            style="@style/SigninupTabLayout"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"></android.support.design.widget.TabLayout>
+    </android.support.v4.view.ViewPager>
+
 </android.support.constraint.ConstraintLayout>
