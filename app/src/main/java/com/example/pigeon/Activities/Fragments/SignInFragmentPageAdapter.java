@@ -24,7 +24,7 @@ public class SignInFragmentPageAdapter extends FragmentPagerAdapter {
         if(position == 0)
             return SignInFragment.newInstance(position);
         else if(position == 1)
-            return SignInFragment.newInstance(position); //TODO: Create SignUpFragment
+            return SignUpFragment.newInstance(position); //TODO: Create SignUpFragment
         return null;
     }
 
