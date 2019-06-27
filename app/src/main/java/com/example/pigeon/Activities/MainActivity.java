@@ -29,9 +29,6 @@ public class MainActivity extends AppCompatActivity {
 
         FirebaseHelper.build();
 
-       // LoggingInHelper.signInUser("jkim@gmail.com", "password");
-
-
     }
 
     public static void send(){
