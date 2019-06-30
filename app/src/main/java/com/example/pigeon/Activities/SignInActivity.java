@@ -1,21 +1,14 @@
 package com.example.pigeon.Activities;
 
-import android.app.Activity;
-import android.content.Intent;
 import android.os.Build;
 import android.support.design.widget.TabLayout;
-import android.support.v4.app.Fragment;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
-import android.widget.Button;
-import android.widget.EditText;
 
-import com.example.pigeon.Activities.Fragments.SignInFragmentPageAdapter;
-import com.example.pigeon.FirebaseManagers.Accounts.LoggingInHelper;
+import com.example.pigeon.Activities.Fragments.SignInFragmentPagerAdapter;
 import com.example.pigeon.FirebaseManagers.FirebaseHelper;
 import com.example.pigeon.R;
 
@@ -35,7 +28,7 @@ public class SignInActivity extends AppCompatActivity {
         FirebaseHelper.build();
 
         ViewPager viewPager = (ViewPager) findViewById(R.id.view_pager);
-        viewPager.setAdapter(new SignInFragmentPageAdapter(getSupportFragmentManager(),
+        viewPager.setAdapter(new SignInFragmentPagerAdapter(getSupportFragmentManager(),
                 SignInActivity.this));
 
         // Give the TabLayout the ViewPager
@@ -46,7 +39,7 @@ public class SignInActivity extends AppCompatActivity {
 
     }
 
-    private Activity getActivity(){
+    private AppCompatActivity getActivity(){
         return this;
     }
 

@@ -40,33 +40,27 @@ public class SignUpActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 boolean checks = true; //Has one boolean so that the sign up call is easily accessed.
-                if(emailSignUp.getText().toString().equals(""))
-                {
+                if(emailSignUp.getText().toString().equals("")) {
                     Toast.makeText(getApplicationContext(), "Please enter an Email Address", Toast.LENGTH_SHORT).show();
                     checks = false;
                 }
-                if(passwordSignUp.getText().toString().equals(""))
-                {
+                if(passwordSignUp.getText().toString().equals("")) {
                     Toast.makeText(getApplicationContext(), "Please enter a Password", Toast.LENGTH_SHORT).show();
                     checks = false;
                 }
-                if(confirmPassword.getText().toString().equals(""))
-                {
+                if(confirmPassword.getText().toString().equals("")) {
                     Toast.makeText(getApplicationContext(), "Please Confirm your Password", Toast.LENGTH_SHORT).show();
                     checks = false;
                 }
-                if(!(passwordSignUp.getText().toString().equals(confirmPassword.getText().toString())))
-                {
+                if(!(passwordSignUp.getText().toString().equals(confirmPassword.getText().toString()))) {
                     Toast.makeText(getApplicationContext(), "Passwords do not match", Toast.LENGTH_SHORT).show();
                     checks = false;
                 }
-
                 if(name.getText().toString().equals("")){
                     checks = false;
                 }
-
                 //Final check
-                if(checks){
+                if(checks) {
                     Activity activity = getActivity();
                     LoggingInHelper.signUpUser(emailSignUp.getText().toString(), passwordSignUp.getText().toString(), name.getText().toString(), activity, appCompatActivity);
                 }

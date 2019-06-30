@@ -41,17 +41,18 @@
                 android:tint="#576EF8" />
 
             <EditText
-                android:id="@+id/emailInput"
+                android:id="@+id/emailInputSU"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
                 android:background="@android:color/transparent"
                 android:ems="10"
                 android:hint="Email"
+                android:textColorHint="#AFAFAF"
                 android:inputType="textPersonName"
                 android:shadowColor="#C8DCFC"
                 android:shadowDy="1"
                 android:shadowRadius="7"
-                android:textColor="#AFAFAF"
+                android:textColor="#000"
                 android:textSize="12dp" />
 
         </LinearLayout>
@@ -71,20 +72,22 @@
                 android:layout_marginHorizontal="10dp"
                 android:layout_marginTop="15dp"
                 android:src="@mipmap/ic_person_24px"
-                android:tint="#576EF8" />
+                android:tint="#576EF8"
+                android:contentDescription="TODO" />
 
             <EditText
-                android:id="@+id/usernameInput"
+                android:id="@+id/nameInput"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
                 android:background="@android:color/transparent"
                 android:ems="10"
-                android:hint="User name"
+                android:hint="Name"
+                android:textColorHint="#AFAFAF"
                 android:inputType="textPersonName"
                 android:shadowColor="#C8DCFC"
                 android:shadowDy="1"
                 android:shadowRadius="7"
-                android:textColor="#AFAFAF"
+                android:textColor="#000"
                 android:textSize="12dp" />
 
         </LinearLayout>
@@ -106,14 +109,15 @@
                 android:tint="#576EF8" />
 
             <EditText
-                android:id="@+id/passwordInput"
+                android:id="@+id/passwordInputSU"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
                 android:background="@android:color/transparent"
                 android:ems="10"
                 android:hint="Password"
+                android:textColorHint="#AFAFAF"
                 android:inputType="textPassword"
-                android:textColor="#AFAFAF"
+                android:textColor="#000"
                 android:textSize="12dp" />
 
         </LinearLayout>

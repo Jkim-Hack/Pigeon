@@ -284,9 +284,9 @@ public class MessagingHelper {
 
     //The chat's information
     public static class ChatInfo {
-        String previousMessage;
-        long TimeCreated;
-        String title;
+        public String previousMessage;
+        public long TimeCreated;
+        public String title;
 
         public ChatInfo(String previousMessage, String title) {
             this.previousMessage = previousMessage;

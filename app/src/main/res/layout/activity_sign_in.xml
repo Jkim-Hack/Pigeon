@@ -8,58 +8,19 @@
     android:fitsSystemWindows="true"
     tools:context=".Activities.SignInActivity">
 
-      <!--  <TextView
-            android:id="@+id/signintext"
-            style="@style/signInUpSelected"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Sign In"
-            tools:layout_editor_absoluteX="101dp"
-            tools:layout_editor_absoluteY="355dp" />
-
-        <TextView
-            android:id="@+id/signuptext"
-            style="@style/signInUpSelected"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Sign Up"
-            tools:layout_editor_absoluteX="244dp"
-            tools:layout_editor_absoluteY="355dp" />
-
-        <Button
-            android:id="@+id/signinchange"
-            style="?android:attr/borderlessButtonStyle"
-            android:layout_width="140dp"
-            android:layout_height="55dp"
-            android:drawableBottom="@drawable/signinup_button_underline_selected"
-            tools:layout_editor_absoluteX="60dp"
-            tools:layout_editor_absoluteY="338dp" />
-
-        <Button
-            android:id="@+id/signupchange"
-            style="?android:attr/borderlessButtonStyle"
-            android:layout_width="140dp"
-            android:layout_height="55dp"
-            android:drawableBottom="@drawable/signinup_button_underline_selected"
-            tools:layout_editor_absoluteX="200dp"
-            tools:layout_editor_absoluteY="338dp" />
--->
-
-
     <android.support.v4.view.ViewPager
         android:id="@+id/view_pager"
         android:layout_width="match_parent"
         android:layout_height="400dp"
         android:layout_margin="20dp"
         android:layout_marginStart="8dp"
-        android:layout_marginTop="8dp"
+        android:layout_marginTop="12dp"
         android:layout_marginEnd="8dp"
         android:layout_marginBottom="8dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.874">
+        app:layout_constraintBottom_toTopOf="@+id/guideline7"
+        app:layout_constraintEnd_toStartOf="@+id/guideline8"
+        app:layout_constraintStart_toStartOf="@+id/guideline"
+        app:layout_constraintTop_toTopOf="@+id/guideline2">
 
         <android.support.design.widget.TabLayout
             android:id="@+id/tab_layout"
@@ -67,5 +28,33 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"></android.support.design.widget.TabLayout>
     </android.support.v4.view.ViewPager>
+
+    <android.support.constraint.Guideline
+        android:id="@+id/guideline"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintGuide_percent="0.05" />
+
+    <android.support.constraint.Guideline
+        android:id="@+id/guideline2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_percent="0.4" />
+
+    <android.support.constraint.Guideline
+        android:id="@+id/guideline7"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_percent="0.9" />
+
+    <android.support.constraint.Guideline
+        android:id="@+id/guideline8"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintGuide_percent="0.9513382" />
 
 </android.support.constraint.ConstraintLayout>
