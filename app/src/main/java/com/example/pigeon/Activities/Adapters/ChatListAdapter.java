@@ -24,6 +24,9 @@ public class ChatListAdapter extends ArrayAdapter<HashMap<String, MessagingHelpe
     public ChatListAdapter(Context context, int resource, List<HashMap<String, MessagingHelper.ChatInfo>> objects) {
         super(context, resource, objects);
     }
+    public ChatListAdapter(Context context, int resource) {
+        super(context, resource);
+    }
 
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
@@ -43,27 +46,28 @@ public class ChatListAdapter extends ArrayAdapter<HashMap<String, MessagingHelpe
         //Get the set of our chat info
         Set<Map.Entry<String, MessagingHelper.ChatInfo>> entries = currItem.entrySet();
 
-        //Iterate through
-        Iterator<Map.Entry<String, MessagingHelper.ChatInfo>> iterator = entries.iterator();
-        Map.Entry<String, MessagingHelper.ChatInfo> entry = null;
-        while (iterator.hasNext()) {
-            entry = iterator.next(); //Sets entry as the map value for our chat info
+        if(currItem != null){
+            //Iterate through
+            Iterator<Map.Entry<String, MessagingHelper.ChatInfo>> iterator = entries.iterator();
+            Map.Entry<String, MessagingHelper.ChatInfo> entry = null;
+            while (iterator.hasNext()) {
+                entry = iterator.next(); //Sets entry as the map value for our chat info
+            }
+
+            MessagingHelper.ChatInfo chatInfo = entry.getValue(); //gets chat info
+
+            //Sets the chat title and previousMessage into textviews
+            chatTitle.setText(chatInfo.title);
+            previousMessage.setText(chatInfo.previousMessage);
+
+            //Creates the time in normal form h:mm pm/am
+            Date date = new Date(chatInfo.TimeCreated);
+            SimpleDateFormat dateFormat = new SimpleDateFormat("h:mm a");
+            String time = dateFormat.format(date);
+
+            //Sets the time into the textview
+            timeStamp.setText(time.toLowerCase());
         }
-
-        MessagingHelper.ChatInfo chatInfo = entry.getValue(); //gets chat info
-
-        //Sets the chat title and previousMessage into textviews
-        chatTitle.setText(chatInfo.title);
-        previousMessage.setText(chatInfo.previousMessage);
-
-        //Creates the time in normal form h:mm pm/am
-        Date date = new Date(chatInfo.TimeCreated);
-        SimpleDateFormat dateFormat = new SimpleDateFormat("h:mm a");
-        String time = dateFormat.format(date);
-
-        //Sets the time into the textview
-        timeStamp.setText(time.toLowerCase());
-
 
         return convertView;
     }

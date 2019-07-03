@@ -3,6 +3,7 @@ package com.example.pigeon.FirebaseManagers.Messaging;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.util.Log;
+import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 
 import com.example.pigeon.FirebaseManagers.FirebaseHelper;
@@ -15,6 +16,7 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.OnPausedListener;
 import com.google.firebase.storage.OnProgressListener;
 import com.google.firebase.storage.StorageMetadata;
@@ -58,18 +60,18 @@ public class MessagingHelper {
         currentChatID = uuid.toString();
 
         //Default chatinfo object
-        ChatInfo info = new ChatInfo("", "");
+        ChatInfo info = new ChatInfo("test", "uu");
 
         ArrayList<Task<Void>> allTasks = new ArrayList<>();
 
         //Creates all necessary information for a chat and puts them into a task
-        Task<Void> createNewMessagingArea = FirebaseHelper.messagingDB.getReference().child("Messages").child(currentChatID).setValue(true);
+        //Task<Void> createNewMessagingArea = FirebaseHelper.messagingDB.getReference().child("Messages").child(currentChatID).setValue(true);
         Task<Void> createNewChatInfo = FirebaseHelper.messagingDB.getReference().child("Chats").child(currentChatID).setValue(info);
         Task<Void> createChatMember = FirebaseHelper.messagingDB.getReference().child("Chat Members").child(currentChatID).child(MainActivity.user.getuID()).setValue(true);
         Task<Void> createNewChatMember = FirebaseHelper.messagingDB.getReference().child("Chat Members").child(currentChatID).child(otherUID).setValue(true);
 
         //Adds all necessary tasks to the task pool
-        allTasks.add(createNewMessagingArea);
+        //allTasks.add(createNewMessagingArea);
         allTasks.add(createNewChatInfo);
         allTasks.add(createChatMember);
         allTasks.add(createNewChatMember);
@@ -127,14 +129,41 @@ public class MessagingHelper {
      */
     //TODO: NEEDS TESTING
 
-    public static void LoadAllChatRooms() {
-       final ArrayList<String> chatIDLists = MainActivity.user.getChatList();
+    public static void LoadAllChatRooms(final ArrayAdapter adapter) {
+        if(MainActivity.user.getChatList() == null){
+            return;
+        }
+        adapter.clear();
+        final List<String> chatIDLists = MainActivity.user.getChatList();
+        System.out.println(chatIDLists);
         for (final String chatID : chatIDLists) {
+            FirebaseHelper.messagingDB.getReference("Chats").child(chatID).addValueEventListener(new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                    if (dataSnapshot.exists()) {
+                        ChatInfo chatInfo  = dataSnapshot.getValue(ChatInfo.class);
+                        updateChatList(chatID, chatInfo, adapter);
+                    }
+                }
+
+                @Override
+                public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                }
+            });
+
+            /*
             FirebaseHelper.messagingDB.getReference("Chats").child(chatID).addChildEventListener(new ChildEventListener() {
                 @Override
                 public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
                     if (dataSnapshot.exists()) {
-                        updateChatList(chatID, dataSnapshot.getValue(ChatInfo.class));
+                        Long timeCreated = (Long)dataSnapshot.child("TimeCreated").getValue();
+                        String prevMess = (String)dataSnapshot.child("previousMessage").getValue();
+                        String title = (String)dataSnapshot.child("title").getValue();
+
+                        System.out.println(timeCreated + " " + prevMess + " " + title);
+
+                        updateChatList(chatID, new ChatInfo(timeCreated,prevMess,title), adapter);
                     }
                 }
                 @Override
@@ -154,15 +183,17 @@ public class MessagingHelper {
                     //TODO: ADD CANCELLED EVENT
                 }
             });
+            */
         }
     }
 
     //Creates a map then adds the map into the chatList
-    private static void updateChatList(String chatID, ChatInfo chatInfo){
+    private static void updateChatList(String chatID, ChatInfo chatInfo, ArrayAdapter adapter){
         HashMap<String, ChatInfo> map = new HashMap<>();
         map.put(chatID, chatInfo);
+        adapter.add(map);
         chatList.add(map);
-    }
+}
 
     //TODO: NEEDS TESTING
     //Loads a single chat room. This should be used only for entering a chat room within the app.
@@ -288,9 +319,19 @@ public class MessagingHelper {
         public long TimeCreated;
         public String title;
 
+        public ChatInfo() {
+            this.previousMessage = "no messages";
+            this.TimeCreated = System.currentTimeMillis();
+            this.title = "title";
+        }
         public ChatInfo(String previousMessage, String title) {
             this.previousMessage = previousMessage;
             this.TimeCreated = System.currentTimeMillis();
+            this.title = title;
+        }
+        public ChatInfo(Long timeCreated, String previousMessage, String title) {
+            this.previousMessage = previousMessage;
+            this.TimeCreated = timeCreated;
             this.title = title;
         }
 

@@ -2,9 +2,12 @@ package com.example.pigeon.FirebaseManagers.Accounts;
 
 import android.support.annotation.NonNull;
 
+import com.example.pigeon.Activities.MainMenuActivity;
 import com.example.pigeon.FirebaseManagers.FirebaseHelper;
 import com.example.pigeon.FirebaseManagers.Messaging.MessagingHelper;
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 
 import java.util.ArrayList;
@@ -16,7 +19,7 @@ public class User implements Cloneable{
     private String name;
     private String uID;
     private long phonenumber;
-    private ArrayList<String> chatList;
+    private List<String> chatList;
 
     public User() {
         this.email = "user@gmail.com";
@@ -29,6 +32,7 @@ public class User implements Cloneable{
         this.uID = uID;
         this.phonenumber = phonenumber;
         this.chatList = new ArrayList<>();
+        this.chatList.add("test");
     }
 
     public User(String email, String name, String uID){
@@ -37,6 +41,7 @@ public class User implements Cloneable{
         this.uID = uID;
         this.phonenumber = 0;
         this.chatList = new ArrayList<>();
+        this.chatList.add("test");
     }
 
     public User(User otherUser){
@@ -72,22 +77,31 @@ public class User implements Cloneable{
         return phonenumber;
     }
 
-    public ArrayList<String> getChatList() {
+    public List<String> getChatList() {
         return chatList;
     }
 
-    //WORK IN PROGRESS
-    public void addChat(final String chatID) {
+    public void addChat(String chatID) {
         if(chatList == null){
             chatList = new ArrayList<>();
         }
+        System.out.println("try");
+        chatList.add(chatID);
         //ChatList add should be done after the user has been updated
         Task<Void> addChat = FirebaseHelper.mainDB.getReference().child(this.uID).child("chatList").setValue(chatList);
-        addChat.addOnCompleteListener(new OnCompleteListener<Void>() {
+        addChat.addOnSuccessListener(new OnSuccessListener<Void>() {
             @Override
-            public void onComplete(@NonNull Task<Void> task) {
-                chatList.add(chatID);
-                MessagingHelper.LoadAllChatRooms();
+            public void onSuccess(Void aVoid) {
+                System.out.println("added");
+                MessagingHelper.LoadAllChatRooms(MainMenuActivity.chatListAdapter);
+                //TODO: ADD CHAT TO ADAPTER
+            }
+        });
+        addChat.addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
+                System.out.println("FAILED");
+                System.out.println(e.getMessage());
             }
         });
 

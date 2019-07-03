@@ -116,7 +116,7 @@ public class LoggingInHelper {
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 User user = dataSnapshot.getValue(User.class);
                 MainActivity.user = new User(user);
-                Intent intent = new Intent(signInActivity, MainActivity.class);
+                Intent intent = new Intent(signInActivity, MainMenuActivity.class);
                 currentActivity.startActivity(intent);
             }
 
@@ -135,7 +135,7 @@ public class LoggingInHelper {
         public void onComplete(DatabaseError error, DatabaseReference ref) {
             if(error == null){
                 Log.w(TAG, "userInDatabase:success");
-                Intent intent = new Intent(signUpActivity, MainActivity.class);
+                Intent intent = new Intent(signUpActivity, MainMenuActivity.class);
                 currentActivity.startActivity(intent);
                 //Update UI here
             } else {
