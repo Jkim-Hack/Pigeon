@@ -213,6 +213,7 @@ public class MessagingHelper {
                     for (MessagingInstance message: messagingInstanceList) {
                         currentChatRoom.add(message);
                     }
+                    //TODO: ADD A MESSAGING SCREEN TO GO TO
                 }
             }
 
