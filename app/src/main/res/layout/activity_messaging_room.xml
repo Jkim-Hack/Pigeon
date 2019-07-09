@@ -4,6 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:fitsSystemWindows="true"
     android:background="@color/colorBackground">
 
     <android.support.constraint.Guideline
@@ -32,6 +33,7 @@
             android:layout_width="41dp"
             android:layout_height="match_parent"
             android:layout_centerVertical="true"
+            android:background="#00FFFFFF"
             android:src="@mipmap/ic_keyboard_arrow_left_24px" />
 
         <TextView
@@ -89,12 +91,7 @@
             android:background="@drawable/messagetextbox"
             android:gravity="center_vertical"
             android:paddingLeft="15dp"
-            android:shadowColor="#000"
-            android:shadowDx="10"
-            android:shadowDy="10"
-            android:shadowRadius="10"
-            android:text="Send a message"
-            android:textColor="#989898"
+            android:hint="Send a message"
             android:textSize="14dp" />
 
 
@@ -105,7 +102,7 @@
             android:layout_alignParentRight="true"
             android:layout_centerVertical="true"
             android:layout_marginEnd="10dp"
-            android:src="@mipmap/ellipse13" />
+            android:src="@mipmap/component21" />
 
 
     </RelativeLayout>

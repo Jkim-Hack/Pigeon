@@ -31,6 +31,8 @@ import com.google.firebase.storage.UploadTask;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -214,17 +216,20 @@ public class MessagingHelper {
             public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
                 if(dataSnapshot.exists()){
                     //Creates a new MessageList and copies all the messages received into the new list. This is inefficient but it should work.
+                    System.out.println(dataSnapshot.toString() + "DDDDDDDDDDDDDD");
                     //TODO: Create a new efficient method of getting a list of messages from Firebase. Try queries
                     currentChatRoom = new MessageList<>();
-                    List<MessagingInstance> messagingInstanceList = (List<MessagingInstance>) dataSnapshot.getValue();
-                    System.out.println(messagingInstanceList);
-                    for (MessagingInstance message: messagingInstanceList) {
-                        currentChatRoom.add(message);
+                    HashMap<String, MessagingInstance> messagingInstanceMap = (HashMap<String, MessagingInstance>) dataSnapshot.getValue();
+                    Set<Map.Entry<String, MessagingInstance>> mapSet = messagingInstanceMap.entrySet();
+                    for (Map.Entry<String,MessagingInstance> message: mapSet) {
+                        currentChatRoom.add(message.getValue());
                     }
                     ChatInfo chatInfo = null;
                     for (HashMap<String, ChatInfo> chat: chatList) {
-                        chatInfo = chat.get(chatID);
+                        if(chat.containsKey(chatID))
+                            chatInfo = chat.get(chatID);
                     }
+                    System.out.println(chatInfo.title);
                     MessagingRoomActivity.setChatInfo(chatInfo);
                     Intent intent = new Intent(activity, MessagingRoomActivity.class);
                     activity.startActivity(intent);

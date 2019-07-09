@@ -15,9 +15,8 @@
             android:windowSoftInputMode="adjustPan">
         </activity>
         <activity android:name=".Activities.SignInActivity"
-            android:configChanges="orientation|keyboard|keyboardHidden|screenSize|screenLayout"
             android:screenOrientation="portrait"
-            android:windowSoftInputMode="adjustResize|stateAlwaysHidden|adjustNothing">
+            android:windowSoftInputMode="adjustResize">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
@@ -27,9 +26,8 @@
         </activity>
         <activity android:name=".Activities.MainActivity" android:windowSoftInputMode="adjustResize|stateAlwaysHidden"/>
         <activity android:name=".Activities.MessagingRoomActivity"
-            android:configChanges="orientation|keyboard|keyboardHidden|screenSize|screenLayout"
             android:screenOrientation="portrait"
-            android:windowSoftInputMode="adjustResize|stateAlwaysHidden|adjustNothing"/>
+            android:windowSoftInputMode="adjustResize"/>
     </application>
 
 </manifest>
