@@ -1,11 +1,16 @@
 package com.example.pigeon.FirebaseManagers.Messaging;
 
+import android.app.Activity;
+import android.content.Intent;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 
+import com.example.pigeon.Activities.MainMenuActivity;
+import com.example.pigeon.Activities.MessagingRoomActivity;
 import com.example.pigeon.FirebaseManagers.FirebaseHelper;
 import com.example.pigeon.Activities.MainActivity;
 import com.example.pigeon.FirebaseManagers.ImageHandler;
@@ -81,6 +86,8 @@ public class MessagingHelper {
 
         //Finally adds the chat and associates it with the user
         MainActivity.user.addChat(currentChatID);
+
+        sendTextMessage("HELLOOOO");
 
         //Adds a child event listener so that every time a new message is added, the onChildAdded method is called.
         FirebaseHelper.messagingDB.getReference().child("Messages").child(currentChatID).addChildEventListener(new ChildEventListener() {
@@ -197,7 +204,7 @@ public class MessagingHelper {
 
     //TODO: NEEDS TESTING
     //Loads a single chat room. This should be used only for entering a chat room within the app.
-    public static void LoadChatRoom(String chatID) {
+    public static void LoadChatRoom(final String chatID, final Activity activity) {
         currentChatID = chatID;
         String storagePath = "Messaging Rooms/" + currentChatID + "images/messages/";
         StorageReference reference = FirebaseHelper.mainStorage.getReference().child(storagePath);
@@ -210,10 +217,19 @@ public class MessagingHelper {
                     //TODO: Create a new efficient method of getting a list of messages from Firebase. Try queries
                     currentChatRoom = new MessageList<>();
                     List<MessagingInstance> messagingInstanceList = (List<MessagingInstance>) dataSnapshot.getValue();
+                    System.out.println(messagingInstanceList);
                     for (MessagingInstance message: messagingInstanceList) {
                         currentChatRoom.add(message);
                     }
-                    //TODO: ADD A MESSAGING SCREEN TO GO TO
+                    ChatInfo chatInfo = null;
+                    for (HashMap<String, ChatInfo> chat: chatList) {
+                        chatInfo = chat.get(chatID);
+                    }
+                    MessagingRoomActivity.setChatInfo(chatInfo);
+                    Intent intent = new Intent(activity, MessagingRoomActivity.class);
+                    activity.startActivity(intent);
+                } else {
+                    System.out.println(false);
                 }
             }
 

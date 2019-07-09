@@ -27,6 +27,10 @@ public class MainMenuActivity extends AppCompatActivity {
 
     public static ChatListAdapter chatListAdapter;
 
+    private Activity getActivity() {
+        return this;
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -45,8 +49,8 @@ public class MainMenuActivity extends AppCompatActivity {
                 HashMap<String, MessagingHelper.ChatInfo> item =
                         (HashMap<String, MessagingHelper.ChatInfo>)chatList.getItemAtPosition(position);
                 Set<Map.Entry<String, MessagingHelper.ChatInfo>> entries = item.entrySet();
-
-                if(item != null) {
+                System.out.println(entries);
+                if(entries != null) {
                     //Iterate through
                     Iterator<Map.Entry<String, MessagingHelper.ChatInfo>> iterator = entries.iterator();
                     Map.Entry<String, MessagingHelper.ChatInfo> entry = null;
@@ -54,7 +58,8 @@ public class MainMenuActivity extends AppCompatActivity {
                         entry = iterator.next(); //Sets entry as the map value for our chat info
                     }
                     String chatID = entry.getKey();
-                    MessagingHelper.LoadChatRoom(chatID);
+                    System.out.println(chatID);
+                    MessagingHelper.LoadChatRoom(chatID, getActivity());
                 }
             }
         });

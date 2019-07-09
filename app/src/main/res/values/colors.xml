@@ -1,7 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="colorPrimary">#E2ECFE</color>
-    <color name="colorPrimaryDark">#9EA8FA</color>
+    <color name="colorBackground">#FEFBFF</color>
+    <color name="colorPrimaryDark">#A664EE</color>
     <color name="colorAccent">#2B4DF4</color>
-    <color name="colorButtons">#4F54E1</color>
+    <color name="colorButtons">#2B4DF4</color>
+    <color name="colorPrimary">#BA00FF</color>
+    <color name="messageUser">#AF58FF</color>
+    <color name="messageOther">#E2DEE4</color>
 </resources>
