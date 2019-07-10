@@ -3,8 +3,9 @@
     <color name="colorBackground">#FEFBFF</color>
     <color name="colorPrimaryDark">#A664EE</color>
     <color name="colorAccent">#2B4DF4</color>
-    <color name="colorButtons">#2B4DF4</color>
+    <color name="colorButtons">#9A2BD7</color>
     <color name="colorPrimary">#BA00FF</color>
     <color name="messageUser">#AF58FF</color>
     <color name="messageOther">#E2DEE4</color>
+    <color name="deselected">#85989898</color>
 </resources>

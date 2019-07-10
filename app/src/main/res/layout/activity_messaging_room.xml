@@ -23,6 +23,7 @@
 
 
     <RelativeLayout
+        android:id="@+id/topbar"
         android:layout_width="match_parent"
         android:layout_height="62dp"
         android:background="#FFF"
@@ -34,6 +35,7 @@
             android:layout_height="match_parent"
             android:layout_centerVertical="true"
             android:background="#00FFFFFF"
+            android:clickable="true"
             android:src="@mipmap/ic_keyboard_arrow_left_24px" />
 
         <TextView
@@ -56,7 +58,22 @@
 
     </RelativeLayout>
 
+    <ListView
+        android:id="@+id/messageList"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/bottombar"
+        android:layout_below="@+id/topbar"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentEnd="true"
+        android:layout_marginStart="0dp"
+        android:layout_marginTop="0dp"
+        android:layout_marginEnd="0dp"
+        android:layout_marginBottom="0dp"></ListView>
+
+
     <RelativeLayout
+        android:id="@+id/bottombar"
         android:layout_width="match_parent"
         android:layout_height="64dp"
         android:layout_alignParentBottom="true"
@@ -90,9 +107,26 @@
             android:layout_toStartOf="@+id/emoteButton"
             android:background="@drawable/messagetextbox"
             android:gravity="center_vertical"
-            android:paddingLeft="15dp"
             android:hint="Send a message"
-            android:textSize="14dp" />
+            android:inputType="textMultiLine"
+            android:maxWidth="10dp"
+            android:paddingStart="15dp"
+            android:textSize="14sp" />
+
+        <ImageButton
+            android:id="@+id/sendButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignTop="@+id/messageInput"
+            android:layout_alignEnd="@+id/messageInput"
+            android:layout_alignBottom="@+id/messageInput"
+            android:layout_marginTop="6.5dp"
+            android:layout_marginEnd="6.5dp"
+            android:layout_marginBottom="6.5dp"
+            android:background="@mipmap/ic_send_24px"
+            android:backgroundTint="#85989898"
+            android:clickable="true"
+            />
 
 
         <ImageView

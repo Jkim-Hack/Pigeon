@@ -89,7 +89,6 @@ public class MessagingHelper {
         //Finally adds the chat and associates it with the user
         MainActivity.user.addChat(currentChatID);
 
-        sendTextMessage("HELLOOOO");
 
         //Adds a child event listener so that every time a new message is added, the onChildAdded method is called.
         FirebaseHelper.messagingDB.getReference().child("Messages").child(currentChatID).addChildEventListener(new ChildEventListener() {
@@ -103,6 +102,7 @@ public class MessagingHelper {
                             TextMessage message = (TextMessage) receivedMessage;
                             currentChatRoom.add(message);
                             //TODO: FRONT END HERE
+                            //TODO: ADD FOR IMAGE MESSAGE TYPES TOO
                             //update UI received here
                             //Notification here
                         }
@@ -208,9 +208,25 @@ public class MessagingHelper {
     //Loads a single chat room. This should be used only for entering a chat room within the app.
     public static void LoadChatRoom(final String chatID, final Activity activity) {
         currentChatID = chatID;
+
         String storagePath = "Messaging Rooms/" + currentChatID + "images/messages/";
         StorageReference reference = FirebaseHelper.mainStorage.getReference().child(storagePath);
         uploadTasks = reference.getActiveUploadTasks();
+
+        currentChatRoom = new MessageList<>();
+        currentChatRoom.addListener(new ListListener());
+
+        ChatInfo chatInfo = null;
+        for (HashMap<String, ChatInfo> chat: chatList) {
+            if(chat.containsKey(chatID))
+                chatInfo = chat.get(chatID);
+        }
+        System.out.println(chatInfo.title);
+        MessagingRoomActivity.setChatInfo(chatInfo);
+
+        Intent intent = new Intent(activity, MessagingRoomActivity.class);
+        activity.startActivity(intent);
+
         FirebaseHelper.messagingDB.getReference("Messages").child(currentChatID).orderByKey().addChildEventListener(new ChildEventListener() {
             @Override
             public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
@@ -218,21 +234,19 @@ public class MessagingHelper {
                     //Creates a new MessageList and copies all the messages received into the new list. This is inefficient but it should work.
                     System.out.println(dataSnapshot.toString() + "DDDDDDDDDDDDDD");
                     //TODO: Create a new efficient method of getting a list of messages from Firebase. Try queries
-                    currentChatRoom = new MessageList<>();
-                    HashMap<String, MessagingInstance> messagingInstanceMap = (HashMap<String, MessagingInstance>) dataSnapshot.getValue();
-                    Set<Map.Entry<String, MessagingInstance>> mapSet = messagingInstanceMap.entrySet();
-                    for (Map.Entry<String,MessagingInstance> message: mapSet) {
-                        currentChatRoom.add(message.getValue());
+                    HashMap messagingInstanceMap = (HashMap) dataSnapshot.getValue();
+                    MessagingInstance messagingInstance = null;
+
+                    String type = (String)messagingInstanceMap.get("type");
+                    switch (type) {
+                        case "TEXT":
+                            String message = (String)messagingInstanceMap.get("message");
+                            String uid = (String)messagingInstanceMap.get("userID");
+                            Long timestamp = (Long)messagingInstanceMap.get("sentTimestamp");
+                            messagingInstance = new TextMessage(message, uid, timestamp);
+                            break;
                     }
-                    ChatInfo chatInfo = null;
-                    for (HashMap<String, ChatInfo> chat: chatList) {
-                        if(chat.containsKey(chatID))
-                            chatInfo = chat.get(chatID);
-                    }
-                    System.out.println(chatInfo.title);
-                    MessagingRoomActivity.setChatInfo(chatInfo);
-                    Intent intent = new Intent(activity, MessagingRoomActivity.class);
-                    activity.startActivity(intent);
+                    currentChatRoom.add(messagingInstance);
                 } else {
                     System.out.println(false);
                 }
@@ -365,9 +379,11 @@ public class MessagingHelper {
     static class ListListener implements MessageListListener {
         @Override
         public void OnMessageOffer() {
+            MessagingRoomActivity.messageListAdapter.add(currentChatRoom.getLast());
+            System.out.println(currentChatRoom.getLast().getSentTimestamp() + "FFFFFFFFFF");
             //peek just looks at the top object and doesn't remove anything
             Task<Void> task = FirebaseHelper.messagingDB.getReference().child("Messages").child(currentChatID)
-                    .push().setValue(currentChatRoom.peek());
+                    .push().setValue(currentChatRoom.getLast());
             //Update UI Sending
 
             ExecutorService es = Executors.newSingleThreadExecutor();
@@ -375,6 +391,7 @@ public class MessagingHelper {
                 @Override
                 public void onComplete(@NonNull Task<Void> task) {
                     //Update UI delivered
+                    System.out.println("DEEEEEELLLLLIVVVVVVVVVVEEEEERRRRRRREEEEEDDDDDD");
                 }
             });
 

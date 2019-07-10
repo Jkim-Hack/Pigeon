@@ -12,6 +12,12 @@ public class TextMessage extends MessagingInstance{
         this.userID = userID;
         this.type = "TEXT";
     }
+    public TextMessage(String message, String userID, long timestamp){
+        this.message = message;
+        this.sentTimestamp = timestamp;
+        this.userID = userID;
+        this.type = "TEXT";
+    }
 
 
     public String getMessage(){return message;}

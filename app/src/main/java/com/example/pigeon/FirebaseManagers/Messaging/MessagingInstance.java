@@ -6,6 +6,7 @@ public abstract class MessagingInstance {
     protected long sentTimestamp;
     protected String type;
 
+
     public abstract String getUserID();
     public abstract long getSentTimestamp();
     public abstract String getType();
