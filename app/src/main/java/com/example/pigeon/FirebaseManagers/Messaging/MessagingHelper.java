@@ -121,7 +121,6 @@ public class MessagingHelper {
                 if(dataSnapshot.exists()){
                     //Creates a new MessageList and copies all the messages received into the new list. This is inefficient but it should work.
                     System.out.println(dataSnapshot.toString() + "DDDDDDDDDDDDDD");
-                    //TODO: Create a new efficient method of getting a list of messages from Firebase. Try queries
                     HashMap messagingInstanceMap = (HashMap) dataSnapshot.getValue();
                     MessagingInstance messagingInstance = null;
 

@@ -32,8 +32,8 @@ public class MessageListAdapter extends BaseAdapter {
     public void addList(List<MessagingInstance> messageList){
         if(messageList != null){
             if(!messageList.isEmpty()){
-                System.out.println(messageList.get(0) + "FFFFFFFFFFFFFFFFF");
-                this.add(messageList.get(0));
+                this.messageList.clear();
+                this.messageList.addAll(messageList);
                 notifyDataSetChanged();
             }
         }
