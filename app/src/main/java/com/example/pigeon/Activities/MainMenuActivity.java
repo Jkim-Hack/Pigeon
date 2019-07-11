@@ -10,6 +10,7 @@ import android.widget.Button;
 import android.widget.ListView;
 
 import com.example.pigeon.Activities.Adapters.ChatListAdapter;
+import com.example.pigeon.Activities.Adapters.MessageListAdapter;
 import com.example.pigeon.FirebaseManagers.Messaging.MessagingHelper;
 import com.example.pigeon.R;
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -59,7 +60,7 @@ public class MainMenuActivity extends AppCompatActivity {
                     }
                     String chatID = entry.getKey();
                     System.out.println(chatID);
-                    MessagingHelper.LoadChatRoom(chatID, getActivity());
+                    MessagingHelper.LoadChatRoom(chatID, getActivity(), view.getContext());
                 }
             }
         });
@@ -68,7 +69,7 @@ public class MainMenuActivity extends AppCompatActivity {
         createButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                List<Task<Void>> pool = MessagingHelper.createChat("9lWzsoVkeNZAmX2fwleOdpKkMF63");
+                List<Task<Void>> pool = MessagingHelper.createChat("GZ8DGKZWIoYuUoSDs5XFC63jeiO2", view.getContext());
                 for(int i = 0; i < pool.size(); i++){
                     if(i != pool.size()-1){
                         pool.get(i).addOnCompleteListener(new OnCompleteListener<Void>() {
@@ -81,7 +82,8 @@ public class MainMenuActivity extends AppCompatActivity {
                         pool.get(i).addOnCompleteListener(new OnCompleteListener<Void>() {
                             @Override
                             public void onComplete(@NonNull Task<Void> task) {
-                                MessagingHelper.LoadAllChatRooms(chatListAdapter); //Loads all chat rooms
+                                //MessagingHelper.LoadAllChatRooms(chatListAdapter); //Loads all chat rooms
+                                System.out.println("READY");
                             }
                         });
                     }

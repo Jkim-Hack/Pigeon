@@ -32,8 +32,8 @@ public class MessagingRoomActivity extends AppCompatActivity {
     private ImageView emoteButton;
     private ImageButton sendButton;
 
-    private ListView messageList;
-    public static MessageListAdapter messageListAdapter;
+    private static ListView messageList;
+    private MessageListAdapter messageListAdapter;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -81,10 +81,7 @@ public class MessagingRoomActivity extends AppCompatActivity {
             }
         });
 
-        messageListAdapter = new MessageListAdapter(this, R.id.userMessage);
-        messageList.setAdapter(messageListAdapter);
-        messageListAdapter.addAll(MessagingHelper.currentChatRoom);
-
+        messageList.setAdapter(MessagingHelper.adapters.get(MessagingHelper.currentChatID));
 
     }
 

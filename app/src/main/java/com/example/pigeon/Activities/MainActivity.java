@@ -31,29 +31,5 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-    public static void send(){
-        List<Task<Void>> buildList = MessagingHelper.createChat("mwHaZIGmjrZTaIv1bidOAFEX8PA2");
-        int numberOfThreads = 4;
-        ExecutorService es = Executors.newFixedThreadPool(numberOfThreads);
-
-
-        for (int i = 0; i < buildList.size()-1; i++) {
-            buildList.get(i).addOnCompleteListener(es, new OnCompleteListener<Void>() {
-                @Override
-                public void onComplete(@NonNull Task<Void> task) {
-                    if(task.isSuccessful()){
-                        Log.w(TAG, "Success");
-                    }
-                }
-            });
-        }
-        buildList.get(buildList.size()-1).addOnCompleteListener(es, new OnCompleteListener<Void>() {
-            @Override
-            public void onComplete(@NonNull Task<Void> task) {
-                MessagingHelper.sendTextMessage("Hello");
-            }
-        });
-
-    }
 
 }
