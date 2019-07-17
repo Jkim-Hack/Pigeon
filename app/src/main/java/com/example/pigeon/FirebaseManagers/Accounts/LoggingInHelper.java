@@ -1,25 +1,39 @@
 package com.example.pigeon.FirebaseManagers.Accounts;
 
 import android.app.Activity;
+import android.content.ContentValues;
+import android.content.Context;
 import android.content.Intent;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.widget.Toast;
 
+import com.example.pigeon.Activities.Adapters.MessageListAdapter;
 import com.example.pigeon.Activities.MainMenuActivity;
 import com.example.pigeon.FirebaseManagers.FirebaseHelper;
 import com.example.pigeon.Activities.MainActivity;
+import com.example.pigeon.FirebaseManagers.Messaging.MessageList;
+import com.example.pigeon.FirebaseManagers.Messaging.MessagingHelper;
+import com.example.pigeon.FirebaseManagers.Messaging.MessagingInstance;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.ValueEventListener;
 
+import java.util.HashMap;
+import java.util.logging.Logger;
+
 import static android.content.ContentValues.TAG;
+import static com.example.pigeon.FirebaseManagers.Messaging.MessagingHelper.TIMESTAMP;
+import static com.example.pigeon.FirebaseManagers.Messaging.MessagingHelper.TITLE;
+import static com.example.pigeon.FirebaseManagers.Messaging.MessagingHelper.chatrooms;
 
 public class LoggingInHelper {
 
@@ -27,6 +41,8 @@ public class LoggingInHelper {
     private static Activity signInActivity;
 
     private static AppCompatActivity currentActivity;
+
+
 
     public static void signUpUser(final String email, final String password, final String name, final Activity activity, AppCompatActivity signUpCompactActivity){
         signUpActivity = activity;
@@ -99,9 +115,81 @@ public class LoggingInHelper {
     }
 
     private static void createNewUser(String email, String name, String uID) {
-        MainActivity.user = new User(email,name, uID);
-        FirebaseHelper.mainDB.getReference().child(uID).setValue(MainActivity.user, new OnUserComplete());
+        HashMap<String, String> userMap = new HashMap<>();
+        userMap.put("email", email);
+        userMap.put("name", name);
+        userMap.put("uID", uID);
+
+        FirebaseHelper.mainDB.getReference().child(FirebaseHelper.CLR).child(uID).push().setValue(userMap); //Pushes a new create user request into Firebase
+
+        //Listens for a new value called
+        FirebaseHelper.mainDB.getReference().child(uID).addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                if(dataSnapshot.exists()){
+
+                    //Get the user from firebase and make it the current user
+                    User acquiredUser = dataSnapshot.getValue(User.class);
+                    MainActivity.user = new User(acquiredUser);
+
+                    //Sets up geeting new chatrooms
+                    setupMessaging(currentActivity.getApplicationContext());
+
+                    //Switch activities
+                    Intent intent = new Intent(signUpActivity, MainMenuActivity.class);
+                    currentActivity.startActivity(intent);
+
+                    //Remove this ValueEventListener
+                    FirebaseHelper.mainDB.getReference().child(MainActivity.user.getuID()).removeEventListener(this);
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+                Log.e(TAG, databaseError.getDetails());
+            }
+        });
     }
+
+    private static void setupMessaging(final Context context){
+        FirebaseHelper.mainDB.getReference().child(MainActivity.user.getuID()).child(FirebaseHelper.CHATLIST).addChildEventListener(new ChildEventListener() {
+            @Override
+            public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+                if(dataSnapshot.exists()){
+                    HashMap data = (HashMap)dataSnapshot.getValue();
+                    String chatUUID = (String)data.keySet().iterator().next();
+
+                    MessageList<MessagingInstance> messageList = new MessageList<>();
+                    messageList.addListener(new MessagingHelper.ListListener());
+                    chatrooms.put(chatUUID, messageList);
+
+                    MessageListAdapter messageListAdapter = new MessageListAdapter(context);
+                    MessagingHelper.adapters.put(chatUUID, messageListAdapter);
+
+                    MessagingHelper.createMessagingListener(chatUUID);
+                }
+
+            }
+            @Override
+            public void onChildChanged(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+
+            }
+            @Override
+            public void onChildRemoved(@NonNull DataSnapshot dataSnapshot) {
+                //TODO: ADD WHEN CHAT IS REMOVED
+            }
+            @Override
+            public void onChildMoved(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+
+            }
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+                Log.e(ContentValues.TAG, databaseError.getDetails());
+            }
+        });
+
+    }
+
 
     private static void createNewUser(String email, String name, String uID, long phonenumber) {
         MainActivity.user = new User(email,name, uID, phonenumber);
@@ -123,6 +211,7 @@ public class LoggingInHelper {
             @Override
             public void onCancelled(@NonNull DatabaseError databaseError) {
                 Log.d(TAG , "errorAccessingUser") ;
+                Log.e(TAG, databaseError.getDetails());
             }
         };
         FirebaseHelper.mainDB.getReference().child(uID).addListenerForSingleValueEvent(listener);

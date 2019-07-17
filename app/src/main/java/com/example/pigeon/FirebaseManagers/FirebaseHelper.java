@@ -13,6 +13,26 @@ public class FirebaseHelper {
     public static FirebaseAuth mainAuth;
     public static FirebaseStorage mainStorage;
 
+
+    public static final String ACCOUNTS = "Accounts";
+    public static final String MESSAGES = "Messages";
+
+    public static final String CLR = "ClientRequests";
+    public static final String commandInbox = "CommandInbox";
+
+
+    public static final String COMMAND = "command";
+
+    public static final int UPDATEPROFILE = 0;
+    public static final int CREATECHAT = 1;
+    public static final int DELETECHAT = 2;
+
+    public static final String CHATUSERS = "chatUsers";
+    public static final String CHATLIST = "chatList";
+    public static final String CHATID = "chatID";
+    public static final String CLIENTNUM = "clientNum";
+
+
     public static void build() {
         mainAuth = FirebaseAuth.getInstance();
         mainDB = FirebaseDatabase.getInstance("https://pigeon-engine.firebaseio.com/");

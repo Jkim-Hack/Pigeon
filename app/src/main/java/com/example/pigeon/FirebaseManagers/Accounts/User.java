@@ -5,7 +5,6 @@ import android.support.annotation.NonNull;
 import com.example.pigeon.Activities.MainMenuActivity;
 import com.example.pigeon.FirebaseManagers.FirebaseHelper;
 import com.example.pigeon.FirebaseManagers.Messaging.MessagingHelper;
-import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
@@ -13,11 +12,12 @@ import com.google.android.gms.tasks.Task;
 import java.util.ArrayList;
 import java.util.List;
 
-public class User implements Cloneable{
+public class User{
 
     private String email;
     private String name;
     private String uID;
+    private String clientNum;
     private long phonenumber;
     private List<String> chatList;
 
@@ -50,6 +50,7 @@ public class User implements Cloneable{
         this.uID = otherUser.getuID();
         this.phonenumber = otherUser.getPhonenumber();
         this.chatList = otherUser.getChatList();
+        this.clientNum = otherUser.clientNum;
     }
 
     public void updateUser(String email, String name, String uID, long phonenumber) {
@@ -73,6 +74,10 @@ public class User implements Cloneable{
         return name;
     }
 
+    public String getClientNum() { return clientNum; }
+
+    public void setClientNum(String clientNum) { this.clientNum = clientNum; }
+
     public long getPhonenumber() {
         return phonenumber;
     }
@@ -94,7 +99,6 @@ public class User implements Cloneable{
             public void onSuccess(Void aVoid) {
                 System.out.println("added");
                 MessagingHelper.LoadAllChatRooms(MainMenuActivity.chatListAdapter);
-                //TODO: ADD CHAT TO ADAPTER
             }
         });
         addChat.addOnFailureListener(new OnFailureListener() {
@@ -104,6 +108,9 @@ public class User implements Cloneable{
                 System.out.println(e.getMessage());
             }
         });
+
+
+        chatList.add(chatID);
 
 
     }
