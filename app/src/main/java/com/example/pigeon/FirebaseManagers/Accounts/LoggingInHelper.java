@@ -14,9 +14,11 @@ import com.example.pigeon.Activities.Adapters.MessageListAdapter;
 import com.example.pigeon.Activities.MainMenuActivity;
 import com.example.pigeon.FirebaseManagers.FirebaseHelper;
 import com.example.pigeon.Activities.MainActivity;
+import com.example.pigeon.FirebaseManagers.LoggerHelper;
 import com.example.pigeon.FirebaseManagers.Messaging.MessageList;
 import com.example.pigeon.FirebaseManagers.Messaging.MessagingHelper;
 import com.example.pigeon.FirebaseManagers.Messaging.MessagingInstance;
+import com.example.pigeon.common.LogEntry;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
@@ -120,7 +122,8 @@ public class LoggingInHelper {
         userMap.put("name", name);
         userMap.put("uID", uID);
 
-        FirebaseHelper.mainDB.getReference().child(FirebaseHelper.CLR).child(uID).push().setValue(userMap); //Pushes a new create user request into Firebase
+        FirebaseHelper.mainDB.getReference().child(FirebaseHelper.CLR).push().setValue(userMap); //Pushes a new create user request into Firebase
+        LoggerHelper.sendLog(new LogEntry("New client sign up", "Unknown User"));
 
         //Listens for a new value called
         FirebaseHelper.mainDB.getReference().child(uID).addValueEventListener(new ValueEventListener() {
@@ -131,6 +134,7 @@ public class LoggingInHelper {
                     //Get the user from firebase and make it the current user
                     User acquiredUser = dataSnapshot.getValue(User.class);
                     MainActivity.user = new User(acquiredUser);
+                    System.out.println(MainActivity.user.getClientNum());
 
                     //Sets up geeting new chatrooms
                     setupMessaging(currentActivity.getApplicationContext());
@@ -138,6 +142,8 @@ public class LoggingInHelper {
                     //Switch activities
                     Intent intent = new Intent(signUpActivity, MainMenuActivity.class);
                     currentActivity.startActivity(intent);
+
+                    LoggerHelper.sendLog(new LogEntry("Client signed up---ID: " + MainActivity.user.getuID(), MainActivity.user.getClientNum()));
 
                     //Remove this ValueEventListener
                     FirebaseHelper.mainDB.getReference().child(MainActivity.user.getuID()).removeEventListener(this);
@@ -155,6 +161,7 @@ public class LoggingInHelper {
         FirebaseHelper.mainDB.getReference().child(MainActivity.user.getuID()).child(FirebaseHelper.CHATLIST).addChildEventListener(new ChildEventListener() {
             @Override
             public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+                LoggerHelper.sendLog(new LogEntry("Starting messaging setup...", MainActivity.user.getClientNum()));
                 if(dataSnapshot.exists()){
                     HashMap data = (HashMap)dataSnapshot.getValue();
                     String chatUUID = (String)data.keySet().iterator().next();
@@ -165,6 +172,8 @@ public class LoggingInHelper {
 
                     MessageListAdapter messageListAdapter = new MessageListAdapter(context);
                     MessagingHelper.adapters.put(chatUUID, messageListAdapter);
+
+                    LoggerHelper.sendLog(new LogEntry("Messaging setup complete", MainActivity.user.getClientNum()));
 
                     MessagingHelper.createMessagingListener(chatUUID);
                 }
@@ -185,6 +194,7 @@ public class LoggingInHelper {
             @Override
             public void onCancelled(@NonNull DatabaseError databaseError) {
                 Log.e(ContentValues.TAG, databaseError.getDetails());
+                LoggerHelper.sendLog(new LogEntry(databaseError.getDetails(), MainActivity.user.getClientNum()));
             }
         });
 
@@ -204,6 +214,7 @@ public class LoggingInHelper {
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 User user = dataSnapshot.getValue(User.class);
                 MainActivity.user = new User(user);
+                LoggerHelper.sendLog(new LogEntry("User signed in", MainActivity.user.getClientNum()));
                 Intent intent = new Intent(signInActivity, MainMenuActivity.class);
                 currentActivity.startActivity(intent);
             }

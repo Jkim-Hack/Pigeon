@@ -17,6 +17,8 @@ import com.example.pigeon.Activities.MessagingRoomActivity;
 import com.example.pigeon.FirebaseManagers.FirebaseHelper;
 import com.example.pigeon.Activities.MainActivity;
 import com.example.pigeon.FirebaseManagers.ImageHandler;
+import com.example.pigeon.FirebaseManagers.LoggerHelper;
+import com.example.pigeon.common.LogEntry;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -69,6 +71,7 @@ public class MessagingHelper {
     //TODO: NEEDS TESTING
     //Creates a new chat
     public static void createChat(Collection<String> otherUIDs, final Context context) {
+        LoggerHelper.sendLog(new LogEntry("Attempting to create chat...", MainActivity.user.getClientNum()));
         StringBuilder sb = new StringBuilder();
         if(otherUIDs.size() > 1){
             Iterator<String> uids = otherUIDs.iterator();
@@ -89,6 +92,7 @@ public class MessagingHelper {
         command.put(FirebaseHelper.CHATUSERS, sb.toString());
         command.put(TIMESTAMP, time);
         FirebaseHelper.mainDB.getReference(FirebaseHelper.commandInbox).child(MainActivity.user.getClientNum()).push().setValue(command);
+        LoggerHelper.sendLog(new LogEntry("Requesting chat creation...", MainActivity.user.getClientNum()));
 
         FirebaseHelper.mainDB.getReference().child(MainActivity.user.getuID()).child(FirebaseHelper.CHATLIST).addChildEventListener(new ChildEventListener() {
             @Override
@@ -160,6 +164,8 @@ public class MessagingHelper {
                 } else {
                     System.out.println(false);
                 }
+                LoggerHelper.sendLog(new LogEntry("Message received---ChatID: " + chatUUID, MainActivity.user.getClientNum()));
+
                 //TODO: ADD FOR IMAGE MESSAGE TYPES TOO
             }
 
