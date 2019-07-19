@@ -77,7 +77,9 @@ public class MainMenuActivity extends AppCompatActivity {
         createButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                MessagingHelper.createChat(new ArrayList<String>(), view.getContext());
+                ArrayList<String> list = new ArrayList<>();
+                list.add("IeAQyj4oTOSQpfyIWHEc26p6A0D2");
+                MessagingHelper.createChat(list, view.getContext());
             }
         });
 

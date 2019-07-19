@@ -82,7 +82,7 @@ public class MessagingHelper {
                 }
             }
         } else {
-            sb.append(otherUIDs);
+            sb.append(otherUIDs.iterator().next());
         }
 
         final Long time = System.currentTimeMillis();
@@ -197,7 +197,11 @@ public class MessagingHelper {
     //TODO: NEEDS TESTING
 
     public static void LoadAllChatRooms(final ArrayAdapter adapter) {
-        if(MainActivity.user.getChatList() == null){
+        try {
+           List list = MainActivity.user.getChatList();
+           if(list.isEmpty())
+               return;
+        } catch (NullPointerException e){
             return;
         }
         adapter.clear();

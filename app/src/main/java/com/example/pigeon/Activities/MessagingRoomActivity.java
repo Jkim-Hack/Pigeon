@@ -33,7 +33,6 @@ public class MessagingRoomActivity extends AppCompatActivity {
     private ImageButton sendButton;
 
     private static ListView messageList;
-    private MessageListAdapter messageListAdapter;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {

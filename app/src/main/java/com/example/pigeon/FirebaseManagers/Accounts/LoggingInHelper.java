@@ -173,6 +173,8 @@ public class LoggingInHelper {
                     MessageListAdapter messageListAdapter = new MessageListAdapter(context);
                     MessagingHelper.adapters.put(chatUUID, messageListAdapter);
 
+                    MainActivity.user.addChat(chatUUID);
+
                     LoggerHelper.sendLog(new LogEntry("Messaging setup complete", MainActivity.user.getClientNum()));
 
                     MessagingHelper.createMessagingListener(chatUUID);

@@ -90,28 +90,8 @@ public class User{
         if(chatList == null){
             chatList = new ArrayList<>();
         }
-        System.out.println("try");
         chatList.add(chatID);
-        //ChatList add should be done after the user has been updated
-        Task<Void> addChat = FirebaseHelper.mainDB.getReference().child(this.uID).child("chatList").setValue(chatList);
-        addChat.addOnSuccessListener(new OnSuccessListener<Void>() {
-            @Override
-            public void onSuccess(Void aVoid) {
-                System.out.println("added");
-                MessagingHelper.LoadAllChatRooms(MainMenuActivity.chatListAdapter);
-            }
-        });
-        addChat.addOnFailureListener(new OnFailureListener() {
-            @Override
-            public void onFailure(@NonNull Exception e) {
-                System.out.println("FAILED");
-                System.out.println(e.getMessage());
-            }
-        });
-
-
-        chatList.add(chatID);
-
+        MessagingHelper.LoadAllChatRooms(MainMenuActivity.chatListAdapter);
 
     }
 
