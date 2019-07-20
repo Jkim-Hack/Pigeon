@@ -12,6 +12,7 @@ import android.widget.Toast;
 
 import com.example.pigeon.Activities.Adapters.MessageListAdapter;
 import com.example.pigeon.Activities.MainMenuActivity;
+import com.example.pigeon.Activities.MessagingRoomActivity;
 import com.example.pigeon.FirebaseManagers.FirebaseHelper;
 import com.example.pigeon.Activities.MainActivity;
 import com.example.pigeon.FirebaseManagers.LoggerHelper;
@@ -174,6 +175,7 @@ public class LoggingInHelper {
                     MessagingHelper.adapters.put(chatUUID, messageListAdapter);
 
                     MainActivity.user.addChat(chatUUID);
+                    getChatInfo(chatUUID);
 
                     LoggerHelper.sendLog(new LogEntry("Messaging setup complete", MainActivity.user.getClientNum()));
 
@@ -201,6 +203,29 @@ public class LoggingInHelper {
         });
 
     }
+
+    private static void getChatInfo(String chatUUID) {
+        final String chatUID = chatUUID;
+
+        FirebaseHelper.messagingDB.getReference().child("Chats").child(chatUUID).addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                MessagingHelper.ChatInfo chatInfo = dataSnapshot.getValue(MessagingHelper.ChatInfo.class);
+                if(MainMenuActivity.chatListAdapter != null){
+                    HashMap info  = new HashMap();
+                    info.put(chatUID, chatInfo);
+                    MainMenuActivity.chatListAdapter.add(info);
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+
+    }
+
 
 
     private static void createNewUser(String email, String name, String uID, long phonenumber) {

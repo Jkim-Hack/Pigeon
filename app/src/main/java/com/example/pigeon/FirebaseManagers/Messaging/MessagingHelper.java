@@ -55,6 +55,9 @@ public class MessagingHelper {
     public static HashMap<String, MessageListAdapter> adapters = new HashMap<>();
     public static String currentChatID; //Current chat room's ID
 
+    public static HashMap<String, ChatInfo> tempChatList = new HashMap();
+
+
     public static final Integer CREATECHAT = 1;
     public static final String TIMESTAMP = "timestamp";
     public static final String TITLE = "title";

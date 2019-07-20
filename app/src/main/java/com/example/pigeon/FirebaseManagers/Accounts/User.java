@@ -91,8 +91,6 @@ public class User{
             chatList = new ArrayList<>();
         }
         chatList.add(chatID);
-        MessagingHelper.LoadAllChatRooms(MainMenuActivity.chatListAdapter);
-
     }
 
     @Override
