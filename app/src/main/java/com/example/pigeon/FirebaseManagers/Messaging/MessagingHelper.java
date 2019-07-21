@@ -49,13 +49,13 @@ public class MessagingHelper {
     //TODO: ENABLE OFFLINE CAPABILITIES https://firebase.google.com/docs/database/android/offline-capabilities
 
     //MESSAGES CAP = 30;
-    public static ArrayList<HashMap<String, ChatInfo>> chatList = new ArrayList<>(); //List of chat rooms displayed in the main menu
+    public static HashMap<String, ChatInfo> chatList = new HashMap<>(); //List of chat rooms displayed in the main menu
     public static List<UploadTask> uploadTasks; //upload tasks for the current viewed chat room
     public static HashMap<String, MessageList<MessagingInstance>> chatrooms = new HashMap(); //Current chat room's message list
     public static HashMap<String, MessageListAdapter> adapters = new HashMap<>();
     public static String currentChatID; //Current chat room's ID
 
-    public static HashMap<String, ChatInfo> tempChatList = new HashMap();
+    public static HashMap<String, ChatInfo> tempChatList = new HashMap(); //Temporary container for new chats
 
 
     public static final Integer CREATECHAT = 1;
@@ -155,7 +155,7 @@ public class MessagingHelper {
                             String uid = (String)messagingInstanceMap.get("userID");
                             Long timestamp = (Long)messagingInstanceMap.get("sentTimestamp");
                             messagingInstance = new TextMessage(message, uid, timestamp);
-                            updatePreviousMessage(message);
+                            updatePreviousMessage(message, chatUUID);
                             break;
                     }
 
@@ -201,15 +201,38 @@ public class MessagingHelper {
 
     public static void LoadAllChatRooms(final ArrayAdapter adapter) {
         try {
-           List list = MainActivity.user.getChatList();
-           if(list.isEmpty())
+           HashMap map = MainActivity.user.getChatMap();
+           if(map.isEmpty())
                return;
         } catch (NullPointerException e){
             return;
         }
         adapter.clear();
-        final List<String> chatIDLists = MainActivity.user.getChatList();
+        final HashMap<String, String> chatIDLists = MainActivity.user.getChatMap();
         System.out.println(chatIDLists);
+
+        Set set = chatIDLists.entrySet();
+        Iterator<Map.Entry<String, String>> iterator = set.iterator();
+        while (iterator.hasNext()){
+            final String chatID = iterator.next().getValue();
+            FirebaseHelper.messagingDB.getReference("Chats").child(chatID).addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                    if (dataSnapshot.exists()) {
+                        ChatInfo chatInfo  = dataSnapshot.getValue(ChatInfo.class);
+                        updateChatList(chatID, chatInfo, adapter);
+                    }
+                }
+
+                @Override
+                public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                }
+            });
+        }
+
+
+        /*
         for (final String chatID : chatIDLists) {
             FirebaseHelper.messagingDB.getReference("Chats").child(chatID).addListenerForSingleValueEvent(new ValueEventListener() {
                 @Override
@@ -225,8 +248,11 @@ public class MessagingHelper {
 
                 }
             });
-
         }
+        */
+
+
+
     }
 
     //Creates a map then adds the map into the chatList
@@ -234,7 +260,7 @@ public class MessagingHelper {
         HashMap<String, ChatInfo> map = new HashMap<>();
         map.put(chatID, chatInfo);
         adapter.add(map);
-        chatList.add(map);
+        chatList.put(chatID, chatInfo);
 }
 
     //TODO: NEEDS TESTING
@@ -251,11 +277,7 @@ public class MessagingHelper {
         System.out.println(adapters.get(currentChatID) + "RRRR");
         adapters.get(currentChatID).addList(messageList);
 
-        ChatInfo chatInfo = null;
-        for (HashMap<String, ChatInfo> chat: chatList) {
-            if(chat.containsKey(chatID))
-                chatInfo = chat.get(chatID);
-        }
+        ChatInfo chatInfo = chatList.get(chatID);
         System.out.println(chatInfo.title);
         MessagingRoomActivity.setChatInfo(chatInfo);
 
@@ -319,7 +341,7 @@ public class MessagingHelper {
                 // taskSnapshot.getMetadata() contains file metadata such as size, content-type, etc.
                 if(chatrooms != null){
                     chatrooms.get(currentChatID).offer(message);
-                    updatePreviousMessage(downloadURL);
+                    updatePreviousMessage(downloadURL, currentChatID);
                 }
 
             }
@@ -333,10 +355,10 @@ public class MessagingHelper {
 
 
     //Updates "previous message" in the database
-    private static void updatePreviousMessage(String message) {
+    private static void updatePreviousMessage(String message, String chatID) {
         HashMap<String, Object> map = new HashMap<>();
         map.put("previousMessage", message);
-        FirebaseHelper.messagingDB.getReference().child("Chats").child(currentChatID).updateChildren(map);
+        FirebaseHelper.messagingDB.getReference().child("Chats").child(chatID).updateChildren(map);
     }
 
 

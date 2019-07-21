@@ -137,7 +137,7 @@ public class LoggingInHelper {
                     MainActivity.user = new User(acquiredUser);
                     System.out.println(MainActivity.user.getClientNum());
 
-                    //Sets up geeting new chatrooms
+                    //Sets up geting new chatrooms
                     setupMessaging(currentActivity.getApplicationContext());
 
                     //Switch activities
@@ -164,8 +164,7 @@ public class LoggingInHelper {
             public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
                 LoggerHelper.sendLog(new LogEntry("Starting messaging setup...", MainActivity.user.getClientNum()));
                 if(dataSnapshot.exists()){
-                    HashMap data = (HashMap)dataSnapshot.getValue();
-                    String chatUUID = (String)data.keySet().iterator().next();
+                    String chatUUID = (String)dataSnapshot.getValue();
 
                     MessageList<MessagingInstance> messageList = new MessageList<>();
                     messageList.addListener(new MessagingHelper.ListListener());
@@ -174,7 +173,7 @@ public class LoggingInHelper {
                     MessageListAdapter messageListAdapter = new MessageListAdapter(context);
                     MessagingHelper.adapters.put(chatUUID, messageListAdapter);
 
-                    MainActivity.user.addChat(chatUUID);
+                    MainActivity.user.addChat(dataSnapshot.getKey(), chatUUID);
                     getChatInfo(chatUUID);
 
                     LoggerHelper.sendLog(new LogEntry("Messaging setup complete", MainActivity.user.getClientNum()));
@@ -204,8 +203,8 @@ public class LoggingInHelper {
 
     }
 
-    private static void getChatInfo(String chatUUID) {
-        final String chatUID = chatUUID;
+    private static void getChatInfo(String id) {
+        final String chatUUID = id;
 
         FirebaseHelper.messagingDB.getReference().child("Chats").child(chatUUID).addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
@@ -213,8 +212,11 @@ public class LoggingInHelper {
                 MessagingHelper.ChatInfo chatInfo = dataSnapshot.getValue(MessagingHelper.ChatInfo.class);
                 if(MainMenuActivity.chatListAdapter != null){
                     HashMap info  = new HashMap();
-                    info.put(chatUID, chatInfo);
+                    info.put(chatUUID, chatInfo);
                     MainMenuActivity.chatListAdapter.add(info);
+                    MessagingHelper.chatList.put(chatUUID, chatInfo);
+                } else {
+                    MessagingHelper.tempChatList.put(chatUUID, chatInfo);
                 }
             }
 
@@ -234,14 +236,21 @@ public class LoggingInHelper {
     }
 
     private static void createExistingUser(String uID){
-
+        //TODO: FIX SIGN IN ERROR WHERE dataSnapshot.getValue() DOESN'T GIVE USER CLASS BUT GIVES A HASHMAP.
         //Creates a new listener
         ValueEventListener listener = new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                User user = dataSnapshot.getValue(User.class);
+                //HashMap data = (HashMap)dataSnapshot.getValue();
+
+                //User user = new User((String)data.get("email"), (String)data.get("name"), (String)data.get("uID"), (Long)data.get("phonenumber"));
+                // user.setClientNum((String)data.get("clientNum"));
+
+                User user = (User)dataSnapshot.getValue(User.class);
+
                 MainActivity.user = new User(user);
                 LoggerHelper.sendLog(new LogEntry("User signed in", MainActivity.user.getClientNum()));
+                setupMessaging(currentActivity.getApplicationContext());
                 Intent intent = new Intent(signInActivity, MainMenuActivity.class);
                 currentActivity.startActivity(intent);
             }

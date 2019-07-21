@@ -1,16 +1,6 @@
 package com.example.pigeon.FirebaseManagers.Accounts;
 
-import android.support.annotation.NonNull;
-
-import com.example.pigeon.Activities.MainMenuActivity;
-import com.example.pigeon.FirebaseManagers.FirebaseHelper;
-import com.example.pigeon.FirebaseManagers.Messaging.MessagingHelper;
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.android.gms.tasks.Task;
-
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashMap;
 
 public class User{
 
@@ -19,7 +9,7 @@ public class User{
     private String uID;
     private String clientNum;
     private long phonenumber;
-    private List<String> chatList;
+    private HashMap<String, String> chatMap;
 
     public User() {
         this.email = "user@gmail.com";
@@ -31,8 +21,7 @@ public class User{
         this.name = name;
         this.uID = uID;
         this.phonenumber = phonenumber;
-        this.chatList = new ArrayList<>();
-        this.chatList.add("test");
+        this.chatMap = new HashMap<>();
     }
 
     public User(String email, String name, String uID){
@@ -40,8 +29,7 @@ public class User{
         this.name = name;
         this.uID = uID;
         this.phonenumber = 0;
-        this.chatList = new ArrayList<>();
-        this.chatList.add("test");
+        this.chatMap = new HashMap<>();
     }
 
     public User(User otherUser){
@@ -49,7 +37,7 @@ public class User{
         this.name = otherUser.getName();
         this.uID = otherUser.getuID();
         this.phonenumber = otherUser.getPhonenumber();
-        this.chatList = otherUser.getChatList();
+        this.chatMap = otherUser.getChatMap();
         this.clientNum = otherUser.clientNum;
     }
 
@@ -82,19 +70,19 @@ public class User{
         return phonenumber;
     }
 
-    public List<String> getChatList() {
-        return chatList;
+    public HashMap<String, String> getChatMap() {
+        return chatMap;
     }
 
-    public void addChat(String chatID) {
-        if(chatList == null){
-            chatList = new ArrayList<>();
+    public void addChat(String key, String chatID) {
+        if(this.chatMap == null){
+            this.chatMap = new HashMap<>();
         }
-        chatList.add(chatID);
+        this.chatMap.put(key,chatID);
     }
 
     @Override
     public String toString() {
-        return "Email:" + email + " Name:" + name + " uID:" + uID + " Phone Number:" + phonenumber + "Chars: " + chatList;
+        return "Email:" + email + " Name:" + name + " uID:" + uID + " Phone Number:" + phonenumber + "Chats: " + this.chatMap.toString();
     }
 }
