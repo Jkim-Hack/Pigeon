@@ -69,7 +69,9 @@
         android:layout_marginStart="0dp"
         android:layout_marginTop="0dp"
         android:layout_marginEnd="0dp"
-        android:layout_marginBottom="0dp"></ListView>
+        android:layout_marginBottom="0dp"
+        android:divider="@null"
+        android:dividerHeight="1dp"></ListView>
 
 
     <RelativeLayout
