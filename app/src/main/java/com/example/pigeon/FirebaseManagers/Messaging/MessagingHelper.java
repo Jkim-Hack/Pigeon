@@ -101,12 +101,9 @@ public class MessagingHelper {
             @Override
             public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
                 if(dataSnapshot.exists()){
-                    HashMap data = (HashMap)dataSnapshot.getValue();
-                    Set<String> key = data.keySet();
-                    Iterator<String> keyIt = key.iterator();
-                    String uid = keyIt.next();
-
+                    String uid = (String)dataSnapshot.getValue();
                     if(chatrooms.containsKey(uid)){
+                        currentChatID = uid;
                         Intent intent = new Intent(context, MessagingRoomActivity.class);
                         context.startActivity(intent);
                         FirebaseHelper.mainDB.getReference().child(MainActivity.user.getuID()).child(FirebaseHelper.CHATLIST).removeEventListener(this);
@@ -144,7 +141,7 @@ public class MessagingHelper {
             public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
                 if(dataSnapshot.exists()){
                     //Creates a new MessageList and copies all the messages received into the new list. This is inefficient but it should work.
-                    System.out.println(dataSnapshot.toString() + "DDDDDDDDDDDDDD");
+                    System.out.println(dataSnapshot.toString());
                     HashMap messagingInstanceMap = (HashMap) dataSnapshot.getValue();
                     MessagingInstance messagingInstance = null;
 
@@ -160,10 +157,10 @@ public class MessagingHelper {
                     }
 
                     if(!messagingInstance.getUserID().equals(MainActivity.user.getuID())){
-                        //Add notification here
-                        chatrooms.get(chatUUID).add(messagingInstance);
-                        adapters.get(chatUUID).add(messagingInstance);
+                        //TODO: Add notification here
                     }
+                    chatrooms.get(chatUUID).add(messagingInstance);
+                    adapters.get(chatUUID).add(messagingInstance);
                 } else {
                     System.out.println(false);
                 }
@@ -230,27 +227,6 @@ public class MessagingHelper {
                 }
             });
         }
-
-
-        /*
-        for (final String chatID : chatIDLists) {
-            FirebaseHelper.messagingDB.getReference("Chats").child(chatID).addListenerForSingleValueEvent(new ValueEventListener() {
-                @Override
-                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                    if (dataSnapshot.exists()) {
-                        ChatInfo chatInfo  = dataSnapshot.getValue(ChatInfo.class);
-                        updateChatList(chatID, chatInfo, adapter);
-                    }
-                }
-
-                @Override
-                public void onCancelled(@NonNull DatabaseError databaseError) {
-
-                }
-            });
-        }
-        */
-
 
 
     }
@@ -392,7 +368,7 @@ public class MessagingHelper {
     public static class ListListener implements MessageListListener {
         @Override
         public void OnMessageOffer() {
-            adapters.get(currentChatID).add(chatrooms.get(currentChatID).getLast());
+            //adapters.get(currentChatID).add(chatrooms.get(currentChatID).getLast());
             System.out.println(chatrooms.get(currentChatID).getLast().getSentTimestamp());
             //peek just looks at the top object and doesn't remove anything
             Task<Void> task = FirebaseHelper.messagingDB.getReference().child("Messages").child(currentChatID)

@@ -1,11 +1,18 @@
 package com.example.pigeon.Activities;
 
+import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
+import android.view.KeyEvent;
+import android.view.MotionEvent;
 import android.view.View;
+import android.view.ViewGroup;
+import android.view.WindowManager;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
@@ -34,6 +41,10 @@ public class MessagingRoomActivity extends AppCompatActivity {
 
     private static ListView messageList;
 
+    private boolean isClicked = false;
+
+
+    @SuppressLint("ClickableViewAccessibility")
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -46,8 +57,9 @@ public class MessagingRoomActivity extends AppCompatActivity {
         messageInput = findViewById(R.id.messageInput);
         emoteButton = findViewById(R.id.emoteButton);
         sendButton = findViewById(R.id.sendButton);
-
         messageList = findViewById(R.id.messageList);
+
+        final InputMethodManager inputMethodManager = (InputMethodManager) this.getSystemService(Activity.INPUT_METHOD_SERVICE);
 
         otherName.setText(chatTitle);
         backButton.setOnClickListener(new View.OnClickListener() {
@@ -57,17 +69,6 @@ public class MessagingRoomActivity extends AppCompatActivity {
                 v.getContext().startActivity(intent);
             }
         });
-        //TODO: this should be on key pressed not on click
-        messageInput.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if(!messageInput.getText().toString().isEmpty()){
-                    sendButton.setBackgroundTintList(view.getContext().getResources().getColorStateList(R.color.colorButtons));
-                } else {
-                    sendButton.setBackgroundTintList(view.getContext().getResources().getColorStateList(R.color.deselected));
-                }
-            }
-        });
 
         sendButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -75,12 +76,53 @@ public class MessagingRoomActivity extends AppCompatActivity {
                 if(!messageInput.getText().toString().isEmpty()){
                     System.out.println("Sending");
                     String message = messageInput.getText().toString();
+                    messageInput.setText("");
                     MessagingHelper.sendTextMessage(message);
                 }
             }
         });
 
         messageList.setAdapter(MessagingHelper.adapters.get(MessagingHelper.currentChatID));
+
+        final int width = messageInput.getWidth();
+
+        messageList.setClickable(false);
+        messageInput.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                if(!isClicked){
+                    inputMethodManager.showSoftInput(v,0);
+                    messageInput.setWidth((int)(messageInput.getWidth() * 1.25));
+                    isClicked = true;
+                }
+                return false;
+            }
+        });
+
+
+        messageList.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                if(isClicked){
+                    inputMethodManager.hideSoftInputFromWindow(v.getWindowToken(), 0);
+                    messageInput.setWidth(width);
+                    isClicked = false;
+                }
+                return false;
+            }
+        });
+        messageInput.setOnKeyListener(new View.OnKeyListener() {
+            @Override
+            public boolean onKey(View v, int keyCode, KeyEvent event) {
+                if(!messageInput.getText().toString().isEmpty()){
+                    sendButton.setBackgroundTintList(v.getContext().getResources().getColorStateList(R.color.colorButtons));
+                } else {
+                    sendButton.setBackgroundTintList(v.getContext().getResources().getColorStateList(R.color.deselected));
+                }
+
+                return false;
+            }
+        });
 
     }
 

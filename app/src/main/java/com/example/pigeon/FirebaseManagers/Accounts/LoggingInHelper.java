@@ -166,19 +166,19 @@ public class LoggingInHelper {
                 if(dataSnapshot.exists()){
                     String chatUUID = (String)dataSnapshot.getValue();
 
-                    MessageList<MessagingInstance> messageList = new MessageList<>();
-                    messageList.addListener(new MessagingHelper.ListListener());
-                    chatrooms.put(chatUUID, messageList);
+                    MessageList<MessagingInstance> messageList = new MessageList<>(); //Create a new message list that we populate
+                    messageList.addListener(new MessagingHelper.ListListener()); //Add the listener for it
+                    chatrooms.put(chatUUID, messageList); //Put it into rhe chatrooms map
 
-                    MessageListAdapter messageListAdapter = new MessageListAdapter(context);
-                    MessagingHelper.adapters.put(chatUUID, messageListAdapter);
+                    MessageListAdapter messageListAdapter = new MessageListAdapter(context); //Create a new adapter to put into the map of adapters
+                    MessagingHelper.adapters.put(chatUUID, messageListAdapter); //Add the adapter with the chat id as the key
 
-                    MainActivity.user.addChat(dataSnapshot.getKey(), chatUUID);
-                    getChatInfo(chatUUID);
+                    MainActivity.user.addChat(dataSnapshot.getKey(), chatUUID); //Add the chat into the User's object
+                    getChatInfo(chatUUID); //Gets the chatinfo of the specified id and adds it to the adapter
 
-                    LoggerHelper.sendLog(new LogEntry("Messaging setup complete", MainActivity.user.getClientNum()));
+                    LoggerHelper.sendLog(new LogEntry("Messaging setup complete", MainActivity.user.getClientNum())); //Push a log entry to the servlet
 
-                    MessagingHelper.createMessagingListener(chatUUID);
+                    MessagingHelper.createMessagingListener(chatUUID); //Adds a new messaging listener for the chat
                 }
 
             }

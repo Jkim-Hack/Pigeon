@@ -1,6 +1,8 @@
 package com.example.pigeon.Activities.Adapters;
 
+import android.app.Activity;
 import android.content.Context;
+import android.util.DisplayMetrics;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -63,16 +65,21 @@ public class MessageListAdapter extends BaseAdapter {
     public View getView(int position, View convertView, ViewGroup parent){
         ViewHolder viewHolder = null;
         int type = getItemViewType(position);
+        DisplayMetrics displayMetrics = new DisplayMetrics();
+        ((Activity)parent.getContext()).getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
+        int width = displayMetrics.widthPixels;
         if(convertView == null) {
             viewHolder = new ViewHolder();
             switch (type) {
                 case TYPE_USER:
                     convertView = inflater.inflate(R.layout.chat_text_user, null);
                     viewHolder.textView = convertView.findViewById(R.id.userMessage);
+                    viewHolder.textView.setMaxWidth((int)(width/1.5));
                     break;
                 case TYPE_OTHER:
                     convertView = inflater.inflate(R.layout.chat_text_other, null);
                     viewHolder.textView = convertView.findViewById(R.id.otherMessage);
+                    viewHolder.textView.setMaxWidth((int)(width/1.5));
                     break;
             }
             convertView.setTag(viewHolder);
@@ -86,6 +93,11 @@ public class MessageListAdapter extends BaseAdapter {
         }
         //TODO: ADD IMAGE MESSAGE TYPE
         return convertView;
+    }
+
+    @Override
+    public boolean isEnabled(int position) {
+        return false;
     }
 
     @Override

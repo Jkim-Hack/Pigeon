@@ -13,5 +13,6 @@
         android:paddingHorizontal="10dp"
         android:paddingVertical="5dp"
         android:textColor="#232323"
+        android:clickable="false"
         android:textSize="12sp" />
 </RelativeLayout>
