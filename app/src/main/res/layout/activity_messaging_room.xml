@@ -5,7 +5,8 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:fitsSystemWindows="true"
-    android:background="@color/colorBackground">
+    android:background="@color/colorBackground"
+    android:id="@+id/MessagingRoomRoot">
 
     <android.support.constraint.Guideline
         android:id="@+id/guideline9"
@@ -25,9 +26,10 @@
     <RelativeLayout
         android:id="@+id/topbar"
         android:layout_width="match_parent"
-        android:layout_height="62dp"
+        android:layout_height="?attr/actionBarSize"
         android:background="#FFF"
-        android:layout_alignParentTop="true">
+        android:layout_alignParentTop="true"
+        android:elevation="5dp">
 
         <ImageButton
             android:id="@+id/backButton"
@@ -62,15 +64,17 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_above="@+id/bottombar"
-        android:layout_below="@+id/topbar">
+        android:layout_below="@+id/topbar"
+        android:fitsSystemWindows="true">
         <ListView
             android:id="@+id/messageList"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentStart="true"
             android:layout_alignParentEnd="true"
-            android:clickable="false"
+            android:paddingBottom="5dp"
             android:divider="@null"
+            android:listSelector="@android:color/transparent"
             android:dividerHeight="1dp"></ListView>
 
     </RelativeLayout>

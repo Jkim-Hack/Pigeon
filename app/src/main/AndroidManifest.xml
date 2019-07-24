@@ -27,7 +27,7 @@
         <activity android:name=".Activities.MainActivity" android:windowSoftInputMode="adjustResize|stateAlwaysHidden"/>
         <activity android:name=".Activities.MessagingRoomActivity"
             android:screenOrientation="portrait"
-            android:windowSoftInputMode="adjustResize"/>
+            android:windowSoftInputMode="adjustUnspecified|stateAlwaysVisible"/>
     </application>
 
 </manifest>

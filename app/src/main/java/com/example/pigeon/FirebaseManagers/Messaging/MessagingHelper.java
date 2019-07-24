@@ -226,10 +226,12 @@ public class MessagingHelper {
 
                 }
             });
+
         }
 
 
     }
+
 
     //Creates a map then adds the map into the chatList
     private static void updateChatList(String chatID, ChatInfo chatInfo, ArrayAdapter adapter){

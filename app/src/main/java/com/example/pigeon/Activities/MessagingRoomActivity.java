@@ -3,23 +3,27 @@ package com.example.pigeon.Activities;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Intent;
-import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.view.KeyEvent;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
-import android.view.ViewGroup;
+import android.view.ViewTreeObserver;
 import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.AbsListView;
+import android.widget.AdapterView;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.ListView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toolbar;
 
-import com.example.pigeon.Activities.Adapters.MessageListAdapter;
 import com.example.pigeon.FirebaseManagers.Messaging.MessagingHelper;
 import com.example.pigeon.R;
 
@@ -38,11 +42,11 @@ public class MessagingRoomActivity extends AppCompatActivity {
     private EditText messageInput;
     private ImageView emoteButton;
     private ImageButton sendButton;
+    //private android.support.v7.widget.Toolbar toolbar;
 
     private static ListView messageList;
 
     private boolean isClicked = false;
-
 
     @SuppressLint("ClickableViewAccessibility")
     @Override
@@ -58,6 +62,11 @@ public class MessagingRoomActivity extends AppCompatActivity {
         emoteButton = findViewById(R.id.emoteButton);
         sendButton = findViewById(R.id.sendButton);
         messageList = findViewById(R.id.messageList);
+
+        //toolbar = findViewById(R.id.topbar);
+
+        getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE);
+
 
         final InputMethodManager inputMethodManager = (InputMethodManager) this.getSystemService(Activity.INPUT_METHOD_SERVICE);
 
@@ -82,6 +91,7 @@ public class MessagingRoomActivity extends AppCompatActivity {
             }
         });
 
+
         messageList.setAdapter(MessagingHelper.adapters.get(MessagingHelper.currentChatID));
 
         final int width = messageInput.getWidth();
@@ -99,18 +109,22 @@ public class MessagingRoomActivity extends AppCompatActivity {
             }
         });
 
+        messageList.setTranscriptMode(ListView.TRANSCRIPT_MODE_NORMAL);
+        //messageList.setStackFromBottom(true);
+        messageList.setScrollingCacheEnabled(true);
+        messageList.setSmoothScrollbarEnabled(false);
 
-        messageList.setOnTouchListener(new View.OnTouchListener() {
+        messageList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
-            public boolean onTouch(View v, MotionEvent event) {
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 if(isClicked){
-                    inputMethodManager.hideSoftInputFromWindow(v.getWindowToken(), 0);
+                    inputMethodManager.hideSoftInputFromWindow(view.getWindowToken(), 0);
                     messageInput.setWidth(width);
                     isClicked = false;
                 }
-                return false;
             }
         });
+
         messageInput.setOnKeyListener(new View.OnKeyListener() {
             @Override
             public boolean onKey(View v, int keyCode, KeyEvent event) {
@@ -124,12 +138,49 @@ public class MessagingRoomActivity extends AppCompatActivity {
             }
         });
 
+        /*
+        toolbar.setTitle("Toolbar Test 1");
+        toolbar.inflateMenu(R.menu.profile_icon_messaging_menu);
+        toolbar.setNavigationIcon(getResources().getDrawable(R.mipmap.ic_keyboard_arrow_left_24px, null));
+        toolbar.setNavigationOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(v.getContext(), MainMenuActivity.class);
+                v.getContext().startActivity(intent);
+            }
+        });
+        toolbar.setOnMenuItemClickListener(new Toolbar.OnMenuItemClickListener() {
+            @Override
+            public boolean onMenuItemClick(MenuItem item) {
+                int id = item.getItemId();
+                if (id == R.id.profile_settings) {
+                    return true;
+                }
+
+                return false;
+            }
+        });
+        */
+
     }
 
     public static void setChatInfo(MessagingHelper.ChatInfo c) {
-        chatTitle = c.title;
         prevChatMessage = c.previousMessage;
         timestamp = c.TimeCreated;
     }
+    public static void setUserInfo(String users0) {
+        String[] users1 = users0.split(",");
+        StringBuilder sb = new StringBuilder();
+        for (String user : users1) {
+            if(user != MainActivity.user.getuID()){
+                sb.append(user);
+            }
+        }
+        chatTitle = sb.toString();
+    }
+    public static void setTitle(String chatTitle1){
+        chatTitle = chatTitle1;
+    }
+
 
 }

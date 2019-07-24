@@ -57,4 +57,9 @@
         <item name="android:color">#AFAFAF</item>
     </style>
 
+    <style name="OverflowMenu" parent="Widget.AppCompat.PopupMenu.Overflow" >
+        <item name="overlapAnchor">false</item>
+        <item name="android:dropDownVerticalOffset">?attr/actionBarSize</item>
+    </style>
+
 </resources>
