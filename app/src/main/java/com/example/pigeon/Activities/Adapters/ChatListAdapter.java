@@ -68,18 +68,23 @@ public class ChatListAdapter extends ArrayAdapter<HashMap<String, MessagingHelpe
 
             String chatId = entry.getKey();
 
+            //TODO: The chat titles will be automatically be set to the first instance.
             FirebaseHelper.messagingDB.getReference("Chat Members").child(chatId).addChildEventListener(new ChildEventListener() {
                 @Override
                 public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
                     if (dataSnapshot.exists()) {
                         StringBuilder sb = new StringBuilder();
-                        if(chatInfo.title.equals("Title")){
-                            String id = dataSnapshot.getValue(String.class);
-                            if(id != MainActivity.user.getuID()){
-                                sb.append(id);
+                        if(chatInfo.title.equals("")){
+                            String name = dataSnapshot.getValue(String.class);
+                            String id = dataSnapshot.getKey();
+                            if(!id.equals(MainActivity.user.getuID())){
+                                System.out.println(name + " " + id);
+                                sb.append(name);
                                 chatTitle.setText(sb.toString());
-                                MessagingRoomActivity.setTitle(sb.toString());
+                                MessagingRoomActivity.setTitle(sb.toString()); //TODO: This will only work if only one chat room is associated with the user. FIX
                             }
+                        } else {
+                            MessagingRoomActivity.setTitle(chatInfo.title);
                         }
 
                     }

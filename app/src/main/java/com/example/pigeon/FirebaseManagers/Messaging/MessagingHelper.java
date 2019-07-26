@@ -26,6 +26,8 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.OnPausedListener;
 import com.google.firebase.storage.OnProgressListener;
@@ -43,6 +45,8 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+
+import static android.content.ContentValues.TAG;
 
 public class MessagingHelper {
 
@@ -94,8 +98,37 @@ public class MessagingHelper {
         command.put(FirebaseHelper.COMMAND, CREATECHAT);
         command.put(FirebaseHelper.CHATUSERS, sb.toString());
         command.put(TIMESTAMP, time);
-        FirebaseHelper.mainDB.getReference(FirebaseHelper.commandInbox).child(MainActivity.user.getClientNum()).push().setValue(command);
+
         LoggerHelper.sendLog(new LogEntry("Requesting chat creation...", MainActivity.user.getClientNum()));
+
+        final Query commandI = FirebaseHelper.mainDB.getReference(FirebaseHelper.commandInbox).child(MainActivity.user.getClientNum()).push();
+        ((DatabaseReference) commandI).setValue(command);
+
+        commandI.addChildEventListener(new ChildEventListener() {
+            @Override
+            public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+
+            }
+
+            @Override
+            public void onChildChanged(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+
+            }
+            @Override
+            public void onChildRemoved(@NonNull DataSnapshot dataSnapshot) {
+                Intent intent = new Intent(context, MessagingRoomActivity.class);
+                context.startActivity(intent);
+                commandI.removeEventListener(this);
+            }
+            @Override
+            public void onChildMoved(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+
+            }
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+                Log.d(TAG, databaseError.getDetails());
+            }
+        });
 
         FirebaseHelper.mainDB.getReference().child(MainActivity.user.getuID()).child(FirebaseHelper.CHATLIST).addChildEventListener(new ChildEventListener() {
             @Override
@@ -104,8 +137,6 @@ public class MessagingHelper {
                     String uid = (String)dataSnapshot.getValue();
                     if(chatrooms.containsKey(uid)){
                         currentChatID = uid;
-                        Intent intent = new Intent(context, MessagingRoomActivity.class);
-                        context.startActivity(intent);
                         FirebaseHelper.mainDB.getReference().child(MainActivity.user.getuID()).child(FirebaseHelper.CHATLIST).removeEventListener(this);
                     }
 
@@ -126,9 +157,10 @@ public class MessagingHelper {
             }
             @Override
             public void onCancelled(@NonNull DatabaseError databaseError) {
-                Log.e(ContentValues.TAG, databaseError.getDetails());
+                Log.e(TAG, databaseError.getDetails());
             }
         });
+
 
     }
 
@@ -140,7 +172,7 @@ public class MessagingHelper {
             @Override
             public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
                 if(dataSnapshot.exists()){
-                    //Creates a new MessageList and copies all the messages received into the new list. This is inefficient but it should work.
+                    //Creates a new MessageList and copies all the messages received into the new list.
                     System.out.println(dataSnapshot.toString());
                     HashMap messagingInstanceMap = (HashMap) dataSnapshot.getValue();
                     MessagingInstance messagingInstance = null;
