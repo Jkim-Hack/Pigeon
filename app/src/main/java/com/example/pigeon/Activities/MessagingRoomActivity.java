@@ -82,7 +82,7 @@ public class MessagingRoomActivity extends AppCompatActivity {
         sendButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if(!messageInput.getText().toString().isEmpty()){
+                if (!messageInput.getText().toString().isEmpty()) {
                     System.out.println("Sending");
                     String message = messageInput.getText().toString();
                     messageInput.setText("");
@@ -100,9 +100,9 @@ public class MessagingRoomActivity extends AppCompatActivity {
         messageInput.setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View v, MotionEvent event) {
-                if(!isClicked){
-                    inputMethodManager.showSoftInput(v,0);
-                    messageInput.setWidth((int)(messageInput.getWidth() * 1.25));
+                if (!isClicked) {
+                    inputMethodManager.showSoftInput(v, 0);
+                    messageInput.setWidth((int) (messageInput.getWidth() * 1.25));
                     isClicked = true;
                 }
                 return false;
@@ -117,7 +117,7 @@ public class MessagingRoomActivity extends AppCompatActivity {
         messageList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                if(isClicked){
+                if (isClicked) {
                     inputMethodManager.hideSoftInputFromWindow(view.getWindowToken(), 0);
                     messageInput.setWidth(width);
                     isClicked = false;
@@ -128,7 +128,7 @@ public class MessagingRoomActivity extends AppCompatActivity {
         messageInput.setOnKeyListener(new View.OnKeyListener() {
             @Override
             public boolean onKey(View v, int keyCode, KeyEvent event) {
-                if(!messageInput.getText().toString().isEmpty()){
+                if (!messageInput.getText().toString().isEmpty()) {
                     sendButton.setBackgroundTintList(v.getContext().getResources().getColorStateList(R.color.colorButtons));
                 } else {
                     sendButton.setBackgroundTintList(v.getContext().getResources().getColorStateList(R.color.deselected));
@@ -168,17 +168,19 @@ public class MessagingRoomActivity extends AppCompatActivity {
         prevChatMessage = c.previousMessage;
         timestamp = c.TimeCreated;
     }
+
     public static void setUserInfo(String users0) {
         String[] users1 = users0.split(",");
         StringBuilder sb = new StringBuilder();
         for (String user : users1) {
-            if(user != MainActivity.user.getuID()){
+            if (user != MainActivity.user.getuID()) {
                 sb.append(user);
             }
         }
         chatTitle = sb.toString();
     }
-    public static void setTitle(String chatTitle1){
+
+    public static void setTitle(String chatTitle1) {
         chatTitle = chatTitle1;
     }
 

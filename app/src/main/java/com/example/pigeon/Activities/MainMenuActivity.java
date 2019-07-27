@@ -48,7 +48,6 @@ public class MainMenuActivity extends AppCompatActivity {
         final ListView chatList = findViewById(R.id.chatList);
         chatListAdapter = new ChatListAdapter(this, R.layout.chat_menu_item);
         MessagingHelper.LoadAllChatRooms(chatListAdapter); //Loads all chat rooms
-        //TODO: Need to update whenever a new chatroom loads.
 
         chatList.setAdapter(chatListAdapter); //Add the adapter to the list view
 
@@ -79,7 +78,7 @@ public class MainMenuActivity extends AppCompatActivity {
             public void onClick(View view) {
                 ArrayList<String> list = new ArrayList<>();
                 list.add(MainActivity.user.getuID());
-                list.add("rjr70bdnF6ODODmwsyYBnGEP25G2");
+                list.add("fPbKtnavmpVNBc0MV9cqurB1piC3");
                 MessagingHelper.createChat(list, view.getContext());
             }
         });

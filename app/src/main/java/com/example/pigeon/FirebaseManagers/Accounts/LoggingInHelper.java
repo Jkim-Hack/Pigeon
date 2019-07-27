@@ -46,8 +46,7 @@ public class LoggingInHelper {
     private static AppCompatActivity currentActivity;
 
 
-
-    public static void signUpUser(final String email, final String password, final String name, final Activity activity, AppCompatActivity signUpCompactActivity){
+    public static void signUpUser(final String email, final String password, final String name, final Activity activity, AppCompatActivity signUpCompactActivity) {
         signUpActivity = activity;
         currentActivity = signUpCompactActivity;
         FirebaseHelper.mainAuth.createUserWithEmailAndPassword(email, password)
@@ -63,7 +62,7 @@ public class LoggingInHelper {
                             // If sign in fails, display a message to the user.
                             Log.w(TAG, "createUserWithEmail:failure", task.getException());
                             Toast.makeText(activity, "Sign up failed.",
-                                  Toast.LENGTH_SHORT).show();
+                                    Toast.LENGTH_SHORT).show();
 
                         }
                     }
@@ -71,7 +70,7 @@ public class LoggingInHelper {
     }
 
 
-    public static void signUpUser(final String email, final String password, final String name, final long phoneNumber, Activity activity,  AppCompatActivity signUpCompactActivity){
+    public static void signUpUser(final String email, final String password, final String name, final long phoneNumber, Activity activity, AppCompatActivity signUpCompactActivity) {
         signUpActivity = activity;
         currentActivity = signUpCompactActivity;
         FirebaseHelper.mainAuth.createUserWithEmailAndPassword(email, password)
@@ -94,7 +93,7 @@ public class LoggingInHelper {
                 });
     }
 
-    public static void signInUser(String email, String password, final Activity activity, AppCompatActivity signInCompactActivity){
+    public static void signInUser(String email, String password, final Activity activity, AppCompatActivity signInCompactActivity) {
         signInActivity = activity;
         currentActivity = signInCompactActivity;
         FirebaseHelper.mainAuth.signInWithEmailAndPassword(email, password)
@@ -110,7 +109,7 @@ public class LoggingInHelper {
                             // If sign in fails, display a message to the user.
                             Log.w(TAG, "signInWithEmail:failed", task.getException());
                             Toast.makeText(signInActivity, "Email or password is incorrect.",
-                                 Toast.LENGTH_SHORT).show();
+                                    Toast.LENGTH_SHORT).show();
 
                         }
                     }
@@ -130,7 +129,7 @@ public class LoggingInHelper {
         FirebaseHelper.mainDB.getReference().child(uID).addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                if(dataSnapshot.exists()){
+                if (dataSnapshot.exists()) {
 
                     //Get the user from firebase and make it the current user
                     User acquiredUser = dataSnapshot.getValue(User.class);
@@ -158,23 +157,30 @@ public class LoggingInHelper {
         });
     }
 
-    private static void setupMessaging(final Context context){
+    private static void setupMessaging(final Context context) {
         FirebaseHelper.mainDB.getReference().child(MainActivity.user.getuID()).child(FirebaseHelper.CHATLIST).addChildEventListener(new ChildEventListener() {
             @Override
             public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
                 LoggerHelper.sendLog(new LogEntry("Starting messaging setup...", MainActivity.user.getClientNum()));
-                if(dataSnapshot.exists()){
-                    String chatUUID = (String)dataSnapshot.getValue();
+                if (dataSnapshot.exists()) {
+                    String chatUUID = (String) dataSnapshot.getValue();
 
-                    MessageList<MessagingInstance> messageList = new MessageList<>(); //Create a new message list that we populate
-                    messageList.addListener(new MessagingHelper.ListListener()); //Add the listener for it
-                    chatrooms.put(chatUUID, messageList); //Put it into rhe chatrooms map
+                    if (chatrooms.get(chatUUID) == null || chatrooms.get(chatUUID).isEmpty()) {
+                        MessageList<MessagingInstance> messageList = new MessageList<>(); //Create a new message list that we populate
+                        messageList.addListener(new MessagingHelper.ListListener()); //Add the listener for it
+                        chatrooms.put(chatUUID, messageList); //Put it into rhe chatrooms map
+                    }
 
-                    MessageListAdapter messageListAdapter = new MessageListAdapter(context); //Create a new adapter to put into the map of adapters
-                    MessagingHelper.adapters.put(chatUUID, messageListAdapter); //Add the adapter with the chat id as the key
+                    if (MessagingHelper.adapters.get(chatUUID) == null || MessagingHelper.adapters.get(chatUUID).isEmpty()) {
+                        MessageListAdapter messageListAdapter = new MessageListAdapter(context); //Create a new adapter to put into the map of adapters
+                        MessagingHelper.adapters.put(chatUUID, messageListAdapter); //Add the adapter with the chat id as the key
+                    }
 
-                    MainActivity.user.addChat(dataSnapshot.getKey(), chatUUID); //Add the chat into the User's object
+                    if (MainActivity.user.getChatMap() == null || MainActivity.user.getChatMap().get(chatUUID) == null || MainActivity.user.getChatMap().get(chatUUID).isEmpty()) {
+                        MainActivity.user.addChat(dataSnapshot.getKey(), chatUUID); //Add the chat into the User's object
+                    }
                     getChatInfo(chatUUID); //Gets the chatinfo of the specified id and adds it to the adapter
+                    getChatMembers(chatUUID);
 
                     LoggerHelper.sendLog(new LogEntry("Messaging setup complete", MainActivity.user.getClientNum())); //Push a log entry to the servlet
 
@@ -182,18 +188,22 @@ public class LoggingInHelper {
                 }
 
             }
+
             @Override
             public void onChildChanged(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
 
             }
+
             @Override
             public void onChildRemoved(@NonNull DataSnapshot dataSnapshot) {
                 //TODO: ADD WHEN CHAT IS REMOVED
             }
+
             @Override
             public void onChildMoved(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
 
             }
+
             @Override
             public void onCancelled(@NonNull DatabaseError databaseError) {
                 Log.e(ContentValues.TAG, databaseError.getDetails());
@@ -210,8 +220,8 @@ public class LoggingInHelper {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 MessagingHelper.ChatInfo chatInfo = dataSnapshot.getValue(MessagingHelper.ChatInfo.class);
-                if(MainMenuActivity.chatListAdapter != null){
-                    HashMap info  = new HashMap();
+                if (MainMenuActivity.chatListAdapter != null) {
+                    HashMap info = new HashMap();
                     info.put(chatUUID, chatInfo);
                     MainMenuActivity.chatListAdapter.add(info);
                     MessagingHelper.chatList.put(chatUUID, chatInfo);
@@ -228,14 +238,71 @@ public class LoggingInHelper {
 
     }
 
+    private static void getChatMembers(final String chatID) {
+        final String chatUUID = chatID;
+
+        FirebaseHelper.messagingDB.getReference().child("Chat Members").child(chatUUID).addChildEventListener(new ChildEventListener() {
+            @Override
+            public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+                if (MessagingHelper.chatMemebers.get(chatUUID) == null || MessagingHelper.chatMemebers.get(chatUUID).isEmpty()) {
+                    HashMap<String, String> member = new HashMap<>();
+                    member.put(dataSnapshot.getKey(), dataSnapshot.getValue(String.class));
+                    MessagingHelper.chatMemebers.put(chatUUID, member);
+                } else {
+                    HashMap<String, String> members = MessagingHelper.chatMemebers.get(chatUUID);
+                    members.put(dataSnapshot.getKey(), dataSnapshot.getValue(String.class));
+                }
+                MainMenuActivity.chatListAdapter.notifyDataSetChanged();
+
+
+            }
+
+            @Override
+            public void onChildChanged(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+                if (MessagingHelper.chatMemebers.get(chatUUID) == null || MessagingHelper.chatMemebers.get(chatUUID).isEmpty()) {
+                    HashMap<String, String> member = new HashMap<>();
+                    member.put(dataSnapshot.getKey(), dataSnapshot.getValue(String.class));
+                    MessagingHelper.chatMemebers.put(chatUUID, member);
+                } else {
+                    HashMap<String, String> members = MessagingHelper.chatMemebers.get(chatUUID);
+                    members.remove(dataSnapshot.getKey());
+                    members.put(dataSnapshot.getKey(), dataSnapshot.getValue(String.class));
+                }
+                MainMenuActivity.chatListAdapter.notifyDataSetChanged();
+
+
+            }
+
+            @Override
+            public void onChildRemoved(@NonNull DataSnapshot dataSnapshot) {
+                if (MessagingHelper.chatMemebers.get(chatUUID) == null || MessagingHelper.chatMemebers.get(chatUUID).isEmpty()) {
+                    HashMap<String, String> members = MessagingHelper.chatMemebers.get(chatUUID);
+                    members.remove(dataSnapshot.getKey());
+                }
+                MainMenuActivity.chatListAdapter.notifyDataSetChanged();
+
+
+            }
+
+            @Override
+            public void onChildMoved(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+                //Not used
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+                Log.d(TAG, databaseError.getDetails());
+            }
+        });
+    }
 
 
     private static void createNewUser(String email, String name, String uID, long phonenumber) {
-        MainActivity.user = new User(email,name, uID, phonenumber);
+        MainActivity.user = new User(email, name, uID, phonenumber);
         FirebaseHelper.mainDB.getReference().child(uID).setValue(MainActivity.user, new OnUserComplete());
     }
 
-    private static void createExistingUser(String uID){
+    private static void createExistingUser(String uID) {
         //TODO: FIX SIGN IN ERROR WHERE dataSnapshot.getValue() DOESN'T GIVE USER CLASS BUT GIVES A HASHMAP.
         //Creates a new listener
         ValueEventListener listener = new ValueEventListener() {
@@ -246,7 +313,7 @@ public class LoggingInHelper {
                 //User user = new User((String)data.get("email"), (String)data.get("name"), (String)data.get("uID"), (Long)data.get("phonenumber"));
                 // user.setClientNum((String)data.get("clientNum"));
 
-                User user = (User)dataSnapshot.getValue(User.class);
+                User user = (User) dataSnapshot.getValue(User.class);
 
                 MainActivity.user = new User(user);
                 LoggerHelper.sendLog(new LogEntry("User signed in", MainActivity.user.getClientNum()));
@@ -257,7 +324,7 @@ public class LoggingInHelper {
 
             @Override
             public void onCancelled(@NonNull DatabaseError databaseError) {
-                Log.d(TAG , "errorAccessingUser") ;
+                Log.d(TAG, "errorAccessingUser");
                 Log.e(TAG, databaseError.getDetails());
             }
         };
@@ -265,11 +332,10 @@ public class LoggingInHelper {
     }
 
 
-
-   static class OnUserComplete implements DatabaseReference.CompletionListener {
+    static class OnUserComplete implements DatabaseReference.CompletionListener {
         @Override
         public void onComplete(DatabaseError error, DatabaseReference ref) {
-            if(error == null){
+            if (error == null) {
                 Log.w(TAG, "userInDatabase:success");
                 Intent intent = new Intent(signUpActivity, MainMenuActivity.class);
                 currentActivity.startActivity(intent);
@@ -281,10 +347,6 @@ public class LoggingInHelper {
 
         }
     }
-
-
-
-
 
 
 }

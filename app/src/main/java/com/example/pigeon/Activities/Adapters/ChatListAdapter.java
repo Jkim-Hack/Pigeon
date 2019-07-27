@@ -10,6 +10,7 @@ import android.widget.ArrayAdapter;
 import android.widget.TextView;
 
 import com.example.pigeon.Activities.MainActivity;
+import com.example.pigeon.Activities.MainMenuActivity;
 import com.example.pigeon.Activities.MessagingRoomActivity;
 import com.example.pigeon.FirebaseManagers.FirebaseHelper;
 import com.example.pigeon.FirebaseManagers.Messaging.MessagingHelper;
@@ -28,8 +29,6 @@ import java.util.Map;
 import java.util.Set;
 
 public class ChatListAdapter extends ArrayAdapter<HashMap<String, MessagingHelper.ChatInfo>> {
-
-    private static List<String> ids = new ArrayList<>();
 
     public ChatListAdapter(Context context, int resource, List<HashMap<String, MessagingHelper.ChatInfo>> objects) {
         super(context, resource, objects);
@@ -67,7 +66,33 @@ public class ChatListAdapter extends ArrayAdapter<HashMap<String, MessagingHelpe
             final MessagingHelper.ChatInfo chatInfo = entry.getValue(); //gets chat info
 
             String chatId = entry.getKey();
+            StringBuilder sb = new StringBuilder();
+            if(chatInfo.title.equals("")){
+                HashMap<String, String> membersMap = MessagingHelper.chatMemebers.get(chatId);
+                Set<Map.Entry<String,String>> members = membersMap.entrySet();
 
+                Iterator<Map.Entry<String, String>> membersIterators = members.iterator();
+
+                while (membersIterators.hasNext()){
+                    Map.Entry<String, String> member = membersIterators.next();
+                    if(!member.getKey().equals(MainActivity.user.getuID())){
+                        if(members.size() > 2){
+                            sb.append(member.getValue());
+                        } else {
+                            sb.append(member.getValue() + ", ");
+                        }
+                    }
+                }
+                if(sb.charAt(sb.length()-2) == ','){
+                    sb.deleteCharAt(sb.length()-2);
+                    sb.deleteCharAt(sb.length()-1);
+                }
+            } else {
+                sb.append(chatInfo.title);
+            }
+            chatTitle.setText(sb.toString());
+            MessagingRoomActivity.setTitle(sb.toString());
+            /*
             //TODO: The chat titles will be automatically be set to the first instance.
             FirebaseHelper.messagingDB.getReference("Chat Members").child(chatId).addChildEventListener(new ChildEventListener() {
                 @Override
@@ -111,9 +136,8 @@ public class ChatListAdapter extends ArrayAdapter<HashMap<String, MessagingHelpe
                 }
             });
 
-
-            //Sets the chat title and previousMessage into textviews
-            //chatTitle.setText(chatInfo.title);
+            */
+            //Sets the previousMessage into textview
             previousMessage.setText(chatInfo.previousMessage);
 
             //Creates the time in normal form h:mm pm/am
@@ -127,4 +151,5 @@ public class ChatListAdapter extends ArrayAdapter<HashMap<String, MessagingHelpe
 
         return convertView;
     }
+
 }

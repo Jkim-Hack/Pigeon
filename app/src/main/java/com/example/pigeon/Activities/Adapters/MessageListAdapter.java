@@ -35,9 +35,9 @@ public class MessageListAdapter extends BaseAdapter {
         if(messageList != null){
             if(!messageList.isEmpty()){
                 this.messageList.clear();
-                this.messageList.addAll(messageList);
-                notifyDataSetChanged();
             }
+            this.messageList.addAll(messageList);
+            notifyDataSetChanged();
         }
     }
 

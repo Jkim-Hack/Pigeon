@@ -58,7 +58,7 @@ public class MessagingHelper {
     public static HashMap<String, MessageList<MessagingInstance>> chatrooms = new HashMap(); //Current chat room's message list
     public static HashMap<String, MessageListAdapter> adapters = new HashMap<>();
     public static String currentChatID; //Current chat room's ID
-
+    public static HashMap<String, HashMap<String, String>> chatMemebers = new HashMap<>(); //The chat members per chat. key1 = chatID, key2 = userId, value2 = name
     public static HashMap<String, ChatInfo> tempChatList = new HashMap(); //Temporary container for new chats
 
 
@@ -75,16 +75,15 @@ public class MessagingHelper {
      *
      *
      * */
-    //TODO: NEEDS TESTING
     //Creates a new chat
     public static void createChat(Collection<String> otherUIDs, final Context context) {
         LoggerHelper.sendLog(new LogEntry("Attempting to create chat...", MainActivity.user.getClientNum()));
         StringBuilder sb = new StringBuilder();
-        if(otherUIDs.size() > 1){
+        if (otherUIDs.size() > 1) {
             Iterator<String> uids = otherUIDs.iterator();
-            while (uids.hasNext()){
+            while (uids.hasNext()) {
                 sb.append(uids.next());
-                if(uids.hasNext()){
+                if (uids.hasNext()) {
                     sb.append(",");
                 }
             }
@@ -114,16 +113,20 @@ public class MessagingHelper {
             public void onChildChanged(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
 
             }
+
             @Override
             public void onChildRemoved(@NonNull DataSnapshot dataSnapshot) {
+                //TODO: The chat members dont show when u start this activity. FIX
                 Intent intent = new Intent(context, MessagingRoomActivity.class);
                 context.startActivity(intent);
                 commandI.removeEventListener(this);
             }
+
             @Override
             public void onChildMoved(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
 
             }
+
             @Override
             public void onCancelled(@NonNull DatabaseError databaseError) {
                 Log.d(TAG, databaseError.getDetails());
@@ -133,9 +136,9 @@ public class MessagingHelper {
         FirebaseHelper.mainDB.getReference().child(MainActivity.user.getuID()).child(FirebaseHelper.CHATLIST).addChildEventListener(new ChildEventListener() {
             @Override
             public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
-                if(dataSnapshot.exists()){
-                    String uid = (String)dataSnapshot.getValue();
-                    if(chatrooms.containsKey(uid)){
+                if (dataSnapshot.exists()) {
+                    String uid = (String) dataSnapshot.getValue();
+                    if (chatrooms.containsKey(uid)) {
                         currentChatID = uid;
                         FirebaseHelper.mainDB.getReference().child(MainActivity.user.getuID()).child(FirebaseHelper.CHATLIST).removeEventListener(this);
                     }
@@ -143,18 +146,22 @@ public class MessagingHelper {
                 }
 
             }
+
             @Override
             public void onChildChanged(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
 
             }
+
             @Override
             public void onChildRemoved(@NonNull DataSnapshot dataSnapshot) {
                 //TODO: ADD WHEN CHAT IS REMOVED
             }
+
             @Override
             public void onChildMoved(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
 
             }
+
             @Override
             public void onCancelled(@NonNull DatabaseError databaseError) {
                 Log.e(TAG, databaseError.getDetails());
@@ -164,33 +171,34 @@ public class MessagingHelper {
 
     }
 
-    public static void createMessagingListener(String chatID){
+    public static void createMessagingListener(String chatID) {
         final String chatUUID = chatID;
 
         //Adds a child event listener so that every time a new message is added, the onChildAdded method is called.
         FirebaseHelper.messagingDB.getReference().child("Messages").child(chatUUID).orderByKey().addChildEventListener(new ChildEventListener() {
             @Override
             public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
-                if(dataSnapshot.exists()){
+                if (dataSnapshot.exists()) {
                     //Creates a new MessageList and copies all the messages received into the new list.
                     System.out.println(dataSnapshot.toString());
                     HashMap messagingInstanceMap = (HashMap) dataSnapshot.getValue();
                     MessagingInstance messagingInstance = null;
 
-                    String type = (String)messagingInstanceMap.get("type");
+                    String type = (String) messagingInstanceMap.get("type");
                     switch (type) {
                         case "TEXT":
-                            String message = (String)messagingInstanceMap.get("message");
-                            String uid = (String)messagingInstanceMap.get("userID");
-                            Long timestamp = (Long)messagingInstanceMap.get("sentTimestamp");
+                            String message = (String) messagingInstanceMap.get("message");
+                            String uid = (String) messagingInstanceMap.get("userID");
+                            Long timestamp = (Long) messagingInstanceMap.get("sentTimestamp");
                             messagingInstance = new TextMessage(message, uid, timestamp);
                             updatePreviousMessage(message, chatUUID);
                             break;
                     }
 
-                    if(!messagingInstance.getUserID().equals(MainActivity.user.getuID())){
+                    if (!messagingInstance.getUserID().equals(MainActivity.user.getuID())) {
                         //TODO: Add notification here
                     }
+                    System.out.println(messagingInstance);
                     chatrooms.get(chatUUID).add(messagingInstance);
                     adapters.get(chatUUID).add(messagingInstance);
                 } else {
@@ -205,14 +213,17 @@ public class MessagingHelper {
             public void onChildChanged(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
 
             }
+
             @Override
             public void onChildRemoved(@NonNull DataSnapshot dataSnapshot) {
 
             }
+
             @Override
             public void onChildMoved(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
 
             }
+
             @Override
             public void onCancelled(@NonNull DatabaseError databaseError) {
 
@@ -226,14 +237,12 @@ public class MessagingHelper {
      * Loads all of the chat rooms and any new chats are added to the variable "chatList".
      * This should NOT be used to enter a chat room.
      */
-    //TODO: NEEDS TESTING
-
     public static void LoadAllChatRooms(final ArrayAdapter adapter) {
         try {
-           HashMap map = MainActivity.user.getChatMap();
-           if(map.isEmpty())
-               return;
-        } catch (NullPointerException e){
+            HashMap map = MainActivity.user.getChatMap();
+            if (map.isEmpty())
+                return;
+        } catch (NullPointerException e) {
             return;
         }
         adapter.clear();
@@ -242,20 +251,20 @@ public class MessagingHelper {
 
         Set set = chatIDLists.entrySet();
         Iterator<Map.Entry<String, String>> iterator = set.iterator();
-        while (iterator.hasNext()){
+        while (iterator.hasNext()) {
             final String chatID = iterator.next().getValue();
             FirebaseHelper.messagingDB.getReference("Chats").child(chatID).addListenerForSingleValueEvent(new ValueEventListener() {
                 @Override
                 public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                     if (dataSnapshot.exists()) {
-                        ChatInfo chatInfo  = dataSnapshot.getValue(ChatInfo.class);
+                        ChatInfo chatInfo = dataSnapshot.getValue(ChatInfo.class);
                         updateChatList(chatID, chatInfo, adapter);
                     }
                 }
 
                 @Override
                 public void onCancelled(@NonNull DatabaseError databaseError) {
-
+                    Log.w(TAG, databaseError.getDetails());
                 }
             });
 
@@ -266,14 +275,13 @@ public class MessagingHelper {
 
 
     //Creates a map then adds the map into the chatList
-    private static void updateChatList(String chatID, ChatInfo chatInfo, ArrayAdapter adapter){
+    private static void updateChatList(String chatID, ChatInfo chatInfo, ArrayAdapter adapter) {
         HashMap<String, ChatInfo> map = new HashMap<>();
         map.put(chatID, chatInfo);
         adapter.add(map);
         chatList.put(chatID, chatInfo);
-}
+    }
 
-    //TODO: NEEDS TESTING
     //Loads a single chat room. This should be used only for entering a chat room within the app.
     public static void LoadChatRoom(final String chatID, final Activity activity, Context context) {
         currentChatID = chatID;
@@ -285,7 +293,9 @@ public class MessagingHelper {
         MessageList messageList = chatrooms.get(currentChatID);
         System.out.println(messageList + "FFFF");
         System.out.println(adapters.get(currentChatID) + "RRRR");
-        adapters.get(currentChatID).addList(messageList);
+        if (adapters.get(currentChatID).isEmpty()) {
+            adapters.get(currentChatID).addList(messageList);
+        }
 
         ChatInfo chatInfo = chatList.get(chatID);
         System.out.println(chatInfo.title);
@@ -296,7 +306,6 @@ public class MessagingHelper {
 
     }
 
-    //TODO: NEEDS TESTING
     //Sends a basic text message
     public static void sendTextMessage(String textmessage) {
         MessagingInstance message = MessagingFactory.initializeTextMessagingInstance(textmessage); //Creates a new text message object
@@ -308,7 +317,7 @@ public class MessagingHelper {
 
     //TODO: NEEDS TESTING
     //Sends an image message from the device's existing images.
-    public static void sendImageMessage(String src){
+    public static void sendImageMessage(String src) {
 
         //The storage path and file name will be based on the timestamp sent.
         long timestamp = System.currentTimeMillis();
@@ -341,7 +350,7 @@ public class MessagingHelper {
         }).addOnProgressListener(new OnProgressListener<UploadTask.TaskSnapshot>() { //Handles in progress upload
             @Override
             public void onProgress(UploadTask.TaskSnapshot taskSnapshot) {
-                double progress = (100*taskSnapshot.getBytesTransferred())/taskSnapshot.getTotalByteCount();
+                double progress = (100 * taskSnapshot.getBytesTransferred()) / taskSnapshot.getTotalByteCount();
                 System.out.println("Upload is" + progress + "% done");
                 //TODO: FRONTEND display the progress here
             }
@@ -349,7 +358,7 @@ public class MessagingHelper {
             @Override
             public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
                 // taskSnapshot.getMetadata() contains file metadata such as size, content-type, etc.
-                if(chatrooms != null){
+                if (chatrooms != null) {
                     chatrooms.get(currentChatID).offer(message);
                     updatePreviousMessage(downloadURL, currentChatID);
                 }
@@ -361,7 +370,8 @@ public class MessagingHelper {
     //TODO: FINISH METHOD
     //Sends an image message based on Android's ImageView. This should be used to take pictures directly from the app.
     //SHOULD NOT BE USED FOR EXISTING IMAGES.
-    public static void sendImageMessage(ImageView image){}
+    public static void sendImageMessage(ImageView image) {
+    }
 
 
     //Updates "previous message" in the database
@@ -383,11 +393,13 @@ public class MessagingHelper {
             this.TimeCreated = System.currentTimeMillis();
             this.title = "title";
         }
+
         public ChatInfo(String previousMessage, String title) {
             this.previousMessage = previousMessage;
             this.TimeCreated = System.currentTimeMillis();
             this.title = title;
         }
+
         public ChatInfo(Long timeCreated, String previousMessage, String title) {
             this.previousMessage = previousMessage;
             this.TimeCreated = timeCreated;
