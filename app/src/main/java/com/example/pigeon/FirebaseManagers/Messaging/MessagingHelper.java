@@ -335,10 +335,10 @@ public class MessagingHelper {
         System.out.println(chatInfo.title);
         MessagingRoomActivity.setChatInfo(chatInfo);
 
-        if(activity != null && context == null){
+        if(activity != null){
             Intent intent = new Intent(activity, MessagingRoomActivity.class);
             activity.startActivity(intent);
-        } else if(activity == null && context != null){
+        } else if(context != null){
             Intent intent = new Intent(context, MessagingRoomActivity.class);
             activity.startActivity(intent);
         }
