@@ -27,12 +27,12 @@ public class SignUpActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_sign_up);
 
-        emailSignUp = (EditText) (findViewById(R.id.emailSignUp));
-        passwordSignUp = (EditText) (findViewById(R.id.passwordSignUp));
-        confirmPassword = (EditText) (findViewById(R.id.confirmPassword2));
-        name = (EditText) (findViewById(R.id.name));
-        signUpButton = (Button) (findViewById(R.id.signUpButton));
-        alreadyAccount = (Button) (findViewById(R.id.alreadyAccount));
+        emailSignUp = (findViewById(R.id.emailSignUp));
+        passwordSignUp = (findViewById(R.id.passwordSignUp));
+        confirmPassword = (findViewById(R.id.confirmPassword2));
+        name = (findViewById(R.id.name));
+        signUpButton = (findViewById(R.id.signUpButton));
+        alreadyAccount = (findViewById(R.id.alreadyAccount));
 
         FirebaseHelper.build();
 

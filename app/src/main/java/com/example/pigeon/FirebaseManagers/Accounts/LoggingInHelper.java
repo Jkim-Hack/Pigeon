@@ -42,6 +42,7 @@ public class LoggingInHelper {
     private static AppCompatActivity currentActivity;
 
 
+    //Signs up user
     public static void signUpUser(final String email, final String password, final String name, final Activity activity, AppCompatActivity signUpCompactActivity) {
         signUpActivity = activity;
         currentActivity = signUpCompactActivity;
@@ -53,7 +54,7 @@ public class LoggingInHelper {
                             // Sign in success, update UI with the signed-in user's information
                             Log.d(TAG, "createUserWithEmail:success");
                             FirebaseUser firebaseUser = FirebaseHelper.mainAuth.getCurrentUser();
-                            createNewUser(email, name, firebaseUser.getUid());
+                            createNewUser(email, name, firebaseUser.getUid()); //Creates a client side user and also pushes it into then RT Database
                         } else {
                             // If sign in fails, display a message to the user.
                             Log.w(TAG, "createUserWithEmail:failure", task.getException());
@@ -66,6 +67,7 @@ public class LoggingInHelper {
     }
 
 
+    //Signs up user with a phone number
     public static void signUpUser(final String email, final String password, final String name, final long phoneNumber, Activity activity, AppCompatActivity signUpCompactActivity) {
         signUpActivity = activity;
         currentActivity = signUpCompactActivity;
@@ -89,6 +91,7 @@ public class LoggingInHelper {
                 });
     }
 
+    //Signs in user
     public static void signInUser(String email, String password, final Activity activity, AppCompatActivity signInCompactActivity) {
         signInActivity = activity;
         currentActivity = signInCompactActivity;
@@ -100,7 +103,7 @@ public class LoggingInHelper {
                             // Sign in success, update UI with the signed-in user's information
                             Log.d(TAG, "signInWithEmail:success");
                             FirebaseUser user = FirebaseHelper.mainAuth.getCurrentUser();
-                            createExistingUser(user.getUid());
+                            createExistingUser(user.getUid()); //Creates a client side user
                         } else {
                             // If sign in fails, display a message to the user.
                             Log.w(TAG, "signInWithEmail:failed", task.getException());
@@ -112,6 +115,7 @@ public class LoggingInHelper {
                 });
     }
 
+    //Creates a new user and sets up the chat listener and messaging listeners.
     private static void createNewUser(String email, String name, String uID) {
         HashMap<String, String> userMap = new HashMap<>();
         userMap.put("email", email);
@@ -119,7 +123,7 @@ public class LoggingInHelper {
         userMap.put("uID", uID);
 
         FirebaseHelper.mainDB.getReference().child(FirebaseHelper.CLR).push().setValue(userMap); //Pushes a new create user request into Firebase
-        LoggerHelper.sendLog(new LogEntry("New client sign up", "Unknown User"));
+        LoggerHelper.sendLog(new LogEntry("New client sign up", "Unknown User")); //Sends log to server
 
         //Listens for a new value called
         FirebaseHelper.mainDB.getReference().child(uID).addValueEventListener(new ValueEventListener() {
@@ -139,6 +143,7 @@ public class LoggingInHelper {
                     Intent intent = new Intent(signUpActivity, MainMenuActivity.class);
                     currentActivity.startActivity(intent);
 
+                    //Sends log to server
                     LoggerHelper.sendLog(new LogEntry("Client signed up---ID: " + MainActivity.user.getuID(), MainActivity.user.getClientNum()));
 
                     //Remove this ValueEventListener
@@ -148,12 +153,61 @@ public class LoggingInHelper {
 
             @Override
             public void onCancelled(@NonNull DatabaseError databaseError) {
-                Log.e(TAG, databaseError.getDetails());
+                Log.e(TAG, databaseError.getDetails()); //System log
+                LoggerHelper.sendLog(new LogEntry(databaseError.getDetails(), MainActivity.user.getClientNum())); //Sends details to server
+
             }
         });
     }
 
+    private static void createNewUser(String email, String name, String uID, Long phonenumber) {
+        HashMap<String, String> userMap = new HashMap<>();
+        userMap.put("email", email);
+        userMap.put("name", name);
+        userMap.put("uID", uID);
+        userMap.put("phonenumber", phonenumber.toString());
+
+        FirebaseHelper.mainDB.getReference().child(FirebaseHelper.CLR).push().setValue(userMap); //Pushes a new create user request into Firebase
+        LoggerHelper.sendLog(new LogEntry("New client sign up", "Unknown User")); //Sends log to server
+
+        //Listens for a new value called
+        FirebaseHelper.mainDB.getReference().child(uID).addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                if (dataSnapshot.exists()) {
+
+                    //Get the user from firebase and make it the current user
+                    User acquiredUser = dataSnapshot.getValue(User.class);
+                    MainActivity.user = new User(acquiredUser);
+                    System.out.println(MainActivity.user.getClientNum());
+
+                    //Sets up geting new chatrooms
+                    setupMessaging(currentActivity.getApplicationContext());
+
+                    //Switch activities
+                    Intent intent = new Intent(signUpActivity, MainMenuActivity.class);
+                    currentActivity.startActivity(intent);
+
+                    //Sends log to server
+                    LoggerHelper.sendLog(new LogEntry("Client signed up---ID: " + MainActivity.user.getuID(), MainActivity.user.getClientNum()));
+
+                    //Remove this ValueEventListener
+                    FirebaseHelper.mainDB.getReference().child(MainActivity.user.getuID()).removeEventListener(this);
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+                Log.e(TAG, databaseError.getDetails()); //System log
+                LoggerHelper.sendLog(new LogEntry(databaseError.getDetails(), MainActivity.user.getClientNum())); //Sends details to server
+
+            }
+        });
+    }
+
+    //Sets up the messaging for the users
     private static void setupMessaging(final Context context) {
+        //Adds a child listener for the User's chatList node
         FirebaseHelper.mainDB.getReference().child(MainActivity.user.getuID()).child(FirebaseHelper.CHATLIST).addChildEventListener(new ChildEventListener() {
             @Override
             public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
@@ -164,7 +218,7 @@ public class LoggingInHelper {
                     if (chatrooms.get(chatUUID) == null || chatrooms.get(chatUUID).isEmpty()) {
                         MessageList<MessagingInstance> messageList = new MessageList<>(); //Create a new message list that we populate
                         messageList.addListener(new MessagingHelper.ListListener()); //Add the listener for it
-                        chatrooms.put(chatUUID, messageList); //Put it into rhe chatrooms map
+                        chatrooms.put(chatUUID, messageList); //Put it into the chatrooms map
                     }
 
                     if (MessagingHelper.adapters.get(chatUUID) == null || MessagingHelper.adapters.get(chatUUID).isEmpty()) {
@@ -187,9 +241,18 @@ public class LoggingInHelper {
 
             }
 
+            //Checks and removes all data associated with the acquired chatUUID
             @Override
             public void onChildRemoved(@NonNull DataSnapshot dataSnapshot) {
-                //TODO: ADD WHEN CHAT IS REMOVED
+                if(dataSnapshot.exists()){
+                    String chatUUID = (String) dataSnapshot.getValue();
+                    if(chatrooms.get(chatUUID) != null)
+                        chatrooms.remove(chatUUID);
+                    if(MessagingHelper.adapters.get(chatUUID) != null)
+                        MessagingHelper.adapters.remove(chatUUID);
+                    if(MainActivity.user.getChatMap().get(chatUUID) != null)
+                        MainActivity.user.getChatMap().remove(chatUUID);
+                }
             }
 
             @Override
@@ -199,13 +262,14 @@ public class LoggingInHelper {
 
             @Override
             public void onCancelled(@NonNull DatabaseError databaseError) {
-                Log.e(ContentValues.TAG, databaseError.getDetails());
-                LoggerHelper.sendLog(new LogEntry(databaseError.getDetails(), MainActivity.user.getClientNum()));
+                Log.e(TAG, databaseError.getDetails()); //System log
+                LoggerHelper.sendLog(new LogEntry(databaseError.getDetails(), MainActivity.user.getClientNum())); //Sends details to server
             }
         });
 
     }
 
+    //Gets the ChatInfo from the id provided and adds it to the chat list and chat list adapter
     private static void getChatInfo(String id) {
         final String chatUUID = id;
 
@@ -214,38 +278,47 @@ public class LoggingInHelper {
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 MessagingHelper.ChatInfo chatInfo = dataSnapshot.getValue(MessagingHelper.ChatInfo.class);
                 if (MainMenuActivity.chatListAdapter != null) {
+                    //Puts data into a map
                     HashMap info = new HashMap();
                     info.put(chatUUID, chatInfo);
+
+                    //Adds the map into the chat list adapter
                     MainMenuActivity.chatListAdapter.add(info);
+
+                    //Adds chat info into chat list
                     MessagingHelper.chatList.put(chatUUID, chatInfo);
                 } else {
+                    //Adds to the temporary chat list
                     MessagingHelper.tempChatList.put(chatUUID, chatInfo);
                 }
             }
 
             @Override
             public void onCancelled(@NonNull DatabaseError databaseError) {
-
+                Log.e(TAG, databaseError.getDetails()); //System log
+                LoggerHelper.sendLog(new LogEntry(databaseError.getDetails(), MainActivity.user.getClientNum())); //Sends details to server
             }
         });
 
     }
 
+    //Gets the chat members from the specified chatID. This listener will stay as long as the user is signed in.
     private static void getChatMembers(final String chatID) {
         final String chatUUID = chatID;
 
         FirebaseHelper.messagingDB.getReference().child("Chat Members").child(chatUUID).addChildEventListener(new ChildEventListener() {
             @Override
             public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+                //Adds data into the chat members map
                 if (MessagingHelper.chatMembers.get(chatUUID) == null || MessagingHelper.chatMembers.get(chatUUID).isEmpty()) {
                     HashMap<String, String> member = new HashMap<>();
-                    member.put(dataSnapshot.getKey(), dataSnapshot.getValue(String.class));
-                    MessagingHelper.chatMembers.put(chatUUID, member);
+                    member.put(dataSnapshot.getKey(), dataSnapshot.getValue(String.class)); //The key is the user's ID and the value is their name in the chat.
+                    MessagingHelper.chatMembers.put(chatUUID, member); //Puts info into the chat members map
                 } else {
-                    HashMap<String, String> members = MessagingHelper.chatMembers.get(chatUUID);
-                    members.put(dataSnapshot.getKey(), dataSnapshot.getValue(String.class));
+                    HashMap<String, String> members = MessagingHelper.chatMembers.get(chatUUID); //The key is the user's ID and the value is their name in the chat.
+                    members.put(dataSnapshot.getKey(), dataSnapshot.getValue(String.class)); //Puts info into the chat members map
                 }
-                MainMenuActivity.chatListAdapter.notifyDataSetChanged();
+                MainMenuActivity.chatListAdapter.notifyDataSetChanged(); //Notifies the chat list adapter that new members to the chat has been put in
 
 
             }
@@ -254,25 +327,25 @@ public class LoggingInHelper {
             public void onChildChanged(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
                 if (MessagingHelper.chatMembers.get(chatUUID) == null || MessagingHelper.chatMembers.get(chatUUID).isEmpty()) {
                     HashMap<String, String> member = new HashMap<>();
-                    member.put(dataSnapshot.getKey(), dataSnapshot.getValue(String.class));
-                    MessagingHelper.chatMembers.put(chatUUID, member);
+                    member.put(dataSnapshot.getKey(), dataSnapshot.getValue(String.class)); //The key is the user's ID and the value is their name in the chat.
+                    MessagingHelper.chatMembers.put(chatUUID, member); //Puts info into the chat members map
                 } else {
                     HashMap<String, String> members = MessagingHelper.chatMembers.get(chatUUID);
-                    members.remove(dataSnapshot.getKey());
-                    members.put(dataSnapshot.getKey(), dataSnapshot.getValue(String.class));
+                    members.remove(dataSnapshot.getKey()); //Removes current, client side value
+                    members.put(dataSnapshot.getKey(), dataSnapshot.getValue(String.class)); //Puts new info into the chat members map
                 }
-                MainMenuActivity.chatListAdapter.notifyDataSetChanged();
+                MainMenuActivity.chatListAdapter.notifyDataSetChanged(); //Notifies the chat list adapter that members in the chat has been changed
 
 
             }
 
             @Override
             public void onChildRemoved(@NonNull DataSnapshot dataSnapshot) {
-                if (MessagingHelper.chatMembers.get(chatUUID) == null || MessagingHelper.chatMembers.get(chatUUID).isEmpty()) {
-                    HashMap<String, String> members = MessagingHelper.chatMembers.get(chatUUID);
-                    members.remove(dataSnapshot.getKey());
+                if (MessagingHelper.chatMembers.get(chatUUID) != null || !MessagingHelper.chatMembers.get(chatUUID).isEmpty()) {
+                    HashMap<String, String> members = MessagingHelper.chatMembers.get(chatUUID); //Gets the client side map
+                    members.remove(dataSnapshot.getKey()); //Removes the chat user from the client side map
                 }
-                MainMenuActivity.chatListAdapter.notifyDataSetChanged();
+                MainMenuActivity.chatListAdapter.notifyDataSetChanged(); //Notifies the chat list adapter that members in the chat has been removed
 
 
             }
@@ -284,55 +357,38 @@ public class LoggingInHelper {
 
             @Override
             public void onCancelled(@NonNull DatabaseError databaseError) {
-                Log.d(TAG, databaseError.getDetails());
+                Log.e(TAG, databaseError.getDetails()); //System log
+                LoggerHelper.sendLog(new LogEntry(databaseError.getDetails(), MainActivity.user.getClientNum())); //Sends details to server
             }
         });
     }
 
 
-    private static void createNewUser(String email, String name, String uID, long phonenumber) {
-        MainActivity.user = new User(email, name, uID, phonenumber);
-        FirebaseHelper.mainDB.getReference().child(uID).setValue(MainActivity.user, new OnUserComplete());
-    }
-
+    //Creates a existing user client side
     private static void createExistingUser(String uID) {
         //Creates a new listener
-        ValueEventListener listener = new ValueEventListener() {
+        FirebaseHelper.mainDB.getReference().child(uID).addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                User user = (User) dataSnapshot.getValue(User.class);
-                MainActivity.user = new User(user);
-                LoggerHelper.sendLog(new LogEntry("User signed in", MainActivity.user.getClientNum()));
-                setupMessaging(currentActivity.getApplicationContext());
+                User user = dataSnapshot.getValue(User.class); //Gets server side user
+                MainActivity.user = new User(user); //Updates client side user
+                LoggerHelper.sendLog(new LogEntry("User signed in", MainActivity.user.getClientNum())); //Sends server log
+                setupMessaging(currentActivity.getApplicationContext()); //Sets up messaging component
+
+                //Switches to the MainMenu activity
                 Intent intent = new Intent(signInActivity, MainMenuActivity.class);
                 currentActivity.startActivity(intent);
             }
 
             @Override
             public void onCancelled(@NonNull DatabaseError databaseError) {
+                //Displays errors
                 Log.d(TAG, "errorAccessingUser");
                 Log.e(TAG, databaseError.getDetails());
             }
-        };
-        FirebaseHelper.mainDB.getReference().child(uID).addListenerForSingleValueEvent(listener);
+        });
     }
 
-
-    static class OnUserComplete implements DatabaseReference.CompletionListener {
-        @Override
-        public void onComplete(DatabaseError error, DatabaseReference ref) {
-            if (error == null) {
-                Log.w(TAG, "userInDatabase:success");
-                Intent intent = new Intent(signUpActivity, MainMenuActivity.class);
-                currentActivity.startActivity(intent);
-                //Update UI here
-            } else {
-                Log.w(TAG, "userInDatabase:FAILED");
-                //Update UI here
-            }
-
-        }
-    }
 
 
 }

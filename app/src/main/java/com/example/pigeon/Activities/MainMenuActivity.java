@@ -34,7 +34,7 @@ import java.util.Set;
 public class MainMenuActivity extends AppCompatActivity {
 
 
-    public static ChatListAdapter chatListAdapter;
+    public static ChatListAdapter chatListAdapter; //Chat list adapter is what fills out the info in the ListView of chats
 
     private Activity getActivity() {
         return this;
@@ -51,6 +51,7 @@ public class MainMenuActivity extends AppCompatActivity {
 
         chatList.setAdapter(chatListAdapter); //Add the adapter to the list view
 
+        //Loads the chat selected
         chatList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
@@ -67,11 +68,12 @@ public class MainMenuActivity extends AppCompatActivity {
                     }
                     String chatID = entry.getKey();
                     System.out.println(chatID);
-                    MessagingHelper.LoadChatRoom(chatID, getActivity(), view.getContext());
+                    MessagingHelper.LoadChatRoom(chatID, getActivity(), view.getContext()); //Loads the chatroom
                 }
             }
         });
 
+        //Creates a new chat with the specified uid
         Button createButton = findViewById(R.id.createChatButton);
         createButton.setOnClickListener(new View.OnClickListener() {
             @Override

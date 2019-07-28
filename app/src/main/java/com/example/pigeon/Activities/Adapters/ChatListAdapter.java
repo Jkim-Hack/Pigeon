@@ -57,9 +57,10 @@ public class ChatListAdapter extends ArrayAdapter<HashMap<String, MessagingHelpe
 
             final MessagingHelper.ChatInfo chatInfo = entry.getValue(); //gets chat info
 
+            //Iterates through the map of chat members at the specified id and makes the title of the chat to the user.
             String chatId = entry.getKey();
             StringBuilder sb = new StringBuilder();
-            if(chatInfo.title.equals("")){
+            if(chatInfo.title.equals("")){ //Check whether there's a title or not
                 HashMap<String, String> membersMap = MessagingHelper.chatMembers.get(chatId);
                 if(membersMap != null){
                     Set<Map.Entry<String,String>> members = membersMap.entrySet();
@@ -82,54 +83,10 @@ public class ChatListAdapter extends ArrayAdapter<HashMap<String, MessagingHelpe
                     }
                 }
             } else {
-                sb.append(chatInfo.title);
+                sb.append(chatInfo.title); //This is a custom title the users have put
             }
             chatTitle.setText(sb.toString());
-            /*
-            //TODO: The chat titles will be automatically be set to the first instance.
-            FirebaseHelper.messagingDB.getReference("Chat Members").child(chatId).addChildEventListener(new ChildEventListener() {
-                @Override
-                public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
-                    if (dataSnapshot.exists()) {
-                        StringBuilder sb = new StringBuilder();
-                        if(chatInfo.title.equals("")){
-                            String name = dataSnapshot.getValue(String.class);
-                            String id = dataSnapshot.getKey();
-                            if(!id.equals(MainActivity.user.getuID())){
-                                System.out.println(name + " " + id);
-                                sb.append(name);
-                                chatTitle.setText(sb.toString());
-                                MessagingRoomActivity.setTitle(sb.toString()); //TODO: This will only work if only one chat room is associated with the user. FIX
-                            }
-                        } else {
-                            MessagingRoomActivity.setTitle(chatInfo.title);
-                        }
 
-                    }
-                }
-
-                @Override
-                public void onChildChanged(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
-
-                }
-
-                @Override
-                public void onChildRemoved(@NonNull DataSnapshot dataSnapshot) {
-
-                }
-
-                @Override
-                public void onChildMoved(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
-
-                }
-
-                @Override
-                public void onCancelled(@NonNull DatabaseError databaseError) {
-
-                }
-            });
-
-            */
             //Sets the previousMessage into textview
             previousMessage.setText(chatInfo.previousMessage);
 
