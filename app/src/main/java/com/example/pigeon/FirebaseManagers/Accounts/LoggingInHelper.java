@@ -12,7 +12,6 @@ import android.widget.Toast;
 
 import com.example.pigeon.Activities.Adapters.MessageListAdapter;
 import com.example.pigeon.Activities.MainMenuActivity;
-import com.example.pigeon.Activities.MessagingRoomActivity;
 import com.example.pigeon.FirebaseManagers.FirebaseHelper;
 import com.example.pigeon.Activities.MainActivity;
 import com.example.pigeon.FirebaseManagers.LoggerHelper;
@@ -31,11 +30,8 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.HashMap;
-import java.util.logging.Logger;
 
 import static android.content.ContentValues.TAG;
-import static com.example.pigeon.FirebaseManagers.Messaging.MessagingHelper.TIMESTAMP;
-import static com.example.pigeon.FirebaseManagers.Messaging.MessagingHelper.TITLE;
 import static com.example.pigeon.FirebaseManagers.Messaging.MessagingHelper.chatrooms;
 
 public class LoggingInHelper {
@@ -175,10 +171,7 @@ public class LoggingInHelper {
                         MessageListAdapter messageListAdapter = new MessageListAdapter(context); //Create a new adapter to put into the map of adapters
                         MessagingHelper.adapters.put(chatUUID, messageListAdapter); //Add the adapter with the chat id as the key
                     }
-
-                    if (MainActivity.user.getChatMap() == null || MainActivity.user.getChatMap().get(chatUUID) == null || MainActivity.user.getChatMap().get(chatUUID).isEmpty()) {
-                        MainActivity.user.addChat(dataSnapshot.getKey(), chatUUID); //Add the chat into the User's object
-                    }
+                    MainActivity.user.addChat(dataSnapshot.getKey(), chatUUID); //Add the chat into the User's object
                     getChatInfo(chatUUID); //Gets the chatinfo of the specified id and adds it to the adapter
                     getChatMembers(chatUUID);
 
@@ -244,12 +237,12 @@ public class LoggingInHelper {
         FirebaseHelper.messagingDB.getReference().child("Chat Members").child(chatUUID).addChildEventListener(new ChildEventListener() {
             @Override
             public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
-                if (MessagingHelper.chatMemebers.get(chatUUID) == null || MessagingHelper.chatMemebers.get(chatUUID).isEmpty()) {
+                if (MessagingHelper.chatMembers.get(chatUUID) == null || MessagingHelper.chatMembers.get(chatUUID).isEmpty()) {
                     HashMap<String, String> member = new HashMap<>();
                     member.put(dataSnapshot.getKey(), dataSnapshot.getValue(String.class));
-                    MessagingHelper.chatMemebers.put(chatUUID, member);
+                    MessagingHelper.chatMembers.put(chatUUID, member);
                 } else {
-                    HashMap<String, String> members = MessagingHelper.chatMemebers.get(chatUUID);
+                    HashMap<String, String> members = MessagingHelper.chatMembers.get(chatUUID);
                     members.put(dataSnapshot.getKey(), dataSnapshot.getValue(String.class));
                 }
                 MainMenuActivity.chatListAdapter.notifyDataSetChanged();
@@ -259,12 +252,12 @@ public class LoggingInHelper {
 
             @Override
             public void onChildChanged(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
-                if (MessagingHelper.chatMemebers.get(chatUUID) == null || MessagingHelper.chatMemebers.get(chatUUID).isEmpty()) {
+                if (MessagingHelper.chatMembers.get(chatUUID) == null || MessagingHelper.chatMembers.get(chatUUID).isEmpty()) {
                     HashMap<String, String> member = new HashMap<>();
                     member.put(dataSnapshot.getKey(), dataSnapshot.getValue(String.class));
-                    MessagingHelper.chatMemebers.put(chatUUID, member);
+                    MessagingHelper.chatMembers.put(chatUUID, member);
                 } else {
-                    HashMap<String, String> members = MessagingHelper.chatMemebers.get(chatUUID);
+                    HashMap<String, String> members = MessagingHelper.chatMembers.get(chatUUID);
                     members.remove(dataSnapshot.getKey());
                     members.put(dataSnapshot.getKey(), dataSnapshot.getValue(String.class));
                 }
@@ -275,8 +268,8 @@ public class LoggingInHelper {
 
             @Override
             public void onChildRemoved(@NonNull DataSnapshot dataSnapshot) {
-                if (MessagingHelper.chatMemebers.get(chatUUID) == null || MessagingHelper.chatMemebers.get(chatUUID).isEmpty()) {
-                    HashMap<String, String> members = MessagingHelper.chatMemebers.get(chatUUID);
+                if (MessagingHelper.chatMembers.get(chatUUID) == null || MessagingHelper.chatMembers.get(chatUUID).isEmpty()) {
+                    HashMap<String, String> members = MessagingHelper.chatMembers.get(chatUUID);
                     members.remove(dataSnapshot.getKey());
                 }
                 MainMenuActivity.chatListAdapter.notifyDataSetChanged();
@@ -303,18 +296,11 @@ public class LoggingInHelper {
     }
 
     private static void createExistingUser(String uID) {
-        //TODO: FIX SIGN IN ERROR WHERE dataSnapshot.getValue() DOESN'T GIVE USER CLASS BUT GIVES A HASHMAP.
         //Creates a new listener
         ValueEventListener listener = new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                //HashMap data = (HashMap)dataSnapshot.getValue();
-
-                //User user = new User((String)data.get("email"), (String)data.get("name"), (String)data.get("uID"), (Long)data.get("phonenumber"));
-                // user.setClientNum((String)data.get("clientNum"));
-
                 User user = (User) dataSnapshot.getValue(User.class);
-
                 MainActivity.user = new User(user);
                 LoggerHelper.sendLog(new LogEntry("User signed in", MainActivity.user.getClientNum()));
                 setupMessaging(currentActivity.getApplicationContext());

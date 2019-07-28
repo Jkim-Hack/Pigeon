@@ -1,12 +1,10 @@
 package com.example.pigeon.FirebaseManagers.Messaging;
 
 import android.app.Activity;
-import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
@@ -35,14 +33,12 @@ import com.google.firebase.storage.StorageMetadata;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.UUID;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -58,7 +54,7 @@ public class MessagingHelper {
     public static HashMap<String, MessageList<MessagingInstance>> chatrooms = new HashMap(); //Current chat room's message list
     public static HashMap<String, MessageListAdapter> adapters = new HashMap<>();
     public static String currentChatID; //Current chat room's ID
-    public static HashMap<String, HashMap<String, String>> chatMemebers = new HashMap<>(); //The chat members per chat. key1 = chatID, key2 = userId, value2 = name
+    public static HashMap<String, HashMap<String, String>> chatMembers = new HashMap<>(); //The chat members per chat. key1 = chatID, key2 = userId, value2 = name
     public static HashMap<String, ChatInfo> tempChatList = new HashMap(); //Temporary container for new chats
 
 
@@ -103,28 +99,92 @@ public class MessagingHelper {
         final Query commandI = FirebaseHelper.mainDB.getReference(FirebaseHelper.commandInbox).child(MainActivity.user.getClientNum()).push();
         ((DatabaseReference) commandI).setValue(command);
 
-        commandI.addChildEventListener(new ChildEventListener() {
+        commandI.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                final String key = dataSnapshot.getKey();
+                System.out.println(key);
+                /*
+                currentChatID = MainActivity.user.getChatMap().get(key);
+                Intent intent = new Intent(context, MessagingRoomActivity.class);
+                context.startActivity(intent);
+                */
+                FirebaseHelper.mainDB.getReference().child(MainActivity.user.getuID()).child(FirebaseHelper.CHATLIST).addChildEventListener(new ChildEventListener() {
+                    @Override
+                    public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+                        if (dataSnapshot.exists()) {
+                            String uid = (String) dataSnapshot.getValue();
+                            if (dataSnapshot.getKey().equals(key)) {
+                                currentChatID = uid;
+                                getChatMembersInit(currentChatID, context);
+                                FirebaseHelper.mainDB.getReference().child(MainActivity.user.getuID()).child(FirebaseHelper.CHATLIST).removeEventListener(this);
+                            }
+                        }
+                    }
+
+                    @Override
+                    public void onChildChanged(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+
+                    }
+
+                    @Override
+                    public void onChildRemoved(@NonNull DataSnapshot dataSnapshot) {
+
+                    }
+
+                    @Override
+                    public void onChildMoved(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError databaseError) {
+                        Log.w(TAG, databaseError.getDetails());
+                    }
+                });
+
+                commandI.removeEventListener(this);
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+    }
+
+    //Gets all the chat members within the chatID, this should only be used once per chat as
+    //it is only to make sure all the information is put into our data maps (chatMembers map), and finally switch activities
+    private static void getChatMembersInit(final String chatID, final Context context) {
+        final String chatUUID = chatID;
+
+        FirebaseHelper.messagingDB.getReference().child("Chat Members").child(chatUUID).addChildEventListener(new ChildEventListener() {
             @Override
             public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+                if (MessagingHelper.chatMembers.get(chatUUID) == null || MessagingHelper.chatMembers.get(chatUUID).isEmpty()) {
+                    HashMap<String, String> member = new HashMap<>();
+                    member.put(dataSnapshot.getKey(), dataSnapshot.getValue(String.class));
+                    MessagingHelper.chatMembers.put(chatUUID, member);
+                } else {
+                    HashMap<String, String> members = MessagingHelper.chatMembers.get(chatUUID);
+                    members.put(dataSnapshot.getKey(), dataSnapshot.getValue(String.class));
+                }
+                MainMenuActivity.chatListAdapter.notifyDataSetChanged();
+                Intent intent = new Intent(context, MessagingRoomActivity.class);
+                context.startActivity(intent);
 
             }
 
             @Override
             public void onChildChanged(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
-
             }
 
             @Override
             public void onChildRemoved(@NonNull DataSnapshot dataSnapshot) {
-                //TODO: The chat members dont show when u start this activity. FIX
-                Intent intent = new Intent(context, MessagingRoomActivity.class);
-                context.startActivity(intent);
-                commandI.removeEventListener(this);
             }
 
             @Override
             public void onChildMoved(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
-
             }
 
             @Override
@@ -132,43 +192,6 @@ public class MessagingHelper {
                 Log.d(TAG, databaseError.getDetails());
             }
         });
-
-        FirebaseHelper.mainDB.getReference().child(MainActivity.user.getuID()).child(FirebaseHelper.CHATLIST).addChildEventListener(new ChildEventListener() {
-            @Override
-            public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
-                if (dataSnapshot.exists()) {
-                    String uid = (String) dataSnapshot.getValue();
-                    if (chatrooms.containsKey(uid)) {
-                        currentChatID = uid;
-                        FirebaseHelper.mainDB.getReference().child(MainActivity.user.getuID()).child(FirebaseHelper.CHATLIST).removeEventListener(this);
-                    }
-
-                }
-
-            }
-
-            @Override
-            public void onChildChanged(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
-
-            }
-
-            @Override
-            public void onChildRemoved(@NonNull DataSnapshot dataSnapshot) {
-                //TODO: ADD WHEN CHAT IS REMOVED
-            }
-
-            @Override
-            public void onChildMoved(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
-
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-                Log.e(TAG, databaseError.getDetails());
-            }
-        });
-
-
     }
 
     public static void createMessagingListener(String chatID) {

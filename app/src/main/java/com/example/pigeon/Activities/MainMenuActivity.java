@@ -78,7 +78,7 @@ public class MainMenuActivity extends AppCompatActivity {
             public void onClick(View view) {
                 ArrayList<String> list = new ArrayList<>();
                 list.add(MainActivity.user.getuID());
-                list.add("fPbKtnavmpVNBc0MV9cqurB1piC3");
+                list.add("pt8cor5TTQZzfBgMpMWn22WHnD82");
                 MessagingHelper.createChat(list, view.getContext());
             }
         });

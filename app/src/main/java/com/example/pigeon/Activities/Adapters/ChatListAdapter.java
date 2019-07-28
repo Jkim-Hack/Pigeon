@@ -1,8 +1,6 @@
 package com.example.pigeon.Activities.Adapters;
 
 import android.content.Context;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -10,17 +8,11 @@ import android.widget.ArrayAdapter;
 import android.widget.TextView;
 
 import com.example.pigeon.Activities.MainActivity;
-import com.example.pigeon.Activities.MainMenuActivity;
 import com.example.pigeon.Activities.MessagingRoomActivity;
-import com.example.pigeon.FirebaseManagers.FirebaseHelper;
 import com.example.pigeon.FirebaseManagers.Messaging.MessagingHelper;
 import com.example.pigeon.R;
-import com.google.firebase.database.ChildEventListener;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
 
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -68,30 +60,31 @@ public class ChatListAdapter extends ArrayAdapter<HashMap<String, MessagingHelpe
             String chatId = entry.getKey();
             StringBuilder sb = new StringBuilder();
             if(chatInfo.title.equals("")){
-                HashMap<String, String> membersMap = MessagingHelper.chatMemebers.get(chatId);
-                Set<Map.Entry<String,String>> members = membersMap.entrySet();
+                HashMap<String, String> membersMap = MessagingHelper.chatMembers.get(chatId);
+                if(membersMap != null){
+                    Set<Map.Entry<String,String>> members = membersMap.entrySet();
 
-                Iterator<Map.Entry<String, String>> membersIterators = members.iterator();
+                    Iterator<Map.Entry<String, String>> membersIterators = members.iterator();
 
-                while (membersIterators.hasNext()){
-                    Map.Entry<String, String> member = membersIterators.next();
-                    if(!member.getKey().equals(MainActivity.user.getuID())){
-                        if(members.size() > 2){
-                            sb.append(member.getValue());
-                        } else {
-                            sb.append(member.getValue() + ", ");
+                    while (membersIterators.hasNext()){
+                        Map.Entry<String, String> member = membersIterators.next();
+                        if(!member.getKey().equals(MainActivity.user.getuID())){
+                            if(members.size() > 2){
+                                sb.append(member.getValue());
+                            } else {
+                                sb.append(member.getValue() + ", ");
+                            }
                         }
                     }
-                }
-                if(sb.charAt(sb.length()-2) == ','){
-                    sb.deleteCharAt(sb.length()-2);
-                    sb.deleteCharAt(sb.length()-1);
+                    if(sb.charAt(sb.length()-2) == ','){
+                        sb.deleteCharAt(sb.length()-2);
+                        sb.deleteCharAt(sb.length()-1);
+                    }
                 }
             } else {
                 sb.append(chatInfo.title);
             }
             chatTitle.setText(sb.toString());
-            MessagingRoomActivity.setTitle(sb.toString());
             /*
             //TODO: The chat titles will be automatically be set to the first instance.
             FirebaseHelper.messagingDB.getReference("Chat Members").child(chatId).addChildEventListener(new ChildEventListener() {

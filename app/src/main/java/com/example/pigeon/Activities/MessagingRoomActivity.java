@@ -27,6 +27,13 @@ import android.widget.Toolbar;
 import com.example.pigeon.FirebaseManagers.Messaging.MessagingHelper;
 import com.example.pigeon.R;
 
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.Set;
+
+import static com.example.pigeon.FirebaseManagers.Messaging.MessagingHelper.currentChatID;
+
 
 public class MessagingRoomActivity extends AppCompatActivity {
 
@@ -65,6 +72,27 @@ public class MessagingRoomActivity extends AppCompatActivity {
 
         //toolbar = findViewById(R.id.topbar);
 
+        HashMap<String, String> membersMap = MessagingHelper.chatMembers.get(currentChatID);
+        Set<Map.Entry<String,String>> members = membersMap.entrySet();
+
+        Iterator<Map.Entry<String, String>> membersIterators = members.iterator();
+        StringBuilder sb = new StringBuilder();
+        while (membersIterators.hasNext()){
+            Map.Entry<String, String> member = membersIterators.next();
+            if(!member.getKey().equals(MainActivity.user.getuID())){
+                if(members.size() > 2){
+                    sb.append(member.getValue());
+                } else {
+                    sb.append(member.getValue() + ", ");
+                }
+            }
+        }
+        if(sb.charAt(sb.length()-2) == ','){
+            sb.deleteCharAt(sb.length()-2);
+            sb.deleteCharAt(sb.length()-1);
+        }
+        chatTitle = sb.toString();
+
         getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE);
 
 
@@ -92,7 +120,7 @@ public class MessagingRoomActivity extends AppCompatActivity {
         });
 
 
-        messageList.setAdapter(MessagingHelper.adapters.get(MessagingHelper.currentChatID));
+        messageList.setAdapter(MessagingHelper.adapters.get(currentChatID));
 
         final int width = messageInput.getWidth();
 
