@@ -15,7 +15,6 @@ import com.example.pigeon.FirebaseManagers.Messaging.MessagingInstance;
 import com.example.pigeon.FirebaseManagers.Messaging.TextMessage;
 import com.example.pigeon.R;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class MessageListAdapter extends BaseAdapter {
@@ -31,6 +30,8 @@ public class MessageListAdapter extends BaseAdapter {
         messageList = new MessageList<>();
         inflater = (LayoutInflater)context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
     }
+
+    //Adds an entire list of Messaging Instances into the messageList
     public void addList(List<MessagingInstance> messageList){
         if(messageList != null){
             if(!messageList.isEmpty()){
@@ -41,6 +42,7 @@ public class MessageListAdapter extends BaseAdapter {
         }
     }
 
+    //Adds a new MessagingInstance into the message list
     public void add(MessagingInstance message){
         this.messageList.add(message);
         notifyDataSetChanged();
@@ -63,23 +65,23 @@ public class MessageListAdapter extends BaseAdapter {
 
     @Override
     public View getView(int position, View convertView, ViewGroup parent){
-        ViewHolder viewHolder = null;
+        ViewHolder viewHolder = null; //View holder of a TextView
         int type = getItemViewType(position);
         DisplayMetrics displayMetrics = new DisplayMetrics();
-        ((Activity)parent.getContext()).getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
-        int width = displayMetrics.widthPixels;
+        ((Activity)parent.getContext()).getWindowManager().getDefaultDisplay().getMetrics(displayMetrics); //Gets metrics of the screen
+        int width = displayMetrics.widthPixels; //Gets the width of the entire screen
         if(convertView == null) {
             viewHolder = new ViewHolder();
             switch (type) {
-                case TYPE_USER:
-                    convertView = inflater.inflate(R.layout.chat_text_user, null);
-                    viewHolder.textView = convertView.findViewById(R.id.userMessage);
-                    viewHolder.textView.setMaxWidth((int)(width/1.5));
+                case TYPE_USER: //Type of message as this user
+                    convertView = inflater.inflate(R.layout.chat_text_user, null); //Inflate the chat user's view
+                    viewHolder.textView = convertView.findViewById(R.id.userMessage); //The id of the chat user's view TextView
+                    viewHolder.textView.setMaxWidth((int)(width/1.5)); //Set the max width to a little more than half of the screen
                     break;
-                case TYPE_OTHER:
-                    convertView = inflater.inflate(R.layout.chat_text_other, null);
-                    viewHolder.textView = convertView.findViewById(R.id.otherMessage);
-                    viewHolder.textView.setMaxWidth((int)(width/1.5));
+                case TYPE_OTHER: //Type of message as other user
+                    convertView = inflater.inflate(R.layout.chat_text_other, null);  //Inflate the chat user's view
+                    viewHolder.textView = convertView.findViewById(R.id.otherMessage); //The id of the chat user's view TextView
+                    viewHolder.textView.setMaxWidth((int)(width/1.5)); //Set the max width to a little more than half of the screen
                     break;
             }
             convertView.setTag(viewHolder);
@@ -88,8 +90,8 @@ public class MessageListAdapter extends BaseAdapter {
         }
 
         if(messageList.get(position).getType().equals("TEXT")) {
-            MessagingInstance message = (TextMessage)getItem(position);
-            viewHolder.textView.setText(((TextMessage) message).getMessage());
+            MessagingInstance message = (TextMessage)getItem(position); //Get the message at the current position
+            viewHolder.textView.setText(((TextMessage) message).getMessage()); //Sets text of the view acquired above to the message received
         }
         //TODO: ADD IMAGE MESSAGE TYPE
         return convertView;
