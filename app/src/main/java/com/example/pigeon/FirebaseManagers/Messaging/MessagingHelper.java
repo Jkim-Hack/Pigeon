@@ -132,7 +132,8 @@ public class MessagingHelper {
 
                     @Override
                     public void onCancelled(@NonNull DatabaseError databaseError) {
-                        Log.w(TAG, databaseError.getDetails()); //System log with the issue
+                        Log.e(TAG, databaseError.getDetails()); //System log
+                        LoggerHelper.sendLog(new LogEntry(databaseError.getDetails(), MainActivity.user.getClientNum())); //Sends details to server
                     }
                 });
 
@@ -141,7 +142,8 @@ public class MessagingHelper {
 
             @Override
             public void onCancelled(@NonNull DatabaseError databaseError) {
-                Log.w(TAG, databaseError.getDetails()); //System log with the issue
+                Log.e(TAG, databaseError.getDetails()); //System log
+                LoggerHelper.sendLog(new LogEntry(databaseError.getDetails(), MainActivity.user.getClientNum())); //Sends details to server
             }
         });
     }
@@ -187,7 +189,8 @@ public class MessagingHelper {
 
             @Override
             public void onCancelled(@NonNull DatabaseError databaseError) {
-                Log.d(TAG, databaseError.getDetails()); //System log any errors
+                Log.e(TAG, databaseError.getDetails()); //System log
+                LoggerHelper.sendLog(new LogEntry(databaseError.getDetails(), MainActivity.user.getClientNum())); //Sends details to server
             }
         });
     }
@@ -249,7 +252,8 @@ public class MessagingHelper {
 
             @Override
             public void onCancelled(@NonNull DatabaseError databaseError) {
-
+                Log.e(TAG, databaseError.getDetails()); //System log
+                LoggerHelper.sendLog(new LogEntry(databaseError.getDetails(), MainActivity.user.getClientNum())); //Sends details to server
             }
 
         });
@@ -291,7 +295,8 @@ public class MessagingHelper {
 
                 @Override
                 public void onCancelled(@NonNull DatabaseError databaseError) {
-                    Log.w(TAG, databaseError.getDetails());
+                    Log.e(TAG, databaseError.getDetails()); //System log
+                    LoggerHelper.sendLog(new LogEntry(databaseError.getDetails(), MainActivity.user.getClientNum())); //Sends details to server
                 }
             });
 
