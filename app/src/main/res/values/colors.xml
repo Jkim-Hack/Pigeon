@@ -2,6 +2,7 @@
 <resources>
     <color name="colorBackground">#FEFBFF</color>
     <color name="colorPrimaryDark">#A664EE</color>
+    <color name="colorSelected">#AF58FF</color>
     <color name="colorAccent">#2B4DF4</color>
     <color name="colorButtons">#9A2BD7</color>
     <color name="colorPrimary">#BA00FF</color>

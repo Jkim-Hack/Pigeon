@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android" android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <ListView
+        android:id="@+id/chatList"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_above="@+id/navigationView"
+        android:layout_below="@+id/topbar"
+        android:layout_marginBottom="0dp"
+        android:layout_alignParentBottom="true"
+        android:divider="@null"
+        android:dividerHeight="15dp"></ListView>
+
+
+    <RelativeLayout
+        android:id="@+id/topbar"
+        android:layout_width="match_parent"
+        android:layout_height="?attr/actionBarSize"
+        android:layout_alignParentTop="true">
+
+        <TextView
+            android:id="@+id/chatsLabel"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:text="Chats"
+            android:textAlignment="center"
+            android:layout_alignParentLeft="true"
+            android:textColor="#000"
+            android:textSize="30sp"
+            android:layout_margin="5dp"/>
+
+        <Button
+            android:id="@+id/createChatButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_alignParentRight="true"
+            android:layout_margin="5dp"
+            android:text="Create a new chat" />
+    </RelativeLayout>
+</RelativeLayout>

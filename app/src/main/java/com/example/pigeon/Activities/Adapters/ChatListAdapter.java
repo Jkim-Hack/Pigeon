@@ -40,7 +40,7 @@ public class ChatListAdapter extends ArrayAdapter<HashMap<String, MessagingHelpe
         }
 
         //Set the textviews with their respective ids
-        final TextView chatTitle = convertView.findViewById(R.id.chatTitle);
+        TextView chatTitle = convertView.findViewById(R.id.chatTitle);
         TextView previousMessage = convertView.findViewById(R.id.previousMessage);
         TextView timeStamp = convertView.findViewById(R.id.timeStamp);
 
@@ -55,7 +55,7 @@ public class ChatListAdapter extends ArrayAdapter<HashMap<String, MessagingHelpe
                 entry = iterator.next(); //Sets entry as the map value for our chat info
             }
 
-            final MessagingHelper.ChatInfo chatInfo = entry.getValue(); //gets chat info
+            MessagingHelper.ChatInfo chatInfo = entry.getValue(); //gets chat info
 
             //Iterates through the map of chat members at the specified id and makes the title of the chat to the user.
             String chatId = entry.getKey();

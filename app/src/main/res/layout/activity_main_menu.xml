@@ -9,38 +9,26 @@
     tools:context=".Activities.MainMenuActivity">
 
 
-    <ListView
-        android:id="@+id/chatList"
+    <FrameLayout
+        android:id="@+id/main_menu_container"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_below="@+id/toolbar"
+        android:layout_height="match_parent">
+
+    </FrameLayout>
+
+
+    <android.support.design.widget.BottomNavigationView
+        android:id="@+id/navigationView"
+        android:layout_width="match_parent"
+        android:layout_height="?android:attr/actionBarSize"
+        android:layout_alignParentBottom="true"
         android:layout_marginTop="0dp"
-        android:layout_marginBottom="8dp"
-        android:divider="@null"
-        android:dividerHeight="15dp"></ListView>
+        android:layout_marginBottom="0dp"
+        android:background="?android:attr/windowBackground"
+        app:itemIconTint="@color/colorSelected"
+        app:itemTextColor="@color/deselected"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:menu="@menu/navigationbar">
 
-
-    <android.support.v7.widget.Toolbar
-        android:id="@+id/toolbar"
-        android:layout_width="match_parent"
-        android:layout_height="?attr/actionBarSize"
-        android:background="@color/colorBackground"
-        android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
-        android:layout_alignParentTop="true">
-
-        <RelativeLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent">
-
-            <Button
-                android:id="@+id/createChatButton"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_centerInParent="true"
-                android:text="Create a new chat" />
-        </RelativeLayout>
-
-    </android.support.v7.widget.Toolbar>
-
-
+    </android.support.design.widget.BottomNavigationView>
 </RelativeLayout>
