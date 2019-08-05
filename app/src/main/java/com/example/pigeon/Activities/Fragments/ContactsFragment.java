@@ -16,7 +16,7 @@ import com.example.pigeon.common.ContactInfo;
 
 public class ContactsFragment extends Fragment {
 
-    public ContactsListAdapter contactsListAdapter;
+    public static ContactsListAdapter contactsListAdapter;
 
     public static ContactsFragment contactsFragmentBuilder(int position) {
         Bundle args = new Bundle();

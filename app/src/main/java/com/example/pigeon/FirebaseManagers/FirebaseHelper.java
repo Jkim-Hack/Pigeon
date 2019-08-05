@@ -33,6 +33,8 @@ public class FirebaseHelper {
     public static final String CHATID = "chatID";
     public static final String CLIENTNUM = "clientNum";
 
+    public static final String TIMESTAMP = "timestamp";
+
 
     public static void build() {
         mainAuth = FirebaseAuth.getInstance();

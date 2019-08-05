@@ -140,6 +140,9 @@ public class LoggingInHelper {
                     //Sets up geting new chatrooms
                     setupMessaging(currentActivity.getApplicationContext());
 
+                    //Loads and adds listeners for contacts
+                    ContactsHelper.LoadContacts();
+
                     //Switch activities
                     Intent intent = new Intent(signUpActivity, MainMenuActivity.class);
                     currentActivity.startActivity(intent);
@@ -184,6 +187,9 @@ public class LoggingInHelper {
 
                     //Sets up geting new chatrooms
                     setupMessaging(currentActivity.getApplicationContext());
+
+                    //Loads and adds listeners for contacts
+                    ContactsHelper.LoadContacts();
 
                     //Switch activities
                     Intent intent = new Intent(signUpActivity, MainMenuActivity.class);
@@ -374,6 +380,10 @@ public class LoggingInHelper {
                 User user = dataSnapshot.getValue(User.class); //Gets server side user
                 MainActivity.user = new User(user); //Updates client side user
                 LoggerHelper.sendLog(new LogEntry("User signed in", MainActivity.user.getClientNum())); //Sends server log
+
+                //Loads and adds listeners for contacts
+                ContactsHelper.LoadContacts();
+
                 setupMessaging(currentActivity.getApplicationContext()); //Sets up messaging component
 
                 //Switches to the MainMenu activity

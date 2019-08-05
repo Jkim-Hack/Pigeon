@@ -10,11 +10,15 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.example.pigeon.Activities.MainActivity;
 import com.example.pigeon.FirebaseManagers.Messaging.MessagingHelper;
 import com.example.pigeon.R;
 import com.example.pigeon.common.ContactInfo;
 
 import org.jetbrains.annotations.NotNull;
+
+import java.util.ArrayList;
+import java.util.List;
 
 
 public class ContactsListAdapter extends ArrayAdapter<ContactInfo> {
@@ -25,7 +29,7 @@ public class ContactsListAdapter extends ArrayAdapter<ContactInfo> {
 
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
-        ContactInfo item = getItem(position);
+        final ContactInfo item = getItem(position);
 
         if(convertView == null){
             convertView = LayoutInflater.from(getContext()).inflate(R.layout.contact_user, parent, false);
@@ -44,6 +48,11 @@ public class ContactsListAdapter extends ArrayAdapter<ContactInfo> {
             public void onClick(View v) {
                 if(chatID != null){
                     MessagingHelper.LoadChatRoom(chatID, null, context);
+                } else {
+                    List<String> uids = new ArrayList<>();
+                    uids.add(MainActivity.user.getuID());
+                    uids.add(item.getUserID());
+                    MessagingHelper.createChat(uids, context);
                 }
             }
         });

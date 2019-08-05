@@ -60,7 +60,6 @@ public class MessagingHelper {
 
 
     public static final Integer CREATECHAT = 1;
-    public static final String TIMESTAMP = "timestamp";
     public static final String TITLE = "title";
 
     //Creates a new chat
@@ -87,7 +86,7 @@ public class MessagingHelper {
         HashMap command = new HashMap();
         command.put(FirebaseHelper.COMMAND, CREATECHAT); //The command number
         command.put(FirebaseHelper.CHATUSERS, sb.toString()); //The chat users
-        command.put(TIMESTAMP, time); //The time
+        command.put(FirebaseHelper.TIMESTAMP, time); //The time
 
         LoggerHelper.sendLog(new LogEntry("Requesting chat creation...", MainActivity.user.getClientNum())); //Pushes log to server
 
