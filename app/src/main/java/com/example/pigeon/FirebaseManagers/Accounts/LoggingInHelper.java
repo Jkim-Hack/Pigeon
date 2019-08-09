@@ -33,6 +33,7 @@ import com.google.firebase.database.ValueEventListener;
 import java.util.HashMap;
 
 import static android.content.ContentValues.TAG;
+import static com.example.pigeon.Activities.MainMenuActivity.chatListAdapter;
 import static com.example.pigeon.FirebaseManagers.Messaging.MessagingHelper.chatrooms;
 
 public class LoggingInHelper {
@@ -284,13 +285,13 @@ public class LoggingInHelper {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 MessagingHelper.ChatInfo chatInfo = dataSnapshot.getValue(MessagingHelper.ChatInfo.class);
-                if (ChatsFragment.chatListAdapter != null) {
+                if (chatListAdapter != null) {
                     //Puts data into a map
                     HashMap info = new HashMap();
                     info.put(chatUUID, chatInfo);
 
                     //Adds the map into the chat list adapter
-                    ChatsFragment.chatListAdapter.add(info);
+                    chatListAdapter.add(info);
 
                     //Adds chat info into chat list
                     MessagingHelper.chatList.put(chatUUID, chatInfo);
@@ -325,7 +326,7 @@ public class LoggingInHelper {
                     HashMap<String, String> members = MessagingHelper.chatMembers.get(chatUUID); //The key is the user's ID and the value is their name in the chat.
                     members.put(dataSnapshot.getKey(), dataSnapshot.getValue(String.class)); //Puts info into the chat members map
                 }
-                ChatsFragment.chatListAdapter.notifyDataSetChanged(); //Notifies the chat list adapter that new members to the chat has been put in
+                chatListAdapter.notifyDataSetChanged(); //Notifies the chat list adapter that new members to the chat has been put in
 
 
             }
@@ -341,7 +342,7 @@ public class LoggingInHelper {
                     members.remove(dataSnapshot.getKey()); //Removes current, client side value
                     members.put(dataSnapshot.getKey(), dataSnapshot.getValue(String.class)); //Puts new info into the chat members map
                 }
-                ChatsFragment.chatListAdapter.notifyDataSetChanged(); //Notifies the chat list adapter that members in the chat has been changed
+                chatListAdapter.notifyDataSetChanged(); //Notifies the chat list adapter that members in the chat has been changed
 
 
             }
@@ -352,7 +353,7 @@ public class LoggingInHelper {
                     HashMap<String, String> members = MessagingHelper.chatMembers.get(chatUUID); //Gets the client side map
                     members.remove(dataSnapshot.getKey()); //Removes the chat user from the client side map
                 }
-                ChatsFragment.chatListAdapter.notifyDataSetChanged(); //Notifies the chat list adapter that members in the chat has been removed
+                chatListAdapter.notifyDataSetChanged(); //Notifies the chat list adapter that members in the chat has been removed
 
 
             }

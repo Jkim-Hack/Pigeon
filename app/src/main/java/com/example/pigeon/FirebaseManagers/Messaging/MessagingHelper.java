@@ -169,7 +169,7 @@ public class MessagingHelper {
                     HashMap<String, String> members = MessagingHelper.chatMembers.get(chatUUID); //Create a new hash map
                     members.put(dataSnapshot.getKey(), dataSnapshot.getValue(String.class)); //Add values into map
                 }
-                ChatsFragment.chatListAdapter.notifyDataSetChanged(); //Notify the chatListAdapter specified in the MainMenuActivity that an item has changed
+                MainMenuActivity.chatListAdapter.notifyDataSetChanged(); //Notify the chatListAdapter specified in the MainMenuActivity that an item has changed
                 Intent intent = new Intent(context, MessagingRoomActivity.class); //Create a new intent
                 context.startActivity(intent); //Start the activity
 

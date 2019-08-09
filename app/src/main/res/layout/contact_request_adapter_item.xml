@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android" android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+
+    <RelativeLayout
+        android:id="@+id/requestRelativeLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <ImageView
+            android:id="@+id/requestContactImage"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@mipmap/group541"/>
+
+        <LinearLayout
+            android:id="@+id/requestTextFields"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="5dp"
+            android:layout_toStartOf="@+id/requestAcceptButton"
+            android:layout_toEndOf="@+id/requestContactImage"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/requestTextName"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentTop="true"
+                android:text="name" />
+
+            <TextView
+                android:id="@+id/requestTextTime"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentBottom="true"
+                android:text="10:42pm" />
+        </LinearLayout>
+
+
+        <Button
+            android:id="@+id/requestAcceptButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="1dp"
+            android:layout_toStartOf="@+id/requestIgnoreButton"
+            android:text="Accept" />
+
+        <Button
+            android:id="@+id/requestIgnoreButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentEnd="true"
+            android:layout_marginEnd="0dp"
+            android:text="Ignore" />
+    </RelativeLayout>
+
+
+</RelativeLayout>

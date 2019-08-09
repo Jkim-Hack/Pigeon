@@ -1,5 +1,6 @@
-package com.example.pigeon.Activities.Fragments;
+package com.example.pigeon.Activities.Fragments.Contacts;
 
+import android.content.res.Configuration;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -10,20 +11,22 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ListView;
 
-import com.example.pigeon.Activities.Adapters.ContactsListAdapter;
+import com.example.pigeon.Activities.Adapters.Contacts.ContactsListAdapter;
 import com.example.pigeon.R;
 import com.example.pigeon.common.ContactInfo;
 
-public class ContactsFragment extends Fragment {
+import static com.example.pigeon.Activities.MainMenuActivity.contactsListAdapter;
 
-    public static ContactsListAdapter contactsListAdapter;
+public class ContactsAllFragment extends Fragment {
 
-    public static ContactsFragment contactsFragmentBuilder(int position) {
+    private ListView contactsList;
+
+    public static ContactsAllFragment newInstance(int position) {
         Bundle args = new Bundle();
         args.putInt("ARG_PAGE", position);
-        ContactsFragment contactsFragment = new ContactsFragment();
-        contactsFragment.setArguments(args);
-        return contactsFragment;
+        ContactsAllFragment fragment = new ContactsAllFragment();
+        fragment.setArguments(args);
+        return fragment;
     }
 
     @Override
@@ -34,10 +37,10 @@ public class ContactsFragment extends Fragment {
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.contacts_fragment_content, container, false);
+        View view = inflater.inflate(R.layout.contact_all_fragment, container, false);
 
-        final ListView contactsList = view.findViewById(R.id.contactsList);
-        contactsListAdapter = new ContactsListAdapter(view.getContext(), R.layout.contact_user);
+        contactsList = view.findViewById(R.id.contactsList);
+        System.out.println(contactsListAdapter.getItem(0) + "---------------------------");
         contactsList.setAdapter(contactsListAdapter);
 
         contactsList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -51,7 +54,4 @@ public class ContactsFragment extends Fragment {
 
         return view;
     }
-
-
-
 }

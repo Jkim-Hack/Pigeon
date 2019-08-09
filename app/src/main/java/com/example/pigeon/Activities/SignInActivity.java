@@ -8,7 +8,7 @@ import android.os.Bundle;
 import android.view.Window;
 import android.view.WindowManager;
 
-import com.example.pigeon.Activities.Fragments.SignInFragmentPagerAdapter;
+import com.example.pigeon.Activities.Fragments.Login.SignInFragmentPagerAdapter;
 import com.example.pigeon.FirebaseManagers.FirebaseHelper;
 import com.example.pigeon.R;
 

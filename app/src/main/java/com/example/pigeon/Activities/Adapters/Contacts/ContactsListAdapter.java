@@ -1,6 +1,5 @@
-package com.example.pigeon.Activities.Adapters;
+package com.example.pigeon.Activities.Adapters.Contacts;
 
-import android.app.Activity;
 import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -15,15 +14,17 @@ import com.example.pigeon.FirebaseManagers.Messaging.MessagingHelper;
 import com.example.pigeon.R;
 import com.example.pigeon.common.ContactInfo;
 
-import org.jetbrains.annotations.NotNull;
-
 import java.util.ArrayList;
 import java.util.List;
 
 
 public class ContactsListAdapter extends ArrayAdapter<ContactInfo> {
 
-    public ContactsListAdapter(@NotNull Context context, int resource) {
+    public ContactsListAdapter(Context context, int resource, List<ContactInfo> contactInfoList){
+        super(context,resource ,contactInfoList);
+    }
+
+    public ContactsListAdapter(Context context, int resource) {
         super(context, resource);
     }
 
@@ -40,6 +41,8 @@ public class ContactsListAdapter extends ArrayAdapter<ContactInfo> {
         Button toMessages = convertView.findViewById(R.id.messageButton);
 
         final Context context = convertView.getContext();
+
+        System.out.println(item + "OOOOOOOOOO");
 
         contactName.setText(item.getName());
         final String chatID = item.getChatID();
@@ -59,5 +62,10 @@ public class ContactsListAdapter extends ArrayAdapter<ContactInfo> {
 
 
         return convertView;
+    }
+
+    @Override
+    public int getCount() {
+        return super.getCount();
     }
 }

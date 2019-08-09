@@ -22,9 +22,10 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 
+import static com.example.pigeon.Activities.MainMenuActivity.chatListAdapter;
+
 public class ChatsFragment extends Fragment {
 
-    public static ChatListAdapter chatListAdapter; //Chat list adapter is what fills out the info in the ListView of chats
 
     public static ChatsFragment chatsFragmentBuilder(int position) {
         Bundle args = new Bundle();
@@ -46,9 +47,6 @@ public class ChatsFragment extends Fragment {
 
         //Creates the new ListView object and adapter object
         final ListView chatList = view.findViewById(R.id.chatList);
-        chatListAdapter = new ChatListAdapter(view.getContext(), R.layout.chat_menu_item);
-        MessagingHelper.LoadAllChatRooms(chatListAdapter); //Loads all chat rooms
-
         chatList.setAdapter(chatListAdapter); //Add the adapter to the list view
 
         //Loads the chat selected

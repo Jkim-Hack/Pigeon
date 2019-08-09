@@ -3,18 +3,6 @@
     xmlns:android="http://schemas.android.com/apk/res/android" android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <ListView
-        android:id="@+id/contactsList"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_above="@+id/navigationView"
-        android:layout_below="@+id/topbarContacts"
-        android:layout_marginBottom="0dp"
-        android:layout_alignParentBottom="true"
-        android:divider="@null"
-        android:dividerHeight="15dp"></ListView>
-
-
     <RelativeLayout
         android:id="@+id/topbarContacts"
         android:layout_width="match_parent"
@@ -33,11 +21,25 @@
             android:layout_margin="5dp"/>
 
         <Button
-            android:id="@+id/newContact"
+            android:id="@+id/newContactButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerVertical="true"
             android:layout_alignParentRight="true"
             android:text="Make a new Contact " />
     </RelativeLayout>
+
+    <android.support.v4.view.ViewPager
+        android:id="@+id/contactsFragmentViewPager"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/topbarContacts"
+        android:layout_marginTop="0dp">
+        <android.support.design.widget.TabLayout
+            android:id="@+id/contactsTabLayout"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"></android.support.design.widget.TabLayout>
+    </android.support.v4.view.ViewPager>
+
+
 </RelativeLayout>

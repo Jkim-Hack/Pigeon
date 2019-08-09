@@ -1,13 +1,11 @@
 package com.example.pigeon.FirebaseManagers.Accounts;
 
-import android.content.ContentValues;
-import android.content.Context;
-import android.nfc.Tag;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.util.Log;
 
-import com.example.pigeon.Activities.Fragments.ContactsFragment;
+import com.example.pigeon.Activities.Adapters.Contacts.ContactRequestsAdapter;
+import com.example.pigeon.Activities.Fragments.Contacts.ContactsFragment;
 import com.example.pigeon.Activities.MainActivity;
 import com.example.pigeon.FirebaseManagers.FirebaseHelper;
 import com.example.pigeon.FirebaseManagers.LoggerHelper;
@@ -25,6 +23,9 @@ import java.util.HashMap;
 import java.util.List;
 
 import static android.content.ContentValues.TAG;
+import static com.example.pigeon.Activities.MainMenuActivity.contactRequestsAdapter;
+import static com.example.pigeon.Activities.MainMenuActivity.contactsListAdapter;
+import static com.example.pigeon.Activities.MainMenuActivity.tempContactsList;
 
 
 public class ContactsHelper {
@@ -32,11 +33,17 @@ public class ContactsHelper {
     public static final Integer REQUESTUSER = 3;
     public static final String USER = "user";
     public static final String CONTACTSLIST = "ContactsList";
-    public static List<ContactInfo> contacts;
+    private static final String CONTACTREQUESTS = "ContactRequests";
 
-    public static void createContact(String uid) {
+    public static List<ContactInfo> contacts;
+    public static HashMap<String, ContactInfo> contactRequests;
+
+    public static void requestContact(String uid) {
         if (contacts == null)
             contacts = new ArrayList<>(); //Create new list because the first instance will have a null list
+        if(contactRequests == null)
+            contactRequests = new HashMap<>();
+
         final String userID = uid;
         long time = System.currentTimeMillis();
 
@@ -61,11 +68,9 @@ public class ContactsHelper {
                     @Override
                     public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
                         if (dataSnapshot.exists()) {
-                            ContactInfo userInfo = (ContactInfo) dataSnapshot.getValue(); //Gets the ContactInfo
+                            ContactInfo userInfo = dataSnapshot.getValue(ContactInfo.class); //Gets the ContactInfo
                             if (dataSnapshot.getKey().equals(key)) { //Identifies the key associated
-                                contacts.add(userInfo); //Adds into the list of contacts client side
-                                ContactsFragment.contactsListAdapter.add(userInfo); //Adds to the adapter list
-                                ContactsFragment.contactsListAdapter.notifyDataSetChanged();
+                                //TODO: ADD NOTIFICATION THAT THE USER ACCEPTED REQUEST
                             }
                         }
                     }
@@ -108,6 +113,8 @@ public class ContactsHelper {
     public static void LoadContacts() {
         if (contacts == null)
             contacts = new ArrayList<>();
+        if(contactRequests == null)
+            contactRequests = new HashMap<>();
 
         final String userID = MainActivity.user.getuID();
 
@@ -117,8 +124,12 @@ public class ContactsHelper {
                 ContactInfo contactInfo = dataSnapshot.getValue(ContactInfo.class);
                 if(!contacts.contains(contactInfo)) {
                     contacts.add(contactInfo);
-                    ContactsFragment.contactsListAdapter.add(contactInfo);
-                    ContactsFragment.contactsListAdapter.notifyDataSetChanged();
+                    if(contactsListAdapter == null){
+                        tempContactsList.add(contactInfo);
+                    } else {
+                        contactsListAdapter.add(contactInfo);
+                        contactsListAdapter.notifyDataSetChanged();
+                    }
                 }
             }
 
@@ -130,11 +141,11 @@ public class ContactsHelper {
                     if(contacts.get(i).getUserID().equals(uid)){
                         ContactInfo currInfo = contacts.get(i);
                         contacts.remove(i);
-                        ContactsFragment.contactsListAdapter.remove(currInfo);
+                        contactsListAdapter.remove(currInfo);
 
                         contacts.add(i, contactInfo);
-                        ContactsFragment.contactsListAdapter.add(contactInfo);
-                        ContactsFragment.contactsListAdapter.notifyDataSetChanged();
+                        contactsListAdapter.add(contactInfo);
+                        contactsListAdapter.notifyDataSetChanged();
                     }
                 }
             }
@@ -143,8 +154,8 @@ public class ContactsHelper {
             public void onChildRemoved(@NonNull DataSnapshot dataSnapshot) {
                 ContactInfo contactInfo = dataSnapshot.getValue(ContactInfo.class);
                 contacts.remove(contactInfo);
-                ContactsFragment.contactsListAdapter.remove(contactInfo);
-                ContactsFragment.contactsListAdapter.notifyDataSetChanged();
+                contactsListAdapter.remove(contactInfo);
+                contactsListAdapter.notifyDataSetChanged();
             }
 
             @Override
@@ -159,6 +170,47 @@ public class ContactsHelper {
             }
         });
 
+        FirebaseHelper.mainDB.getReference().child(CONTACTREQUESTS).child(MainActivity.user.getuID()).addChildEventListener(new ChildEventListener() {
+            @Override
+            public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+                contactRequests.put(dataSnapshot.getKey(), dataSnapshot.getValue(ContactInfo.class));
+            }
+
+            @Override
+            public void onChildChanged(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+                contactRequests.replace(dataSnapshot.getKey(), dataSnapshot.getValue(ContactInfo.class));
+                contactRequestsAdapter.replace(dataSnapshot.getKey(), dataSnapshot.getValue(ContactInfo.class));
+            }
+
+            @Override
+            public void onChildRemoved(@NonNull DataSnapshot dataSnapshot) {
+
+            }
+
+            @Override
+            public void onChildMoved(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+                Log.e(TAG, databaseError.getDetails()); //System log
+                LoggerHelper.sendLog(new LogEntry(databaseError.getDetails(), MainActivity.user.getClientNum())); //Sends details to server
+            }
+        });
+    }
+
+    public static void acceptContact(ContactInfo contactInfo, String key) {
+        FirebaseHelper.mainDB.getReference().child(CONTACTSLIST).child(MainActivity.user.getuID()).child(key).setValue(contactInfo);
+        FirebaseHelper.mainDB.getReference().child(CONTACTREQUESTS).child(MainActivity.user.getuID()).child(key).removeValue();
+        contactRequestsAdapter.remove(key);
+        contactsListAdapter.notifyDataSetChanged();
+    }
+
+    public static void ignoreContact(ContactInfo contactInfo, String key) {
+        contactRequestsAdapter.remove(key);
+        FirebaseHelper.mainDB.getReference().child(CONTACTREQUESTS).child(MainActivity.user.getuID()).child(key).removeValue();
+        FirebaseHelper.mainDB.getReference().child(CONTACTREQUESTS).child(key).removeValue();
     }
 
 }
