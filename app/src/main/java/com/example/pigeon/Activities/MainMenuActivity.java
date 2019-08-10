@@ -45,10 +45,10 @@ public class MainMenuActivity extends AppCompatActivity {
         chatListAdapter = new ChatListAdapter(getApplicationContext(), R.layout.chat_menu_item);
         MessagingHelper.LoadAllChatRooms(chatListAdapter); //Loads all chat rooms
 
-        contactsListAdapter = new ContactsListAdapter(getApplicationContext(), R.layout.contact_user);
+        contactsListAdapter = new ContactsListAdapter(getApplicationContext());
         contactRequestsAdapter = new ContactRequestsAdapter(getApplicationContext());
 
-        contactsListAdapter.addAll(ContactsHelper.contacts);
+        contactsListAdapter.putAll(ContactsHelper.contacts);
         Iterator<Map.Entry<String, ContactInfo>> iterator = ContactsHelper.contactRequests.entrySet().iterator();
         while (iterator.hasNext()) {
             Map.Entry<String, ContactInfo> entry = iterator.next();

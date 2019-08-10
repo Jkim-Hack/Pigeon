@@ -35,12 +35,12 @@ public class ContactsHelper {
     public static final String CONTACTSLIST = "ContactsList";
     private static final String CONTACTREQUESTS = "ContactRequests";
 
-    public static List<ContactInfo> contacts;
+    public static HashMap<String, ContactInfo> contacts;
     public static HashMap<String, ContactInfo> contactRequests;
 
     public static void requestContact(String uid) {
         if (contacts == null)
-            contacts = new ArrayList<>(); //Create new list because the first instance will have a null list
+            contacts = new HashMap<>(); //Create new list because the first instance will have a null list
         if(contactRequests == null)
             contactRequests = new HashMap<>();
 
@@ -112,7 +112,7 @@ public class ContactsHelper {
 
     public static void LoadContacts() {
         if (contacts == null)
-            contacts = new ArrayList<>();
+            contacts = new HashMap<>();
         if(contactRequests == null)
             contactRequests = new HashMap<>();
 
@@ -122,13 +122,13 @@ public class ContactsHelper {
             @Override
             public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
                 ContactInfo contactInfo = dataSnapshot.getValue(ContactInfo.class);
-                if(!contacts.contains(contactInfo)) {
-                    contacts.add(contactInfo);
+                String key = dataSnapshot.getKey();
+                if(!contacts.keySet().contains(key)) {
+                    contacts.put(key,contactInfo);
                     if(contactsListAdapter == null){
                         tempContactsList.add(contactInfo);
                     } else {
-                        contactsListAdapter.add(contactInfo);
-                        contactsListAdapter.notifyDataSetChanged();
+                        contactsListAdapter.put(key, contactInfo);
                     }
                 }
             }
@@ -136,26 +136,19 @@ public class ContactsHelper {
             @Override
             public void onChildChanged(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
                 ContactInfo contactInfo = dataSnapshot.getValue(ContactInfo.class);
-                String uid = contactInfo.getUserID();
-                for(int i = 0; i < contacts.size(); i++){
-                    if(contacts.get(i).getUserID().equals(uid)){
-                        ContactInfo currInfo = contacts.get(i);
-                        contacts.remove(i);
-                        contactsListAdapter.remove(currInfo);
-
-                        contacts.add(i, contactInfo);
-                        contactsListAdapter.add(contactInfo);
-                        contactsListAdapter.notifyDataSetChanged();
-                    }
+                contacts.replace(dataSnapshot.getKey(), contactInfo);
+                if(contactsListAdapter != null){
+                    contactsListAdapter.put(dataSnapshot.getKey(), contactInfo);
                 }
+
             }
 
             @Override
             public void onChildRemoved(@NonNull DataSnapshot dataSnapshot) {
-                ContactInfo contactInfo = dataSnapshot.getValue(ContactInfo.class);
-                contacts.remove(contactInfo);
-                contactsListAdapter.remove(contactInfo);
-                contactsListAdapter.notifyDataSetChanged();
+                contacts.remove(dataSnapshot.getKey());
+                if(contactsListAdapter != null){
+                    contactsListAdapter.remove(dataSnapshot.getKey());
+                }
             }
 
             @Override
@@ -211,6 +204,10 @@ public class ContactsHelper {
         contactRequestsAdapter.remove(key);
         FirebaseHelper.mainDB.getReference().child(CONTACTREQUESTS).child(MainActivity.user.getuID()).child(key).removeValue();
         FirebaseHelper.mainDB.getReference().child(CONTACTREQUESTS).child(key).removeValue();
+    }
+
+    public static void deleteContact(String key){
+        FirebaseHelper.mainDB.getReference().child(CONTACTSLIST).child(MainActivity.user.getuID()).child(key).removeValue();
     }
 
 }

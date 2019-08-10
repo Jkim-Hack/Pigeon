@@ -11,7 +11,6 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ListView;
 
-import com.example.pigeon.Activities.Adapters.Contacts.ContactsListAdapter;
 import com.example.pigeon.R;
 import com.example.pigeon.common.ContactInfo;
 
@@ -39,8 +38,9 @@ public class ContactsAllFragment extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.contact_all_fragment, container, false);
 
+
         contactsList = view.findViewById(R.id.contactsList);
-        System.out.println(contactsListAdapter.getItem(0) + "---------------------------");
+        //System.out.println(contactsListAdapter.getItem(0) + "---------------------------");
         contactsList.setAdapter(contactsListAdapter);
 
         contactsList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
