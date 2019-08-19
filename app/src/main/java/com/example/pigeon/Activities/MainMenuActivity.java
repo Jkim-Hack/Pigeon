@@ -1,6 +1,8 @@
 package com.example.pigeon.Activities;
 
-import android.app.Activity;
+import android.app.ActivityManager;
+import android.content.Context;
+import android.content.Intent;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
 import android.support.v4.app.Fragment;
@@ -13,12 +15,14 @@ import com.example.pigeon.Activities.Adapters.ChatListAdapter;
 import com.example.pigeon.Activities.Adapters.Contacts.ContactRequestsAdapter;
 import com.example.pigeon.Activities.Adapters.Contacts.ContactsListAdapter;
 import com.example.pigeon.Activities.Fragments.ChatsFragment;
-import com.example.pigeon.Activities.Fragments.Contacts.ContactsAllFragment;
 import com.example.pigeon.Activities.Fragments.Contacts.ContactsFragment;
 import com.example.pigeon.FirebaseManagers.Accounts.ContactsHelper;
 import com.example.pigeon.FirebaseManagers.Messaging.MessagingHelper;
+import com.example.pigeon.Services.ChatNotificationService;
 import com.example.pigeon.R;
-import com.example.pigeon.common.ContactInfo;
+import com.example.pigeon.Services.ContactsNotificationService;
+import com.example.pigeon.common.UserInfo.ContactInfo;
+import com.example.pigeon.common.NotificationHelper;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -26,11 +30,6 @@ import java.util.List;
 import java.util.Map;
 
 public class MainMenuActivity extends AppCompatActivity {
-
-
-    private Activity getActivity() {
-        return this;
-    }
 
     public static ChatListAdapter chatListAdapter; //Chat list adapter is what fills out the info in the ListView of chats
 
@@ -41,12 +40,24 @@ public class MainMenuActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        if(MainActivity.user == null){
+            Intent intent = new Intent(this, StartingActivity.class);
+            this.startActivity(intent);
+        }
+
         setContentView(R.layout.activity_main_menu);
-        chatListAdapter = new ChatListAdapter(getApplicationContext(), R.layout.chat_menu_item);
+        try {
+            System.out.println(MainActivity.user.getName());
+        } catch (NullPointerException e){
+            System.out.println("DD");
+        }
+        NotificationHelper.createNotificationChannel(this,   "PIGEON "+ "CHANNEL");
+        chatListAdapter = new ChatListAdapter(this, R.layout.chat_menu_item);
         MessagingHelper.LoadAllChatRooms(chatListAdapter); //Loads all chat rooms
 
-        contactsListAdapter = new ContactsListAdapter(getApplicationContext());
-        contactRequestsAdapter = new ContactRequestsAdapter(getApplicationContext());
+        contactsListAdapter = new ContactsListAdapter(this);
+        contactRequestsAdapter = new ContactRequestsAdapter(this);
 
         contactsListAdapter.putAll(ContactsHelper.contacts);
         Iterator<Map.Entry<String, ContactInfo>> iterator = ContactsHelper.contactRequests.entrySet().iterator();
@@ -83,4 +94,5 @@ public class MainMenuActivity extends AppCompatActivity {
 
         bottomNavigationView.setSelectedItemId(R.id.chatsNav);
     }
+
 }

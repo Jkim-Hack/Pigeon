@@ -4,12 +4,10 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.util.Log;
 
-import com.example.pigeon.Activities.Adapters.Contacts.ContactRequestsAdapter;
-import com.example.pigeon.Activities.Fragments.Contacts.ContactsFragment;
 import com.example.pigeon.Activities.MainActivity;
 import com.example.pigeon.FirebaseManagers.FirebaseHelper;
 import com.example.pigeon.FirebaseManagers.LoggerHelper;
-import com.example.pigeon.common.ContactInfo;
+import com.example.pigeon.common.UserInfo.ContactInfo;
 import com.example.pigeon.common.LogEntry;
 import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
@@ -18,9 +16,7 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 
 import static android.content.ContentValues.TAG;
 import static com.example.pigeon.Activities.MainMenuActivity.contactRequestsAdapter;
@@ -33,7 +29,7 @@ public class ContactsHelper {
     public static final Integer REQUESTUSER = 3;
     public static final String USER = "user";
     public static final String CONTACTSLIST = "ContactsList";
-    private static final String CONTACTREQUESTS = "ContactRequests";
+    public static final String CONTACTREQUESTS = "ContactRequests";
 
     public static HashMap<String, ContactInfo> contacts;
     public static HashMap<String, ContactInfo> contactRequests;
@@ -167,6 +163,9 @@ public class ContactsHelper {
             @Override
             public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
                 contactRequests.put(dataSnapshot.getKey(), dataSnapshot.getValue(ContactInfo.class));
+                if(contactRequestsAdapter != null){
+                    contactRequestsAdapter.add(dataSnapshot.getKey(), dataSnapshot.getValue(ContactInfo.class));
+                }
             }
 
             @Override

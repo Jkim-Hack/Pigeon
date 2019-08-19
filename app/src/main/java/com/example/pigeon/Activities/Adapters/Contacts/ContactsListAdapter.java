@@ -4,7 +4,6 @@ import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
 import android.widget.BaseAdapter;
 import android.widget.Button;
 import android.widget.ImageView;
@@ -14,7 +13,7 @@ import com.example.pigeon.Activities.MainActivity;
 import com.example.pigeon.FirebaseManagers.Accounts.ContactsHelper;
 import com.example.pigeon.FirebaseManagers.Messaging.MessagingHelper;
 import com.example.pigeon.R;
-import com.example.pigeon.common.ContactInfo;
+import com.example.pigeon.common.UserInfo.ContactInfo;
 
 import java.util.ArrayList;
 import java.util.HashMap;

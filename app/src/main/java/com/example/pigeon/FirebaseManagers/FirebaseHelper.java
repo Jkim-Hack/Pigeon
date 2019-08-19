@@ -11,6 +11,7 @@ public class FirebaseHelper {
     public static FirebaseDatabase mainDB;
     public static FirebaseDatabase messagingDB;
     public static FirebaseDatabase logDB;
+    public static  FirebaseDatabase notifsDB;
     public static FirebaseAuth mainAuth;
     public static FirebaseStorage mainStorage;
 
@@ -41,6 +42,7 @@ public class FirebaseHelper {
         mainDB = FirebaseDatabase.getInstance("https://pigeon-engine.firebaseio.com/");
         messagingDB = FirebaseDatabase.getInstance("https://pigeon-engine-messaging.firebaseio.com/");
         logDB = FirebaseDatabase.getInstance("https://pigeon-engine-95cbe.firebaseio.com/");
+        notifsDB = FirebaseDatabase.getInstance("https://pigeon-engine-notifs.firebaseio.com/");
         mainStorage = FirebaseStorage.getInstance();
     }
 

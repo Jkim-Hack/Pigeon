@@ -5,28 +5,27 @@ import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.v4.app.NotificationManagerCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.view.KeyEvent;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
-import android.view.ViewTreeObserver;
 import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
-import android.widget.AbsListView;
 import android.widget.AdapterView;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.ListView;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
-import android.widget.Toolbar;
 
+import com.example.pigeon.FirebaseManagers.FirebaseHelper;
 import com.example.pigeon.FirebaseManagers.Messaging.MessagingHelper;
 import com.example.pigeon.R;
+import com.example.pigeon.common.UserInfo.ContactInfo;
+import com.example.pigeon.common.NotificationHelper;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
@@ -70,20 +69,29 @@ public class MessagingRoomActivity extends AppCompatActivity {
         sendButton = findViewById(R.id.sendButton);
         messageList = findViewById(R.id.messageList);
 
+        NotificationManagerCompat notificationManager = NotificationManagerCompat.from(this);
+        ArrayList<Integer> idList = NotificationHelper.chatNotificationIDs.get(currentChatID);
+        if(idList != null){
+            for(Integer i : idList){
+                notificationManager.cancel(i);
+            }
+            idList.clear();
+            FirebaseHelper.notifsDB.getReference().child(MainActivity.user.getuID()).child(currentChatID).removeValue();
+        }
+
         //toolbar = findViewById(R.id.topbar);
+        HashMap<String, ContactInfo> membersMap = MessagingHelper.chatMembers.get(currentChatID);
+        Set<Map.Entry<String,ContactInfo>> members = membersMap.entrySet();
 
-        HashMap<String, String> membersMap = MessagingHelper.chatMembers.get(currentChatID);
-        Set<Map.Entry<String,String>> members = membersMap.entrySet();
-
-        Iterator<Map.Entry<String, String>> membersIterators = members.iterator();
+        Iterator<Map.Entry<String, ContactInfo>> membersIterators = members.iterator();
         StringBuilder sb = new StringBuilder();
         while (membersIterators.hasNext()){
-            Map.Entry<String, String> member = membersIterators.next();
+            Map.Entry<String, ContactInfo> member = membersIterators.next();
             if(!member.getKey().equals(MainActivity.user.getuID())){
                 if(members.size() > 2){
-                    sb.append(member.getValue());
+                    sb.append(member.getValue().getName());
                 } else {
-                    sb.append(member.getValue() + ", ");
+                    sb.append(member.getValue().getName() + ", ");
                 }
             }
         }
@@ -115,6 +123,7 @@ public class MessagingRoomActivity extends AppCompatActivity {
                     String message = messageInput.getText().toString();
                     messageInput.setText("");
                     MessagingHelper.sendTextMessage(message);
+
                 }
             }
         });
@@ -132,6 +141,7 @@ public class MessagingRoomActivity extends AppCompatActivity {
                     inputMethodManager.showSoftInput(v, 0);
                     messageInput.setWidth((int) (messageInput.getWidth() * 1.25));
                     isClicked = true;
+                    sendButton.setBackgroundTintList(v.getContext().getResources().getColorStateList(R.color.deselected));
                 }
                 return false;
             }
@@ -211,6 +221,7 @@ public class MessagingRoomActivity extends AppCompatActivity {
     public static void setTitle(String chatTitle1) {
         chatTitle = chatTitle1;
     }
+
 
 
 }

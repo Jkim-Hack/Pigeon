@@ -4,11 +4,19 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.NotificationManagerCompat;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ListView;
+
+import com.example.pigeon.Activities.MainActivity;
+import com.example.pigeon.FirebaseManagers.Accounts.ContactsHelper;
+import com.example.pigeon.FirebaseManagers.FirebaseHelper;
 import com.example.pigeon.R;
+import com.example.pigeon.common.NotificationHelper;
+
+import java.util.List;
 
 import static com.example.pigeon.Activities.MainMenuActivity.contactRequestsAdapter;
 
@@ -24,6 +32,16 @@ public class ContactRequestsFragment extends Fragment {
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
+        List<Integer> list = NotificationHelper.contactRequestNotifIds;
+        NotificationManagerCompat notificationManager = NotificationManagerCompat.from(this.getActivity());
+        if(list != null){
+            for(Integer i : list){
+                notificationManager.cancel(i);
+            }
+            list.clear();
+            FirebaseHelper.notifsDB.getReference().child(MainActivity.user.getuID()).child(ContactsHelper.CONTACTREQUESTS).removeValue();
+        }
+
         super.onCreate(savedInstanceState);
     }
 

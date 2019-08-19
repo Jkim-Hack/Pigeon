@@ -10,13 +10,13 @@ import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 
 import com.example.pigeon.Activities.Adapters.MessageListAdapter;
-import com.example.pigeon.Activities.Fragments.ChatsFragment;
 import com.example.pigeon.Activities.MainMenuActivity;
 import com.example.pigeon.Activities.MessagingRoomActivity;
 import com.example.pigeon.FirebaseManagers.FirebaseHelper;
 import com.example.pigeon.Activities.MainActivity;
 import com.example.pigeon.FirebaseManagers.ImageHandler;
 import com.example.pigeon.FirebaseManagers.LoggerHelper;
+import com.example.pigeon.common.UserInfo.ContactInfo;
 import com.example.pigeon.common.LogEntry;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
@@ -44,6 +44,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 import static android.content.ContentValues.TAG;
+import static com.example.pigeon.Activities.MainMenuActivity.chatListAdapter;
 
 public class MessagingHelper {
 
@@ -55,7 +56,7 @@ public class MessagingHelper {
     public static HashMap<String, MessageList<MessagingInstance>> chatrooms = new HashMap(); //Current chat room's message list
     public static HashMap<String, MessageListAdapter> adapters = new HashMap<>();
     public static String currentChatID; //Current chat room's ID
-    public static HashMap<String, HashMap<String, String>> chatMembers = new HashMap<>(); //The chat members per chat. key1 = chatID, key2 = userId, value2 = name
+    public static HashMap<String, HashMap<String, ContactInfo>> chatMembers = new HashMap<>(); //The chat members per chat. key1 = chatID, key2 = userId, value2 = name
     public static HashMap<String, ChatInfo> tempChatList = new HashMap(); //Temporary container for new chats
 
 
@@ -109,6 +110,7 @@ public class MessagingHelper {
                             if (dataSnapshot.getKey().equals(key)) { //Checks if the uid is matching with the one associated with the key
                                 currentChatID = uid; //Switch to the current chatID
                                 getChatMembersInit(currentChatID, context); //Gets the chat members and switches activities
+                                updateChatInfo(uid);
                                 FirebaseHelper.mainDB.getReference().child(MainActivity.user.getuID()).child(FirebaseHelper.CHATLIST).removeEventListener(this); //Finally removes this listener
 
                             }
@@ -146,6 +148,74 @@ public class MessagingHelper {
                 LoggerHelper.sendLog(new LogEntry(databaseError.getDetails(), MainActivity.user.getClientNum())); //Sends details to server
             }
         });
+
+
+
+    }
+
+    //TODO: CREATE A MORE EFFICIENT METHOD OF REPLACING
+    //TODO: Make comments
+    private static void updateChatInfo(String chatID){
+        final String chatUUID = chatID;
+        FirebaseHelper.messagingDB.getReference().child("Chats").child(chatID).addChildEventListener(new ChildEventListener() {
+            @Override
+            public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+
+            }
+
+            @Override
+            public void onChildChanged(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+                String key = dataSnapshot.getKey();
+                String changed = dataSnapshot.getValue(String.class);
+                ChatInfo chatInfo = null;
+                if (chatListAdapter != null) {
+                    //Puts data into a map
+                    for(int i = 0; i < chatListAdapter.getCount(); i++){
+                        if(chatListAdapter.getItem(i).get(chatUUID) != null){
+                            chatInfo = new ChatInfo(chatListAdapter.getItem(i).get(chatUUID));
+                            switch (key) {
+                                case "previousMessage":
+                                    chatInfo.previousMessage = changed;
+                                    break;
+                                case "title":
+                                    chatInfo.title = changed;
+                                    break;
+                            }
+                            chatListAdapter.remove(chatListAdapter.getItem(i));
+
+                            HashMap<String, ChatInfo> map = new HashMap<>();
+                            map.put(chatUUID, chatInfo);
+                            chatListAdapter.add(map);
+                        }
+                    }
+                    if(chatInfo != null){
+                        //Adds chat info into chat list
+                        MessagingHelper.chatList.replace(chatUUID, chatInfo);
+                        chatListAdapter.notifyDataSetChanged();
+                    }
+                } else {
+                    if(chatInfo != null) {
+                        //Adds to the temporary chat list
+                        MessagingHelper.tempChatList.put(chatUUID, chatInfo);
+                    }
+                }
+            }
+
+            @Override
+            public void onChildRemoved(@NonNull DataSnapshot dataSnapshot) {
+
+            }
+
+            @Override
+            public void onChildMoved(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
     }
 
     /*
@@ -162,12 +232,12 @@ public class MessagingHelper {
             @Override
             public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
                 if (MessagingHelper.chatMembers.get(chatUUID) == null || MessagingHelper.chatMembers.get(chatUUID).isEmpty()) { //Checks if this value is null/empty
-                    HashMap<String, String> member = new HashMap<>(); //Create a new hash map
-                    member.put(dataSnapshot.getKey(), dataSnapshot.getValue(String.class)); //Add values into map
+                    HashMap<String, ContactInfo> member = new HashMap<>(); //Create a new hash map
+                    member.put(dataSnapshot.getKey(), dataSnapshot.getValue(ContactInfo.class)); //Add values into map
                     MessagingHelper.chatMembers.put(chatUUID, member);
                 } else {
-                    HashMap<String, String> members = MessagingHelper.chatMembers.get(chatUUID); //Create a new hash map
-                    members.put(dataSnapshot.getKey(), dataSnapshot.getValue(String.class)); //Add values into map
+                    HashMap<String, ContactInfo> members = MessagingHelper.chatMembers.get(chatUUID); //Create a new hash map
+                    members.put(dataSnapshot.getKey(), dataSnapshot.getValue(ContactInfo.class)); //Add values into map
                 }
                 MainMenuActivity.chatListAdapter.notifyDataSetChanged(); //Notify the chatListAdapter specified in the MainMenuActivity that an item has changed
                 Intent intent = new Intent(context, MessagingRoomActivity.class); //Create a new intent
@@ -196,7 +266,7 @@ public class MessagingHelper {
     }
 
     //Creates a new listener for messages between users
-    public static void createMessagingListener(String chatID) {
+    public static void createMessagingListener(String chatID, final Context context) {
         final String chatUUID = chatID;
 
         //Adds a child event listener so that every time a new message is added, the onChildAdded method is called.
@@ -205,26 +275,25 @@ public class MessagingHelper {
             public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
                 if (dataSnapshot.exists()) {
                     //Creates a new MessageList and copies all the messages received into the new list.
-                    System.out.println(dataSnapshot.toString());
+
                     HashMap messagingInstanceMap = (HashMap) dataSnapshot.getValue();
                     MessagingInstance messagingInstance = null;
 
                     String type = (String) messagingInstanceMap.get("type"); //Gets the type of message (TEXT, IMAGE)
+                    String message = null;
+                    String uid = null;
+                    Long timestamp = null;
                     switch (type) {
                         case "TEXT":
                             //Gets all info
-                            String message = (String) messagingInstanceMap.get("message");
-                            String uid = (String) messagingInstanceMap.get("userID");
-                            Long timestamp = (Long) messagingInstanceMap.get("sentTimestamp");
+                            message = (String) messagingInstanceMap.get("message");
+                            uid = (String) messagingInstanceMap.get("userID");
+                            timestamp = (Long) messagingInstanceMap.get("sentTimestamp");
                             messagingInstance = new TextMessage(message, uid, timestamp);
                             updatePreviousMessage(message, chatUUID); //Updates previous message
                             break;
                     }
 
-                    if (!messagingInstance.getUserID().equals(MainActivity.user.getuID())) {
-                        //TODO: Add notification here
-                    }
-                    System.out.println(messagingInstance);
                     chatrooms.get(chatUUID).add(messagingInstance); //Add message to the chatroom
                     adapters.get(chatUUID).add(messagingInstance); //Adds message to the MessageListAdapter
                 } else {
@@ -350,6 +419,28 @@ public class MessagingHelper {
 
     }
 
+    public static void LoadChatRoom(final String chatID) {
+        currentChatID = chatID;
+
+        /* Needed for images
+        String storagePath = "Messaging Rooms/" + currentChatID + "images/messages/";
+        StorageReference reference = FirebaseHelper.mainStorage.getReference().child(storagePath);
+        uploadTasks = reference.getActiveUploadTasks();
+        */
+
+        MessageList messageList = chatrooms.get(currentChatID);
+        System.out.println(messageList + "FFFF");
+        System.out.println(adapters.get(currentChatID) + "RRRR");
+        if (adapters.get(currentChatID).isEmpty()) {
+            adapters.get(currentChatID).addList(messageList);
+        }
+
+        ChatInfo chatInfo = chatList.get(chatID);
+        System.out.println(chatInfo.title);
+        MessagingRoomActivity.setChatInfo(chatInfo);
+
+    }
+
     //Sends a basic text message
     public static void sendTextMessage(String textmessage) {
         MessagingInstance message = MessagingFactory.initializeTextMessagingInstance(textmessage); //Creates a new text message object
@@ -448,6 +539,12 @@ public class MessagingHelper {
             this.previousMessage = previousMessage;
             this.TimeCreated = timeCreated;
             this.title = title;
+        }
+
+        public ChatInfo(ChatInfo info){
+            this.previousMessage = info.previousMessage;
+            this.TimeCreated = info.TimeCreated;
+            this.title = info.title;
         }
 
     }

@@ -1,4 +1,4 @@
-package com.example.pigeon.FirebaseManagers.Accounts;
+package com.example.pigeon.common.UserInfo;
 
 import java.util.HashMap;
 

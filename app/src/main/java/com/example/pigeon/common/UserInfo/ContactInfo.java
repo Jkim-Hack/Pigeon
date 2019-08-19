@@ -1,4 +1,7 @@
-package com.example.pigeon.common;
+package com.example.pigeon.common.UserInfo;
+
+import android.support.v4.app.Person;
+
 
 public class ContactInfo {
 
@@ -57,4 +60,13 @@ public class ContactInfo {
     public void setUserID(String userID) {
         this.userID = userID;
     }
+
+    public Person buildPerson(){
+        Person person = new Person.Builder()
+                .setKey(userID)
+                .setName(name)
+                .build();
+        return person;
+    }
+
 }

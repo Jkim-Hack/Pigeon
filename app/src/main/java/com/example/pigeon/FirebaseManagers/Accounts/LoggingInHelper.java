@@ -1,7 +1,6 @@
 package com.example.pigeon.FirebaseManagers.Accounts;
 
 import android.app.Activity;
-import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
 import android.support.annotation.NonNull;
@@ -12,14 +11,18 @@ import android.widget.Toast;
 
 import com.example.pigeon.Activities.Adapters.MessageListAdapter;
 import com.example.pigeon.Activities.MainMenuActivity;
-import com.example.pigeon.Activities.Fragments.ChatsFragment;
+import com.example.pigeon.Activities.SignInActivity;
 import com.example.pigeon.FirebaseManagers.FirebaseHelper;
 import com.example.pigeon.Activities.MainActivity;
 import com.example.pigeon.FirebaseManagers.LoggerHelper;
 import com.example.pigeon.FirebaseManagers.Messaging.MessageList;
 import com.example.pigeon.FirebaseManagers.Messaging.MessagingHelper;
 import com.example.pigeon.FirebaseManagers.Messaging.MessagingInstance;
+import com.example.pigeon.common.SavedSharedPreferences;
+import com.example.pigeon.common.UserInfo.ContactInfo;
 import com.example.pigeon.common.LogEntry;
+import com.example.pigeon.common.NotificationHelper;
+import com.example.pigeon.common.UserInfo.User;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
@@ -27,7 +30,6 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.HashMap;
@@ -42,7 +44,7 @@ public class LoggingInHelper {
     private static Activity signInActivity;
 
     private static AppCompatActivity currentActivity;
-
+    public static String CHANNEL_ID = "DEFAULT";
 
     //Signs up user
     public static void signUpUser(final String email, final String password, final String name, final Activity activity, AppCompatActivity signUpCompactActivity) {
@@ -56,7 +58,9 @@ public class LoggingInHelper {
                             // Sign in success, update UI with the signed-in user's information
                             Log.d(TAG, "createUserWithEmail:success");
                             FirebaseUser firebaseUser = FirebaseHelper.mainAuth.getCurrentUser();
-                            createNewUser(email, name, firebaseUser.getUid()); //Creates a client side user and also pushes it into then RT Database
+                            CHANNEL_ID = firebaseUser.getUid()+"CHANNEL";
+                            NotificationHelper.createNotificationChannel(activity.getApplicationContext());
+                            createNewUser(email, name, firebaseUser.getUid(), password, activity); //Creates a client side user and also pushes it into then RT Database
                         } else {
                             // If sign in fails, display a message to the user.
                             Log.w(TAG, "createUserWithEmail:failure", task.getException());
@@ -70,7 +74,7 @@ public class LoggingInHelper {
 
 
     //Signs up user with a phone number
-    public static void signUpUser(final String email, final String password, final String name, final long phoneNumber, Activity activity, AppCompatActivity signUpCompactActivity) {
+    public static void signUpUser(final String email, final String password, final String name, final long phoneNumber, final Activity activity, AppCompatActivity signUpCompactActivity) {
         signUpActivity = activity;
         currentActivity = signUpCompactActivity;
         FirebaseHelper.mainAuth.createUserWithEmailAndPassword(email, password)
@@ -81,7 +85,9 @@ public class LoggingInHelper {
                             // Sign in success, update UI with the signed-in user's information
                             Log.d(TAG, "createUserWithEmail:success");
                             FirebaseUser firebaseUser = FirebaseHelper.mainAuth.getCurrentUser();
-                            createNewUser(email, name, firebaseUser.getUid(), phoneNumber);
+                            CHANNEL_ID = firebaseUser.getUid()+"CHANNEL";
+                            NotificationHelper.createNotificationChannel(activity.getApplicationContext());
+                            createNewUser(email, name, firebaseUser.getUid(), phoneNumber, password, activity);
                         } else {
                             // If sign in fails, display a message to the user.
                             Log.w(TAG, "createUserWithEmail:failure", task.getException());
@@ -94,7 +100,8 @@ public class LoggingInHelper {
     }
 
     //Signs in user
-    public static void signInUser(String email, String password, final Activity activity, AppCompatActivity signInCompactActivity) {
+    public static void signInUser(final String email,final String password, final Activity activity, AppCompatActivity signInCompactActivity) {
+        System.out.println(email);
         signInActivity = activity;
         currentActivity = signInCompactActivity;
         FirebaseHelper.mainAuth.signInWithEmailAndPassword(email, password)
@@ -105,10 +112,14 @@ public class LoggingInHelper {
                             // Sign in success, update UI with the signed-in user's information
                             Log.d(TAG, "signInWithEmail:success");
                             FirebaseUser user = FirebaseHelper.mainAuth.getCurrentUser();
-                            createExistingUser(user.getUid()); //Creates a client side user
+                            CHANNEL_ID = user.getUid()+"CHANNEL";
+                            NotificationHelper.createNotificationChannel(activity.getApplicationContext());
+                            createExistingUser(user.getUid(), activity, email, password); //Creates a client side user
                         } else {
                             // If sign in fails, display a message to the user.
                             Log.w(TAG, "signInWithEmail:failed", task.getException());
+                            Intent intent = new Intent(activity, SignInActivity.class);
+                            activity.startActivity(intent);
                             Toast.makeText(signInActivity, "Email or password is incorrect.",
                                     Toast.LENGTH_SHORT).show();
 
@@ -118,7 +129,7 @@ public class LoggingInHelper {
     }
 
     //Creates a new user and sets up the chat listener and messaging listeners.
-    private static void createNewUser(String email, String name, String uID) {
+    private static void createNewUser(final String email, String name, String uID, final String password, final Activity activity) {
         HashMap<String, String> userMap = new HashMap<>();
         userMap.put("email", email);
         userMap.put("name", name);
@@ -151,6 +162,7 @@ public class LoggingInHelper {
                     //Sends log to server
                     LoggerHelper.sendLog(new LogEntry("Client signed up---ID: " + MainActivity.user.getuID(), MainActivity.user.getClientNum()));
 
+                    SavedSharedPreferences.setLogin(activity.getApplicationContext(), email, password);
                     //Remove this ValueEventListener
                     FirebaseHelper.mainDB.getReference().child(MainActivity.user.getuID()).removeEventListener(this);
                 }
@@ -165,7 +177,7 @@ public class LoggingInHelper {
         });
     }
 
-    private static void createNewUser(String email, String name, String uID, Long phonenumber) {
+    private static void createNewUser(final String email, String name, String uID, Long phonenumber, final String password, final Activity activity) {
         HashMap<String, String> userMap = new HashMap<>();
         userMap.put("email", email);
         userMap.put("name", name);
@@ -198,6 +210,8 @@ public class LoggingInHelper {
 
                     //Sends log to server
                     LoggerHelper.sendLog(new LogEntry("Client signed up---ID: " + MainActivity.user.getuID(), MainActivity.user.getClientNum()));
+
+                    SavedSharedPreferences.setLogin(activity.getApplicationContext(), email, password);
 
                     //Remove this ValueEventListener
                     FirebaseHelper.mainDB.getReference().child(MainActivity.user.getuID()).removeEventListener(this);
@@ -239,7 +253,7 @@ public class LoggingInHelper {
 
                     LoggerHelper.sendLog(new LogEntry("Messaging setup complete", MainActivity.user.getClientNum())); //Push a log entry to the servlet
 
-                    MessagingHelper.createMessagingListener(chatUUID); //Adds a new messaging listener for the chat
+                    MessagingHelper.createMessagingListener(chatUUID, context); //Adds a new messaging listener for the chat
                 }
 
             }
@@ -295,6 +309,8 @@ public class LoggingInHelper {
 
                     //Adds chat info into chat list
                     MessagingHelper.chatList.put(chatUUID, chatInfo);
+
+                    chatListAdapter.notifyDataSetChanged();
                 } else {
                     //Adds to the temporary chat list
                     MessagingHelper.tempChatList.put(chatUUID, chatInfo);
@@ -319,12 +335,12 @@ public class LoggingInHelper {
             public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
                 //Adds data into the chat members map
                 if (MessagingHelper.chatMembers.get(chatUUID) == null || MessagingHelper.chatMembers.get(chatUUID).isEmpty()) {
-                    HashMap<String, String> member = new HashMap<>();
-                    member.put(dataSnapshot.getKey(), dataSnapshot.getValue(String.class)); //The key is the user's ID and the value is their name in the chat.
+                    HashMap<String, ContactInfo> member = new HashMap<>();
+                    member.put(dataSnapshot.getKey(), dataSnapshot.getValue(ContactInfo.class)); //The key is the user's ID and the value is their name in the chat.
                     MessagingHelper.chatMembers.put(chatUUID, member); //Puts info into the chat members map
                 } else {
-                    HashMap<String, String> members = MessagingHelper.chatMembers.get(chatUUID); //The key is the user's ID and the value is their name in the chat.
-                    members.put(dataSnapshot.getKey(), dataSnapshot.getValue(String.class)); //Puts info into the chat members map
+                    HashMap<String, ContactInfo> members = MessagingHelper.chatMembers.get(chatUUID); //The key is the user's ID and the value is their name in the chat.
+                    members.put(dataSnapshot.getKey(), dataSnapshot.getValue(ContactInfo.class)); //Puts info into the chat members map
                 }
                 chatListAdapter.notifyDataSetChanged(); //Notifies the chat list adapter that new members to the chat has been put in
 
@@ -334,13 +350,13 @@ public class LoggingInHelper {
             @Override
             public void onChildChanged(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
                 if (MessagingHelper.chatMembers.get(chatUUID) == null || MessagingHelper.chatMembers.get(chatUUID).isEmpty()) {
-                    HashMap<String, String> member = new HashMap<>();
-                    member.put(dataSnapshot.getKey(), dataSnapshot.getValue(String.class)); //The key is the user's ID and the value is their name in the chat.
+                    HashMap<String, ContactInfo> member = new HashMap<>();
+                    member.put(dataSnapshot.getKey(), dataSnapshot.getValue(ContactInfo.class)); //The key is the user's ID and the value is their name in the chat.
                     MessagingHelper.chatMembers.put(chatUUID, member); //Puts info into the chat members map
                 } else {
-                    HashMap<String, String> members = MessagingHelper.chatMembers.get(chatUUID);
+                    HashMap<String, ContactInfo> members = MessagingHelper.chatMembers.get(chatUUID);
                     members.remove(dataSnapshot.getKey()); //Removes current, client side value
-                    members.put(dataSnapshot.getKey(), dataSnapshot.getValue(String.class)); //Puts new info into the chat members map
+                    members.put(dataSnapshot.getKey(), dataSnapshot.getValue(ContactInfo.class)); //Puts new info into the chat members map
                 }
                 chatListAdapter.notifyDataSetChanged(); //Notifies the chat list adapter that members in the chat has been changed
 
@@ -350,7 +366,7 @@ public class LoggingInHelper {
             @Override
             public void onChildRemoved(@NonNull DataSnapshot dataSnapshot) {
                 if (MessagingHelper.chatMembers.get(chatUUID) != null || !MessagingHelper.chatMembers.get(chatUUID).isEmpty()) {
-                    HashMap<String, String> members = MessagingHelper.chatMembers.get(chatUUID); //Gets the client side map
+                    HashMap<String, ContactInfo> members = MessagingHelper.chatMembers.get(chatUUID); //Gets the client side map
                     members.remove(dataSnapshot.getKey()); //Removes the chat user from the client side map
                 }
                 chatListAdapter.notifyDataSetChanged(); //Notifies the chat list adapter that members in the chat has been removed
@@ -373,7 +389,7 @@ public class LoggingInHelper {
 
 
     //Creates a existing user client side
-    private static void createExistingUser(String uID) {
+    private static void createExistingUser(String uID, final Activity activity, final String email, final String password) {
         //Creates a new listener
         FirebaseHelper.mainDB.getReference().child(uID).addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
@@ -386,6 +402,8 @@ public class LoggingInHelper {
                 ContactsHelper.LoadContacts();
 
                 setupMessaging(currentActivity.getApplicationContext()); //Sets up messaging component
+
+                SavedSharedPreferences.setLogin(activity.getApplicationContext(), email, password);
 
                 //Switches to the MainMenu activity
                 Intent intent = new Intent(signInActivity, MainMenuActivity.class);
@@ -400,7 +418,6 @@ public class LoggingInHelper {
             }
         });
     }
-
 
 
 }

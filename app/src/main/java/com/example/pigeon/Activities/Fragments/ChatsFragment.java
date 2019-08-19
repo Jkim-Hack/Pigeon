@@ -1,5 +1,6 @@
 package com.example.pigeon.Activities.Fragments;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -13,6 +14,7 @@ import android.widget.ListView;
 
 import com.example.pigeon.Activities.Adapters.ChatListAdapter;
 import com.example.pigeon.Activities.MainActivity;
+import com.example.pigeon.Activities.SignInActivity;
 import com.example.pigeon.FirebaseManagers.Messaging.MessagingHelper;
 import com.example.pigeon.R;
 
@@ -76,10 +78,14 @@ public class ChatsFragment extends Fragment {
         createButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                /*
                 ArrayList<String> list = new ArrayList<>();
                 list.add(MainActivity.user.getuID());
-                list.add("AIbFBafwzheXXBdjGh4fp8HnFO12");
+                list.add("aTfrH9fwbtNI0hRYGg0r7MkwOCU2");
                 MessagingHelper.createChat(list, view.getContext());
+                */
+                Intent intent = new Intent(view.getContext(), SignInActivity.class);
+                view.getContext().startActivity(intent);
             }
         });
         return view;

@@ -7,7 +7,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.example.pigeon.R;
-import com.example.pigeon.common.ContactInfo;
+import com.example.pigeon.common.UserInfo.ContactInfo;
 
 public class UserProfileActivity extends AppCompatActivity {
 

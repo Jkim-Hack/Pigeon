@@ -1,5 +1,8 @@
 package com.example.pigeon.Activities;
 
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
+import android.content.Context;
 import android.os.Build;
 import android.support.design.widget.TabLayout;
 import android.support.v4.view.ViewPager;
@@ -25,7 +28,8 @@ public class SignInActivity extends AppCompatActivity {
             Window w = getWindow();
             w.setFlags(WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS, WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS);
         }
-        FirebaseHelper.build();
+        //FirebaseHelper.build();
+
 
         ViewPager viewPager = (ViewPager) findViewById(R.id.view_pager);
         viewPager.setAdapter(new SignInFragmentPagerAdapter(getSupportFragmentManager(),

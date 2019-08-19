@@ -11,7 +11,7 @@ import android.widget.TextView;
 
 import com.example.pigeon.FirebaseManagers.Accounts.ContactsHelper;
 import com.example.pigeon.R;
-import com.example.pigeon.common.ContactInfo;
+import com.example.pigeon.common.UserInfo.ContactInfo;
 
 import java.util.HashMap;
 import java.util.Map;

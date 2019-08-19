@@ -8,9 +8,9 @@ import android.widget.ArrayAdapter;
 import android.widget.TextView;
 
 import com.example.pigeon.Activities.MainActivity;
-import com.example.pigeon.Activities.MessagingRoomActivity;
 import com.example.pigeon.FirebaseManagers.Messaging.MessagingHelper;
 import com.example.pigeon.R;
+import com.example.pigeon.common.UserInfo.ContactInfo;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -61,19 +61,19 @@ public class ChatListAdapter extends ArrayAdapter<HashMap<String, MessagingHelpe
             String chatId = entry.getKey();
             StringBuilder sb = new StringBuilder();
             if(chatInfo.title.equals("")){ //Check whether there's a title or not
-                HashMap<String, String> membersMap = MessagingHelper.chatMembers.get(chatId);
+                HashMap<String, ContactInfo> membersMap = MessagingHelper.chatMembers.get(chatId);
                 if(membersMap != null){
-                    Set<Map.Entry<String,String>> members = membersMap.entrySet();
+                    Set<Map.Entry<String,ContactInfo>> members = membersMap.entrySet();
 
-                    Iterator<Map.Entry<String, String>> membersIterators = members.iterator();
+                    Iterator<Map.Entry<String, ContactInfo>> membersIterators = members.iterator();
 
                     while (membersIterators.hasNext()){
-                        Map.Entry<String, String> member = membersIterators.next();
+                        Map.Entry<String, ContactInfo> member = membersIterators.next();
                         if(!member.getKey().equals(MainActivity.user.getuID())){
                             if(members.size() > 2){
-                                sb.append(member.getValue());
+                                sb.append(member.getValue().getName());
                             } else {
-                                sb.append(member.getValue() + ", ");
+                                sb.append(member.getValue().getName() + ", ");
                             }
                         }
                     }

@@ -45,7 +45,7 @@ public class ContactsFragment extends Fragment {
         newContactButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                ContactsHelper.requestContact("AIbFBafwzheXXBdjGh4fp8HnFO12");
+                ContactsHelper.requestContact("aTfrH9fwbtNI0hRYGg0r7MkwOCU2");
             }
         });
 
