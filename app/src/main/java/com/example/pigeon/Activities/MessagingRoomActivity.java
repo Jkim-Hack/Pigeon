@@ -4,6 +4,7 @@ import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
+import android.provider.MediaStore;
 import android.support.annotation.Nullable;
 import android.support.v4.app.NotificationManagerCompat;
 import android.support.v7.app.AppCompatActivity;
@@ -53,6 +54,9 @@ public class MessagingRoomActivity extends AppCompatActivity {
     private static ListView messageList;
 
     private boolean isClicked = false;
+
+    private static final int REQUEST_IMAGE_CAPTURE = 1;
+
 
     @SuppressLint("ClickableViewAccessibility")
     @Override
@@ -221,7 +225,6 @@ public class MessagingRoomActivity extends AppCompatActivity {
     public static void setTitle(String chatTitle1) {
         chatTitle = chatTitle1;
     }
-
 
 
 }

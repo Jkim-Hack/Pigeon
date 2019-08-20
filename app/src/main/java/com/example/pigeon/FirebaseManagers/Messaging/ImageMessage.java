@@ -2,14 +2,14 @@ package com.example.pigeon.FirebaseManagers.Messaging;
 
 public class ImageMessage extends MessagingInstance {
 
-    private String downloadLink;
+    private String downloadPath;
 
     public ImageMessage(){
         //TODO: ADD DEFAULT MESSAGE
     }
 
-    public ImageMessage(String downloadLink, String userID){
-        this.downloadLink = downloadLink;
+    public ImageMessage(String downloadPath, String userID){
+        this.downloadPath = downloadPath;
         this.sentTimestamp = System.currentTimeMillis();
         this.userID = userID;
         this.type = "IMAGE";
@@ -33,5 +33,13 @@ public class ImageMessage extends MessagingInstance {
     @Override
     public void setUserID(String userID) {
         this.userID = userID;
+    }
+
+    public String getDownloadPath() {
+        return downloadPath;
+    }
+
+    public void setDownloadPath(String downloadPath) {
+        this.downloadPath = downloadPath;
     }
 }

@@ -74,14 +74,18 @@ public class MessageListAdapter extends BaseAdapter {
             viewHolder = new ViewHolder();
             switch (type) {
                 case TYPE_USER: //Type of message as this user
-                    convertView = inflater.inflate(R.layout.chat_text_user, null); //Inflate the chat user's view
-                    viewHolder.textView = convertView.findViewById(R.id.userMessage); //The id of the chat user's view TextView
-                    viewHolder.textView.setMaxWidth((int)(width/1.5)); //Set the max width to a little more than half of the screen
+                    if(messageList.get(position).getType().equals("TEXT")){
+                        convertView = inflater.inflate(R.layout.chat_text_user, null); //Inflate the chat user's view
+                        viewHolder.textView = convertView.findViewById(R.id.userMessage); //The id of the chat user's view TextView
+                        viewHolder.textView.setMaxWidth((int)(width/1.5)); //Set the max width to a little more than half of the screen
+                    }
                     break;
                 case TYPE_OTHER: //Type of message as other user
-                    convertView = inflater.inflate(R.layout.chat_text_other, null);  //Inflate the chat user's view
-                    viewHolder.textView = convertView.findViewById(R.id.otherMessage); //The id of the chat user's view TextView
-                    viewHolder.textView.setMaxWidth((int)(width/1.5)); //Set the max width to a little more than half of the screen
+                    if(messageList.get(position).getType().equals("TEXT")) {
+                        convertView = inflater.inflate(R.layout.chat_text_other, null);  //Inflate the chat user's view
+                        viewHolder.textView = convertView.findViewById(R.id.otherMessage); //The id of the chat user's view TextView
+                        viewHolder.textView.setMaxWidth((int) (width / 1.5)); //Set the max width to a little more than half of the screen
+                    }
                     break;
             }
             convertView.setTag(viewHolder);
