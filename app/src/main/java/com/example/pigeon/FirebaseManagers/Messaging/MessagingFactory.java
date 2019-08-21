@@ -1,8 +1,8 @@
 package com.example.pigeon.FirebaseManagers.Messaging;
 
-import android.widget.ImageView;
-
 import com.example.pigeon.Activities.MainActivity;
+import com.example.pigeon.FirebaseManagers.Messaging.Imaging.ImageMessage;
+import com.example.pigeon.FirebaseManagers.Messaging.Text.TextMessage;
 
 public class MessagingFactory {
 

@@ -1,7 +1,5 @@
 package com.example.pigeon.Activities;
 
-import android.app.ActivityManager;
-import android.content.Context;
 import android.content.Intent;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
@@ -18,9 +16,7 @@ import com.example.pigeon.Activities.Fragments.ChatsFragment;
 import com.example.pigeon.Activities.Fragments.Contacts.ContactsFragment;
 import com.example.pigeon.FirebaseManagers.Accounts.ContactsHelper;
 import com.example.pigeon.FirebaseManagers.Messaging.MessagingHelper;
-import com.example.pigeon.Services.ChatNotificationService;
 import com.example.pigeon.R;
-import com.example.pigeon.Services.ContactsNotificationService;
 import com.example.pigeon.common.UserInfo.ContactInfo;
 import com.example.pigeon.common.NotificationHelper;
 
@@ -53,7 +49,7 @@ public class MainMenuActivity extends AppCompatActivity {
             System.out.println("DD");
         }
         NotificationHelper.createNotificationChannel(this,   "PIGEON "+ "CHANNEL");
-        chatListAdapter = new ChatListAdapter(this, R.layout.chat_menu_item);
+        chatListAdapter = new ChatListAdapter(this, R.layout.item_chat_menu);
         MessagingHelper.LoadAllChatRooms(chatListAdapter); //Loads all chat rooms
 
         contactsListAdapter = new ContactsListAdapter(this);

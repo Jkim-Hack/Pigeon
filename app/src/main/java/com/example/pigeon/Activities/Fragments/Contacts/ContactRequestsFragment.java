@@ -48,7 +48,7 @@ public class ContactRequestsFragment extends Fragment {
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.contact_requests_fragment, container, false);
+        View view = inflater.inflate(R.layout.fragment_contact_requests, container, false);
         ListView listView = view.findViewById(R.id.requestList);
         listView.setAdapter(contactRequestsAdapter);
         return view;

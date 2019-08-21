@@ -1,6 +1,8 @@
-package com.example.pigeon.FirebaseManagers.Messaging;
+package com.example.pigeon.FirebaseManagers.Messaging.Text;
 
-public class TextMessage extends MessagingInstance{
+import com.example.pigeon.FirebaseManagers.Messaging.MessagingInstance;
+
+public class TextMessage extends MessagingInstance {
     private String message;
 
     public TextMessage(){

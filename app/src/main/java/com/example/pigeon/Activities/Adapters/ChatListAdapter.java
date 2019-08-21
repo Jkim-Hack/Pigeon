@@ -36,7 +36,7 @@ public class ChatListAdapter extends ArrayAdapter<HashMap<String, MessagingHelpe
 
         //Inflate the view
         if(convertView == null){
-            convertView = LayoutInflater.from(getContext()).inflate(R.layout.chat_menu_item, parent, false);
+            convertView = LayoutInflater.from(getContext()).inflate(R.layout.item_chat_menu, parent, false);
         }
 
         //Set the textviews with their respective ids

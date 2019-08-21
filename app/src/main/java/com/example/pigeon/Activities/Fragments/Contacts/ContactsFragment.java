@@ -32,7 +32,7 @@ public class ContactsFragment extends Fragment {
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.contacts_fragment_content, container, false);
+        View view = inflater.inflate(R.layout.fragment_contacts_content, container, false);
 
         ViewPager viewPager = view.findViewById(R.id.contactsFragmentViewPager);
         viewPager.setAdapter(new ContactsPageFragmentPagerAdapter(this.getChildFragmentManager()));

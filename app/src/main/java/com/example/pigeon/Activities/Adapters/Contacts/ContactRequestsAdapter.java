@@ -62,7 +62,7 @@ public class ContactRequestsAdapter extends BaseAdapter {
         ViewHolder viewHolder = null;
         if(convertView == null){
             viewHolder = new ViewHolder();
-            convertView = inflater.inflate(R.layout.contact_request_adapter_item, parent, false);
+            convertView = inflater.inflate(R.layout.item_contact_request, parent, false);
 
             viewHolder.profileImage = convertView.findViewById(R.id.requestContactImage);
             viewHolder.name = convertView.findViewById(R.id.requestTextName);

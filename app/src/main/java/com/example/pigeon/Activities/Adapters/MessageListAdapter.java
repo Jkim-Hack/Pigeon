@@ -7,12 +7,15 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.example.pigeon.Activities.MainActivity;
+import com.example.pigeon.FirebaseManagers.Messaging.Imaging.ImageHandler;
+import com.example.pigeon.FirebaseManagers.Messaging.Imaging.ImageMessage;
 import com.example.pigeon.FirebaseManagers.Messaging.MessageList;
 import com.example.pigeon.FirebaseManagers.Messaging.MessagingInstance;
-import com.example.pigeon.FirebaseManagers.Messaging.TextMessage;
+import com.example.pigeon.FirebaseManagers.Messaging.Text.TextMessage;
 import com.example.pigeon.R;
 
 import java.util.List;
@@ -75,16 +78,24 @@ public class MessageListAdapter extends BaseAdapter {
             switch (type) {
                 case TYPE_USER: //Type of message as this user
                     if(messageList.get(position).getType().equals("TEXT")){
-                        convertView = inflater.inflate(R.layout.chat_text_user, null); //Inflate the chat user's view
+                        convertView = inflater.inflate(R.layout.item_chat_text_user, null); //Inflate the chat user's view
                         viewHolder.textView = convertView.findViewById(R.id.userMessage); //The id of the chat user's view TextView
                         viewHolder.textView.setMaxWidth((int)(width/1.5)); //Set the max width to a little more than half of the screen
+                    } else if(messageList.get(position).getType().equals("IMAGE")) {
+                        convertView = inflater.inflate(R.layout.item_chat_image_user, null);  //Inflate the chat user's view
+                        viewHolder.imageView = convertView.findViewById(R.id.image_user); //The id of the chat user's view ImageView
+                        viewHolder.imageView.setMaxWidth((int) (width / 1.5)); //Set the max width to a little more than half of the screen
                     }
                     break;
                 case TYPE_OTHER: //Type of message as other user
                     if(messageList.get(position).getType().equals("TEXT")) {
-                        convertView = inflater.inflate(R.layout.chat_text_other, null);  //Inflate the chat user's view
+                        convertView = inflater.inflate(R.layout.item_chat_text_other, null);  //Inflate the chat user's view
                         viewHolder.textView = convertView.findViewById(R.id.otherMessage); //The id of the chat user's view TextView
                         viewHolder.textView.setMaxWidth((int) (width / 1.5)); //Set the max width to a little more than half of the screen
+                    } else if(messageList.get(position).getType().equals("IMAGE")) {
+                        convertView = inflater.inflate(R.layout.item_chat_image_other, null);  //Inflate the chat user's view
+                        viewHolder.imageView = convertView.findViewById(R.id.image_other); //The id of the chat user's view ImageView
+                        viewHolder.imageView.setMaxWidth((int) (width / 1.5)); //Set the max width to a little more than half of the screen
                     }
                     break;
             }
@@ -96,8 +107,12 @@ public class MessageListAdapter extends BaseAdapter {
         if(messageList.get(position).getType().equals("TEXT")) {
             MessagingInstance message = (TextMessage)getItem(position); //Get the message at the current position
             viewHolder.textView.setText(((TextMessage) message).getMessage()); //Sets text of the view acquired above to the message received
+        } else if(messageList.get(position).getType().equals("IMAGE")){
+            MessagingInstance message = (ImageMessage)getItem(position);
+            String downloadPath = ((ImageMessage) message).getDownloadPath();
+            //TODO: ADD IN STAND IMAGE/ANIMATION WHILE THE REAL IMAGE LOADS
+            ImageHandler.getImageFromPathBytes(downloadPath, viewHolder.imageView);
         }
-        //TODO: ADD IMAGE MESSAGE TYPE
         return convertView;
     }
 
@@ -120,6 +135,7 @@ public class MessageListAdapter extends BaseAdapter {
 
     public static class ViewHolder {
         public TextView textView;
+        public ImageView imageView;
     }
 
 

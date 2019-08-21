@@ -14,7 +14,7 @@ import com.example.pigeon.FirebaseManagers.FirebaseHelper;
 import com.example.pigeon.FirebaseManagers.LoggerHelper;
 import com.example.pigeon.FirebaseManagers.Messaging.MessagingHelper;
 import com.example.pigeon.FirebaseManagers.Messaging.MessagingInstance;
-import com.example.pigeon.FirebaseManagers.Messaging.TextMessage;
+import com.example.pigeon.FirebaseManagers.Messaging.Text.TextMessage;
 import com.example.pigeon.common.UserInfo.ContactInfo;
 import com.example.pigeon.common.LogEntry;
 import com.example.pigeon.common.NotificationHelper;

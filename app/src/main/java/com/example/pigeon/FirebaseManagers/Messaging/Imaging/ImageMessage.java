@@ -1,4 +1,6 @@
-package com.example.pigeon.FirebaseManagers.Messaging;
+package com.example.pigeon.FirebaseManagers.Messaging.Imaging;
+
+import com.example.pigeon.FirebaseManagers.Messaging.MessagingInstance;
 
 public class ImageMessage extends MessagingInstance {
 

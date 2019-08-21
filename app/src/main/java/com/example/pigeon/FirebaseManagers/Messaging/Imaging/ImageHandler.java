@@ -1,11 +1,13 @@
-package com.example.pigeon.FirebaseManagers;
+package com.example.pigeon.FirebaseManagers.Messaging.Imaging;
 
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.drawable.BitmapDrawable;
 import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.widget.ImageView;
 
+import com.example.pigeon.FirebaseManagers.FirebaseHelper;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.storage.StorageMetadata;
@@ -46,6 +48,27 @@ public class ImageHandler {
         UploadTask uploadTask = storageRef.putBytes(data);
         return uploadTask;
     }
+
+    public static void getImageFromPathBytes(String path, final ImageView imageView) {
+        StorageReference islandRef = FirebaseHelper.mainStorage.getReference().child(path);
+        final long ONE_MEGABYTE = 1024 * 1024;
+        islandRef.getBytes(ONE_MEGABYTE).addOnSuccessListener(new OnSuccessListener<byte[]>() {
+            @Override
+            public void onSuccess(byte[] bytes) {
+                // Data for "images/island.jpg" is returns, use this as needed
+                Bitmap bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
+                imageView.setImageBitmap(bitmap);
+            }
+        }).addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception exception) {
+                // Handle any errors
+                System.out.println(exception.getMessage());
+            }
+        });
+
+    }
+
 
 
 }

@@ -51,7 +51,7 @@ public class ContactsListAdapter extends BaseAdapter {
         final Map.Entry<String, ContactInfo> item = getItem(position);
 
         if(convertView == null){
-            convertView = inflater.inflate(R.layout.contact_user, parent, false);
+            convertView = inflater.inflate(R.layout.item_contact_user, parent, false);
         }
 
         TextView contactName = convertView.findViewById(R.id.contact_name);

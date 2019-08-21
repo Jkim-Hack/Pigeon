@@ -12,13 +12,10 @@ import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.ListView;
 
-import com.example.pigeon.Activities.Adapters.ChatListAdapter;
-import com.example.pigeon.Activities.MainActivity;
 import com.example.pigeon.Activities.SignInActivity;
 import com.example.pigeon.FirebaseManagers.Messaging.MessagingHelper;
 import com.example.pigeon.R;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
@@ -45,7 +42,7 @@ public class ChatsFragment extends Fragment {
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.chats_fragment_content, container, false);
+        View view = inflater.inflate(R.layout.fragment_chats_content, container, false);
 
         //Creates the new ListView object and adapter object
         final ListView chatList = view.findViewById(R.id.chatList);
